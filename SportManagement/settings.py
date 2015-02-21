@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 """
 Django settings for SportManagement project.
 
@@ -36,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Core'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -45,7 +47,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'Core'
 )
 
 ROOT_URLCONF = 'SportManagement.urls'
