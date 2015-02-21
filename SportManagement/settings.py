@@ -45,6 +45,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Core'
 )
 
 ROOT_URLCONF = 'SportManagement.urls'
@@ -57,15 +58,18 @@ WSGI_APPLICATION = 'SportManagement.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sportmanagement',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '',
     }
 }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -75,8 +79,28 @@ USE_L10N = True
 
 USE_TZ = True
 
+#RUTA DEL PROYECTO
+RUTA_PROYECTO = os.path.dirname(os.path.realpath(__file__))
+
+#Administrador
+ADMINS = (
+('Gonzalo Vazquez Suarez', 'gonzalovazquezs@gmail.com'),
+)
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    # Put strings here, like “/home/html/static” or “C:/www/django/static”.
+    # Always use forward slashes, even on Windows.
+    # Don’t forget to use absolute paths, not relative paths.
+    os.path.join(RUTA_PROYECTO,'static'),
+)
+
+#Ubicacion de las plantillas
+TEMPLATE_DIRS = (
+     os.path.join(RUTA_PROYECTO,'templates'),
+)
