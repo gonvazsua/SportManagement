@@ -105,3 +105,10 @@ STATICFILES_DIRS = (
 TEMPLATE_DIRS = (
      os.path.join(RUTA_PROYECTO,'templates'),
 )
+
+#Ruta para poder almacenar las imagenes
+MEDIA_ROOT = os.path.join(RUTA_PROYECTO,'upload')
+MEDIA_URL = 'http://127.0.0.1:8000/media/'
+
+#Extension de User de Django
+AUTH_PROFILE_MODULE = 'Core.Perfil'
