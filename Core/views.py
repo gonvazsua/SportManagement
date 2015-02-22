@@ -1,5 +1,7 @@
 from django.shortcuts import *
 
 def inicio(request):
-    variable = "Hello Sunday!"
-    return render_to_response('Index/index.html', {'variable': variable}, context_instance=RequestContext(request))
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/profile/')
+    else:
+        return render_to_response('Index/index.html', {'variable': ""}, context_instance=RequestContext(request))

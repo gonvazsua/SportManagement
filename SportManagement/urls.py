@@ -15,5 +15,8 @@ urlpatterns = patterns('',
           {'document_root':settings.MEDIA_ROOT,}),
 
     #Pagina principal
-    url(r'^$', 'Core.views.inicio')
+    url(r'^$', 'Core.views.inicio'),
+
+    #Usuarios
+    url(r'^profile/', 'Core.views.perfil')
 )
