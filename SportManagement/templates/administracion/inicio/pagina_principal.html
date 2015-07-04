@@ -1,0 +1,193 @@
+{% extends 'administracion/template_admin.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Página principal - {{club.nombre}}
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-green">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-futbol-o fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{num_partidos_hoy}}</div>
+                        <div>Partidos del día</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-check-circle fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{num_partidos_en_juego}}</div>
+                        <div>Partidos en juego</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-red">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-bullhorn fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{num_partidos_abiertos_hoy}}</div>
+                        <div>Partidos abiertos hoy</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-users fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{jugadores.count}}</div>
+                        <div>Jugadores</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-clock-o fa-fw"></i> Partidos para hoy {% now "j F Y " %}
+                <div class="pull-right">
+                    <p class="text-info" title="Franja horaria">{{franja_horaria_actual.inicio|time:'G:i'}} - {{franja_horaria_actual.fin|time:'G:i'}}</p>
+                </div>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                {% for pista, partido in pistas_partidos.iteritems %}
+                    {% if forloop.counter0|divisibleby:"2" %}
+                        <div class="row">
+                    {% endif %}
+                        <div class="col-lg-1">
+                            <input type="hidden" id="num_jugadores_pista_{{pista.id}}" value="{{partido.perfiles.count}}">
+                            <input type="hidden" id="partido_id_pista_{{pista.id}}" value="{{partido.id}}">
+                        </div>
+                        <a {% if not partido == "" %}
+                                href="/administrador/{{perfil.user.id}}/partido/{{partido.id}}/editar"
+                                title="Ver/Editar este partido"
+                           {% else %}
+                                href="/administrador/{{perfil.user.id}}/nuevo?pista_id={{pista.id}}&fh_id={{franja_horaria_actual.id}}"
+                                title="Crear partido"
+                           {% endif %}
+                        >
+                            <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10 {%if partido.perfiles.count == 4%} pista_verde {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla {%else%}pista_roja{%endif%}">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 row-centered">
+                                        <h4 class="color_blanco">{{pista.nombre}}</h4>
+                                        <h4 class="color_blanco">- {{pista.deporte.deporte}} -</h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="col-lg-1"></div>
+                    {% if not forloop.counter0|divisibleby:"2"  or forloop.last %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <!-- /.panel-body -->
+            <div class="panel-footer">
+                <a href="/administrador/{{perfil.user.id}}/nuevo" title="Nuevo partido">Crear partido</a>
+                <div class="pull-right">
+                    <p class="text-info" title="Franja horaria">{{franja_horaria_actual.inicio|time:'G:i'}} - {{franja_horaria_actual.fin|time:'G:i'}}</p>
+                </div>
+            </div>
+            <!-- /.panel-footer -->
+        </div>
+    </div>
+    <!-- /.col-lg-8 -->
+    <div class="col-lg-4">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-user fa-fw"></i> Jugadores
+            </div>
+            <div class="panel-body">
+                <div class="dataTable_wrapper">
+                    <table class="table table-striped table-bordered table-hover" id="dataTables-jugadores">
+                        <thead>
+                            <tr>
+                                <th class="center">Nombre</th>
+                                <th class="center">Usuario</th>
+                                <th class="center">Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for j in jugadores|slice:":10" %}
+                            {% cycle 'odd' 'even' as rowclass silent %}
+                            <tr class="{{rowclass}} gradeX">
+                                <td>{{j.perfil.user.first_name}}</td>
+                                <td>{{j.perfil.user.username}}</td>
+                                <td>{{j.perfil.telefono}}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <a href="/administrador/{{perfil.user.id}}/jugadores" class="btn btn-info btn-block">Ver todos <span class="badge">{{jugadores.count}}</span></a>
+            </div>
+            <!-- /.panel-body -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-sun-o fa-fw"></i> El tiempo en {{perfil.municipio.municipio}}
+                </div>
+                <div class="panel-body">
+                    <div class="row-centered">
+                        {{rutaTiempo.ruta|safe}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.col-lg-4 -->
+
+
+<!-- /.row -->
+{% endblock %}
+
+{% block js %}
+    $("#enlace_pagina_principal").addClass("active")
+{% endblock %}

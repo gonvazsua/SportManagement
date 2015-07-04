@@ -1,0 +1,181 @@
+{% extends 'administracion/template_admin.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Configuración de cuenta - {{perfil.user.first_name}} {{perfil.user.last_name}}
+{% endblock %}
+
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador">Inicio</a></li>
+  <li class="active">Mi cuenta</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Configuración de su cuenta:</h4>
+            <p>
+                Desde esta página podrá configurar toda la información relacionada con usted.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h3>Información personal: <i class="fa fa-pencil fa-fw" title="Formulario de edición"></i></h3>
+        <hr>
+    </div>
+</div>
+
+<form method="POST" id="formulario_cuenta" action="/administrador/{{perfil.user.id}}/cuenta" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-lg-4 col-md-4">
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    {% if perfil.imagen == "" %}
+                        <img src="{{STATIC_URL}}img/Imagen_no_disponible.png" title="Imagen no disponible" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% else %}
+                        <img src="{{MEDIA_URL}}{{perfil.imagen}}" title="{{perfil.user.first_name}}" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    <input type="file" id="imagen_perfil" name="imagen" value="{{perfil.imagen}}">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-8">
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="nombre">Nombre:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="nombre" id="nombre" placeholder="Nombre" value="{{perfil.user.first_name}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="apellidos">Apellidos:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="apellidos" id="apellidos" placeholder="Apellidos" value="{{perfil.user.last_name}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="email">Email:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="email" id="email" placeholder="Email" value="{{perfil.user.email}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="username">Nombre de usuario:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="username" id="username" placeholder="Nombre de usuario" value="{{perfil.user.username}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="password1">Contraseña:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="password" class="form-control" name="password" id="password1" placeholder="Contraseña">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="password2">Repetir contraseña:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="password" class="form-control" name="password2" id="password2" placeholder="Repetir contraseña">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="telefono">Teléfono:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="telefono" id="telefono" placeholder="Teléfono"  value="{{perfil.telefono}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="provincia">Provincia:</label>
+                </div>
+                <div class="col-lg-7">
+                    <select id="id_provincia" name="provincia" class="form-control obligatorio" onchange="javascript:actualiza_municipios(this);">
+                        <option value="0">Seleccione...</option>
+                        {% for p in provincias %}
+                            <option value="{{p.id}}" {% if p.id == perfil.municipio.provincia.id %}selected = "selected" {% endif %}>{{p.provincia}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="municipio">Municipio:</label>
+                </div>
+                <div class="col-lg-7">
+                    <select id="id_municipio" name="municipio" class="form-control obligatorio">
+                        <option value="0">Seleccione...</option>
+                        {% for m in municipios %}
+                            <option value="{{m.id}}" {% if m.id == perfil.municipio.id %}selected = "selected" {% endif %}>{{m.municipio}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group" id="error_pass" style="display:none">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-10">
+                    <div class="alert alert-danger" role="alert">Las contraseñas no coinciden</div>
+                </div>
+            </div>
+            <div class="row form-group" id="error_email" style="display:none">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-10">
+                    <div class="alert alert-danger" role="alert">El formato del email no es correcto</div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-7">
+                     <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_mi_cuenta();">
+                         <i class="fa fa-save fa-fw"></i> Guardar información
+                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

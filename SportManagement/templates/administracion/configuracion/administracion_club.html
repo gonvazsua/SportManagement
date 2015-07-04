@@ -1,0 +1,395 @@
+{% extends 'administracion/template_admin.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Configuración de club - {{club.nombre}}
+{% endblock %}
+
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador">Inicio</a></li>
+  <li class="active">Administración</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Configuración:</h4>
+            <p>
+                Desde esta página podrá configurar los siguientes parámetros: <br>
+                - Información relacionada con su club.<br>
+                - Franjas horarias para la creación de partidos.<br>
+                - Niveles de juego que pueden tener los jugadores.<br>
+                - Deportes que se practican en el club.<br>
+                - Nombre de las pistas del club.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h3>Información del club: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_configuracion_club_titulo','form_configuracion_club');"></i></h3>
+        <hr>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-4 col-md-4">
+        <div class="row">
+        {% if club.imagen == "" %}
+            <img src="{{STATIC_URL}}img/Imagen_no_disponible.png" alt="{{club.nombre}}" class="img-rounded" style="max-width: 100%">
+        {% else %}
+            <img src="{{MEDIA_URL}}{{club.imagen}}" alt="{{club.nombre}}" class="img-rounded" style="max-width: 100%">
+        {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-8">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="row">
+                    <h5><strong>Nombre:</strong> {{club.nombre}}</h5>
+                </div>
+                <div class="row">
+                    <h5><strong>Municipio:</strong> {{club.municipio.municipio}}</h5>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="row">
+                    <h5><strong>Dirección:</strong> {{club.direccion}}</h5>
+                </div>
+                <div class="row">
+                    <h5><strong>Provincia:</strong> {{club.municipio.provincia.provincia}}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 col-md-8">
+                <div class="row">
+                    <h5><strong>Descripción:</strong> {{club.descripcion}}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h3>Franjas horarias: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_franjas_horarias_titulo','form_franjas_horarias');"></i></h3>
+        <hr>
+    </div>
+</div>
+<div class="row">
+    <ul>
+    {% for fh in franjas_horarias %}
+        <li>{{fh.inicio|time:'G:i'}} - {{fh.fin|time:'G:i'}}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h3>Deportes: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_deportes_titulo','form_deportes');"></i></h3>
+        <hr>
+    </div>
+</div>
+<div class="row">
+    <ul>
+    {% for deporte in deportes %}
+        <li>{{deporte.deporte}}, {{deporte.num_jugadores}} jugadores</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h3>Niveles de juego: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_niveles_juego_titulo','form_niveles_juego');"></i></h3>
+        <hr>
+    </div>
+</div>
+<div class="row">
+    <ul>
+    {% for nivel in niveles_juego %}
+        <li>{{nivel.deporte.deporte}} - {{nivel.nivel}}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h3>Pistas: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_pistas_titulo','form_pistas');"></i></h3>
+        <hr>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-md-6">
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th>Orden</th>
+                    <th>Deporte</th>
+                    <th>Nombre</th>
+                </tr>
+            {% for p in pistas %}
+                <tr>
+                    <td>{{p.orden}}</td>
+                    <td>{{p.deporte.deporte}}</td>
+                    <td>{{p.nombre}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ************** FORMULARIOS *********************** -->
+
+<div class="row" id="form_configuracion_club_titulo" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <h3>Modificar información del club:</h3>
+        <hr>
+    </div>
+</div>
+<div class="row" id="form_configuracion_club" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <form id='form_club' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
+            <input type="hidden" name="action" id="action" value="club" />
+            <input type="hidden" name="user_id" id="user_id" value="{{perfil.user.id}}" />
+            <input type="hidden" name="club_id" id="club_id" value="{{club.id}}" />
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='nombre'>Nombre: </label></div>
+                <div class="form-group col-lg-2"><input type="text" maxlength="50" id="id_nombre" name="nombre" placeholder="Nombre del club" value="{{club.nombre}}" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='provincia'>Provincia: </label></div>
+                <div class="form-group col-lg-2">
+                    <select id="id_provincia" class="form-control"  onchange="javascript:actualiza_municipios(this);">
+                        {% for p in provincias %}
+                            <option value="{{p.id}}" {% if p.id == provincia.id  %}selected="selected"{% endif %}>
+                                {{p.provincia}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-lg-1"><label for='municipio'>Municipio: </label></div>
+                <div class="form-group col-lg-4">
+                    <select id="id_municipio" name="municipio" class="form-control" {% if provincia == "" %}disabled="disabled"{% endif %}>
+                        {% for m in municipios %}
+                            <option value="{{m.id}}" {% if m.id == municipio.id  %}selected="selected"{% endif %}>
+                                {{m.municipio}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='direccion'>Dirección: </label></div>
+                <div class="form-group col-lg-5"><input type="text" maxlength="50" id="id_direccion" name="direccion" placeholder="Direccion" value="{{club.direccion}}" class="form-control"/></div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='descripcion'>Descripción: </label></div>
+                <div class="form-group col-lg-10"><textarea name="descripcion" maxlength="300" id="id_descripcion" class="form-control" cols="10" rows="5">{{club.descripcion}}</textarea></div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-11">
+                    <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_club();">
+                      <i class="fa fa-save fa-fw"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Franjas horarias -->
+<div class="row" id="form_franjas_horarias_titulo" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <h3>Modificar franjas horarias de juego:</h3>
+        <hr>
+    </div>
+</div>
+<div class="row" id="form_franjas_horarias" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <form id='form_franja_hora' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
+            <input type="hidden" name="action" id="action" value="franja_hora" />
+            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
+            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
+            <input type="hidden" name="ids_fh_eliminadas" id="ids_fh_eliminadas" value="" />
+            {% for fh in franjas_horarias %}
+            <div class="row" id="fila_form_franja_hora_{{fh.id}}">
+                <div class="form-group col-lg-1"><label for='inicio'>Inicio: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_inicio_{{fh.id}}" disabled="disabled" value="{{fh.inicio}}" name="inicio_{{fh.id}}" placeholder="Hora de inicio" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='fin'>Fin: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_fin_{{fh.id}}" disabled="disabled" value="{{fh.fin}}" name="fin_{{fh.id}}" placeholder="Hora de fin" class="form-control"/></div>
+                <div class="form-group col-lg-1">
+                    <i class="fa fa-minus-square fa-2x" title="Eliminar" style="cursor:pointer" onclick="javascript:elimina_fila_fh({{fh.id}});"></i>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='inicio'>Inicio: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_inicio" value="" name="inicio" placeholder="Hora de inicio" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='fin'>Fin: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_fin" value="" name="fin" placeholder="Hora de fin" class="form-control"/></div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-11">
+                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
+                      <i class="fa fa-save fa-fw"></i> Guardar
+                    </button> &nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Deportes -->
+<div class="row" id="form_deportes_titulo" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <h3>Modificar deportes:</h3>
+        <hr>
+    </div>
+</div>
+<div class="row" id="form_deportes" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <form id='form_deporte' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
+            <input type="hidden" name="action" id="action" value="deporte" />
+            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
+            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
+            <input type="hidden" name="ids_deportes_eliminados" id="ids_deportes_eliminados" value="" />
+            {% for d in deportes %}
+            <div class="row" id="fila_form_deporte_{{d.id}}">
+                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_deporte_{{d.id}}" disabled="disabled" value="{{d.deporte}}" name="deporte_{{d.id}}" placeholder="Deporte" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='num_jugadores'>Jugadores: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_num_jugadores_{{d.num_jugadores}}" disabled="disabled" value="{{d.num_jugadores}}" name="num_jugadores_{{d.id}}" placeholder="Numero de jugadores" class="form-control"/></div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_deporte" value="" name="deporte" placeholder="Nombre del deporte" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='num_jugadores'>Jugadores: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_deporte_num_jugadores" value="" name="num_jugadores" placeholder="Máximo de jugadores" class="form-control"/></div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-11">
+                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
+                      <i class="fa fa-save fa-fw"></i> Guardar
+                    </button> &nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Niveles de juego -->
+<div class="row" id="form_niveles_juego_titulo" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <h3>Modificar niveles de juego:</h3>
+        <hr>
+    </div>
+</div>
+<div class="row" id="form_niveles_juego" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <form id='form_nivel_juego' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
+            <input type="hidden" name="action" id="action" value="nivel_juego" />
+            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
+            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
+            <input type="hidden" name="ids_nj_eliminadas" id="ids_nj_eliminadas" value="" />
+            {% for nj in niveles_juego %}
+            <div class="row" id="fila_form_nivel_juego_{{nj.id}}">
+                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_nj_deporte_{{nj.id}}" disabled="disabled" value="{{nj.deporte}}" name="nj_deporte_{{nj.id}}" placeholder="Deporte" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='nivel'>Nivel: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_nj_nivel_{{nj.id}}" disabled="disabled" value="{{nj.nivel}}" name="nj_nivel_{{nj.id}}" placeholder="Nombre del nivel" class="form-control"/></div>
+                <div class="form-group col-lg-1">
+                    <i class="fa fa-minus-square fa-2x" title="Eliminar" style="cursor:pointer" onclick="javascript:elimina_fila_nj({{nj.id}});"></i>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+                <div class="form-group col-lg-4">
+                    <select id="id_nj_deporte" value="" name="nj_deporte" class="form-control">
+                        {% for d in deportes %}
+                            <option value="{{d.id}}">{{d.deporte}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-lg-1"><label for='nivel'>Nivel: </label></div>
+                <div class="form-group col-lg-4"><input type="text" id="id_nj_nivel" value="" name="nj_nivel" placeholder="Nombre del nivel de juego" class="form-control"/></div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-11">
+                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
+                      <i class="fa fa-save fa-fw"></i> Guardar
+                    </button> &nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Pistas -->
+<div class="row" id="form_pistas_titulo" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <h3>Modificar pistas:</h3>
+        <hr>
+    </div>
+</div>
+<div class="row" id="form_pistas" style="display:none;">
+    <div class="col-lg-12 col-md-12">
+        <form id='form_pista' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
+            <input type="hidden" name="action" id="action" value="pistas" />
+            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
+            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
+            <input type="hidden" name="ids_pistas_eliminadas" id="ids_pistas_eliminadas" value="" />
+            {% for p in pistas %}
+            <div class="row" id="fila_form_pista_{{nj.id}}">
+                <div class="form-group col-lg-1"><label for='orden'>Orden: </label></div>
+                <div class="form-group col-lg-1"><input type="text" id="id_pista_orden_{{p.id}}" disabled="disabled" value="{{p.orden}}" name="pista_orden_{{p.id}}" placeholder="Orden" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+                <div class="form-group col-lg-3"><input type="text" id="id_pista_deporte_{{p.id}}" disabled="disabled" value="{{p.deporte.deporte}}" name="pista_deporte_{{p.id}}" placeholder="Deporte" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='nombre_pista'>Nombre: </label></div>
+                <div class="form-group col-lg-3"><input type="text" id="id_pista_nombre_{{p.id}}" disabled="disabled" value="{{p.nombre}}" name="pista_nombre_{{p.id}}" placeholder="Nombre" class="form-control"/></div>
+                <div class="form-group col-lg-1">
+                    <i class="fa fa-minus-square fa-2x" title="Eliminar" style="cursor:pointer" onclick="javascript:elimina_fila_pista({{p.id}});"></i>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='orden'>Orden: </label></div>
+                <div class="form-group col-lg-1"><input type="text" id="id_pista_orden" value="" name="pista_orden" placeholder="" title="Número de orden de la pista" class="form-control"/></div>
+                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+                <div class="form-group col-lg-3">
+                    <select id="id_pista_deporte" name="pista_deporte" class="form-control">
+                        {% for d in deportes %}
+                            <option value="{{d.id}}">{{d.deporte}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-lg-1"><label for='nombre'>Nombre: </label></div>
+                <div class="form-group col-lg-3"><input type="text" id="id_pista_nombre" value="" name="pista_nombre" placeholder="Nombre de la pista" class="form-control"/></div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-11">
+                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
+                      <i class="fa fa-save fa-fw"></i> Guardar
+                    </button> &nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    activa_enlace_menu("enlace_configurar_club");
+{% endblock %}

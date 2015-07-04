@@ -1,0 +1,68 @@
+.ui-widget-header
+{
+    background-color: none;
+    color: Black;
+}
+.my_error{
+    padding: 15px;
+}
+footer{
+    padding-top: 25px;
+}
+.enlace_negro{
+    color: #333;
+}
+.pista_verde{
+    background-image: url("../img/verde.png");
+    background-repeat:no-repeat;
+    background-position: center top;
+}
+.pista_amarilla{
+    background-image: url("../img/amarillo.png");
+    background-repeat:no-repeat;
+    background-position: center top;
+}
+.pista_roja{
+    background-image: url("../img/rojo.png");
+    background-repeat:no-repeat;
+    background-position: center top;
+}
+.row-centered {
+    text-align:center;
+}
+.row-margin-top-10{
+    margin-top: 10px;
+}
+.partido{
+    margin-top: 5px;
+}
+.row-borde-abajo{
+    border-bottom: 1px solid black;
+}
+.row-altura{
+    min-height: 200px !important;
+}
+.row-altura-500{
+    min-height: 200px;
+}
+
+.row-sin-margen-superior{
+    padding-top:0;
+    margin-top:0;
+}
+.margen_superior{
+    padding-top: 5px;
+}
+.fija_arriba_izquierda{
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+.principal_partido{
+    cursor: pointer;
+}
+
+.color_blanco{
+    color: #FFF !important;
+}

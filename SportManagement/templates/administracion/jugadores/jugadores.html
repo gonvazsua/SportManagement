@@ -1,0 +1,88 @@
+{% extends 'administracion/template_admin.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Jugadores - {{club.nombre}}
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Jugadores</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Buscador de jugadores</h4>
+            <p>
+                En esta pantalla aparecen todos los jugadores afiliados a su club.<br>
+                Introduzca cualquier parámetro de búsqueda en el buscador y el sistema filtrará todas las opciones que coincidan con el texto que introduzca.<br>
+                Puede seleccionar el número de resultados que se muestran en cada página.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-bars fa-fw"></i> Jugadores de {{club.nombre}}
+                <div class="pull-right">
+                    <p class="text-info" title="Crear jugador"><a href="/administrador/{{perfil.user.id}}/jugadores/nuevo">Crear jugador</a></p>
+                </div>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="dataTable_wrapper">
+                    <table class="table table-striped table-bordered table-hover" id="dataTables-jugadores-busqueda">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Nombre</th>
+                                <th>Apellidos</th>
+                                <th>Nombre usuario</th>
+                                <th>Teléfono</th>
+                                <th>Municipio</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for jugador in jugadores %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{jugador.perfil.user.first_name}}</td>
+                                <td>{{jugador.perfil.user.last_name}}</td>
+                                <td>{{jugador.perfil.user.username}}</td>
+                                <td>{{jugador.perfil.telefono}}</td>
+                                <td>{{jugador.perfil.municipio.municipio}}</td>
+                                <td>
+                                    <a href="/administrador/{{perfil.user.id}}/jugadores/{{jugador.perfil.id}}" class="btn btn-success" role="button"><i class="fa fa-info fa-fw"></i> Ver</a>
+                                    <a href="" class="btn btn-danger" role="button"><i class="fa fa-times fa-fw"></i> Eliminar</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    $("#enlace_jugadores").addClass("active")
+{% endblock %}

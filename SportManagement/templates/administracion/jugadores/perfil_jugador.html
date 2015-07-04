@@ -1,0 +1,165 @@
+{% extends 'administracion/template_admin.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Perfil del jugador - {{club.nombre}}
+{% endblock %}
+
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  <li><a href="/administrador/{{perfil.user.id}}/jugadores">Jugadores</a></li>
+  <li class="active">Jugador</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-3 col-md-3">
+        {% if perfil_jugador.imagen == "" %}
+            <img src="{{STATIC_URL}}img/no-image.png" alt="{{perfil_jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+        {% else %}
+            <img src="{{MEDIA_URL}}{{perfil_jugador.imagen}}" alt="{{perfil_jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+        {% endif %}
+    </div>
+    <div class="col-lg-6 col-lg-offset-1">
+        <div class="row">
+            <h4><strong><i class="fa fa-user fa-fw"></i> Nombre:</strong> {{perfil_jugador.user.first_name}}</h4>
+        </div>
+        <div class="row">
+            <h4><strong><i class="fa fa-user fa-fw"></i> Apellidos:</strong> {{perfil_jugador.user.last_name}}</h4>
+        </div>
+        <div class="row">
+            <h4><strong><i class="fa fa-quote-right fa-fw"></i> Nombre de usuario:</strong> {{perfil_jugador.user.username}}</h4>
+        </div>
+        <div class="row">
+            <h4><strong><i class="fa fa-phone fa-fw"></i> Teléfono:</strong> {{perfil_jugador.telefono}}</h4>
+        </div>
+        <div class="row">
+            <h4><strong><i class="fa fa-building fa-fw"></i> Municipio:</strong> {{perfil_jugador.municipio.municipio}}</h4>
+        </div>
+        <div class="row">
+            <h4><strong><i class="fa fa-thumbs-up fa-fw"></i> En el club desde:</strong> {{perfil_jugador.user.date_joined|date:"d M Y"}}</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <hr/>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="pull-right">
+                     <a href="javascript:dar_baja_jugador({{perfil_jugador.id}}, {{club.id}})" class="btn btn-danger" role="button"><i class="fa fa-times fa-fw"></i> Dar de baja</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-success" id="success_baja" role="alert" style="display:none">
+                    <strong>¡Exito!</strong>
+                    Se ha dado de baja al usuario
+                </div>
+                <div class="alert alert-danger" id="error_baja" role="alert" style="display:none">
+                    <strong>¡Ups!</strong>
+                    Ha habido un error al dar de baja al usuario
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <br>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-bar-chart fa-fw"></i> Partidos jugados
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div id="grafico-partidos-jugados"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+$(function () {
+    $('#grafico-partidos-jugados').highcharts({
+        title: {
+            text: 'Partidos jugados este año',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '{% now "Y" %}',
+            x: -20
+        },
+        xAxis: {
+            categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        },
+        yAxis: {
+            title: {
+                text: 'Número de partidos'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: ' jugado(s)'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '{{perfil_jugador.user.first_name}}',
+            data: [
+                {% for p in partidos_mes.iteritems %}
+                    {% if not forloop.last %}
+                        {{p}} ,
+                    {% else %}
+                        {{p}}
+                    {% endif %}
+                {% endfor %}
+            ]
+        }]
+    });
+});
+
+
+{% endblock %}
+
+{% block importaciones %}
+
+    <!-- Importación JS gráficas -->
+    <script src="{{STATIC_URL}}js/graficas/highcharts.js" ></script>
+    <script src="{{STATIC_URL}}js/graficas/exporting.js" ></script>
+
+{% endblock %}

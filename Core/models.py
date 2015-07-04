@@ -23,17 +23,13 @@ class Municipios(models.Model):
 		return self.municipio
 
 class Rol(models.Model):
-    tipo = models.CharField(max_length=50, verbose_name="Rol")
+    rol = models.CharField(max_length=50, verbose_name="Rol")
     def __unicode__(self):
-		return self.tipo
-
-class Nivel(models.Model):
-    nivel = models.CharField(max_length=50, verbose_name="Nivel")
-    def __unicode__(self):
-		return self.nivel
+		return self.rol
 
 class Deporte(models.Model):
     deporte = models.CharField(max_length=50, verbose_name="Deporte")
+    num_jugadores = models.IntegerField(max_length=3, blank=True, null=True)
     def __unicode__(self):
 		return self.deporte
 
@@ -48,31 +44,59 @@ class Club(models.Model):
     municipio = models.ForeignKey(Municipios, related_name='municipio_club', blank=True, null=True, on_delete=models.SET_NULL)
     descripcion = models.TextField(max_length=400, verbose_name="Descripción")
     imagen = models.ImageField(upload_to='Imagenes', verbose_name='Imagen', blank=True)
-    sociedad = models.ForeignKey(Sociedad, unique=True, related_name="club_sociedad")
+    direccion = models.CharField(max_length=50, verbose_name="Dirección")
     def __unicode__(self):
 		return self.nombre
 
 class Pista(models.Model):
     nombre = models.CharField(max_length=50, verbose_name="Nombre")
-    club = models.ForeignKey(Club, related_name="pista_club", unique=True)
-    deporte = models.ForeignKey(Deporte, related_name="pista_deporte", unique=True)
+    club = models.ForeignKey(Club, related_name="pista_club")
+    deporte = models.ForeignKey(Deporte, related_name="pista_deporte")
+    orden = models.IntegerField(verbose_name="Orden", null=True, blank=True)
     def __unicode__(self):
-		return self.nomre + " (" +self.club.nombre + ")"
+		return self.nombre + " (" +self.club.nombre + ")"
+
+class Nivel(models.Model):
+    nivel = models.CharField(verbose_name="Nivel", max_length=50)
+    deporte = models.ForeignKey(Deporte)
+    club = models.ForeignKey(Club)
+    def __unicode__(self):
+		return self.club.nombre + ": " + self.nivel + " - " + self.deporte.deporte
 
 class Perfil(models.Model):
     user = models.ForeignKey(User, unique=True, related_name='perfil_user')
-    rol = models.ForeignKey(Rol, unique=True, related_name="perfil_rol")
-    nivel = models.ForeignKey(Nivel, unique=True, related_name="perfil_nivel")
     imagen = models.ImageField(upload_to='Imagenes', verbose_name='Imagen', blank=True)
     municipio = models.ForeignKey(Municipios, related_name='perfil_municipio', blank=True, null=True, on_delete=models.SET_NULL)
-    clubes = models.ManyToManyField(Club, related_name="perfil_clubes")
+    #deportes = models.ManyToManyField(Nivel, related_name="perfil_deportes", blank=True)
+    telefono = models.CharField(max_length=12, verbose_name="Teléfono", blank=True)
+    deporteNivel = models.ManyToManyField(Nivel)
     def __unicode__(self):
-		return self.user.first_name + " " + self.user.last_name
+		return self.user.first_name + ", " + self.user.last_name
+
+class PerfilRolClub(models.Model):
+    rol = models.ForeignKey(Rol)
+    club = models.ForeignKey(Club)
+    perfil = models.ForeignKey(Perfil)
+    def __unicode__(self):
+		return self.perfil.user.first_name + " " + self.club.nombre + " - " + self.rol.rol
+
+class FranjaHora(models.Model):
+    club = models.ForeignKey(Club, related_name="franja_horaria_club", verbose_name="Club")
+    inicio = models.TimeField(auto_now=False, verbose_name="Hora inicio")
+    fin = models.TimeField(auto_now=False, verbose_name="Hora fin")
+    #estado = models.NullBooleanField()
+    def __unicode__(self):
+		return self.club.nombre + ": " + self.inicio.strftime('%H:%M:%S') + " - " + self.fin.strftime('%H:%M:%S')
 
 class Partido(models.Model):
-    pista = models.ForeignKey(Pista, unique=True, related_name="pista", verbose_name="Pista")
-    hora = models.TimeField(auto_now=False, verbose_name="Hora")
+    franja_horaria = models.ForeignKey(FranjaHora, related_name="partido_franja_horaria", verbose_name="Franja horaria")
     fecha = models.DateField(auto_now=False, verbose_name="Fecha")
     perfiles = models.ManyToManyField(Perfil, related_name="partido_perfiles")
+    pista = models.ForeignKey(Pista, related_name="partido_pista")
+    creado_por = models.ForeignKey(Perfil)
     def __unicode__(self):
-		return "Pista: " + self.pista.nombre + ", Fecha: " + self.fecha + ", Hora:" + self.hora
+		return "Fecha: " + self.fecha.strftime('%d-%m-%Y') + ", Hora:" + self.franja_horaria.inicio.strftime('%H:%M:%S')
+
+class RutaTiempo(models.Model):
+    municipio = models.ForeignKey(Municipios)
+    ruta = models.TextField(blank=True)

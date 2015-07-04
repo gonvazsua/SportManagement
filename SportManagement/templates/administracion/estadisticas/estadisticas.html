@@ -1,0 +1,415 @@
+{% extends 'administracion/template_admin.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Estadísticas - {{club.nombre}}
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-4 col-md-10">
+        <div class="panel panel-green">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-futbol-o fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" id="contador_partidos_mes_actual">{{partidos_mes_actual}}</div>
+                        <div>Partidos del mes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-10">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-thumbs-up fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" id="contador_jugadores_nuevos">{{jugadores_nuevos}}</div>
+                        <div>Jugadores nuevos este mes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-10">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-exclamation-circle fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" id="">{{num_partidos_abiertos_mes}}</div>
+                        <div>Partidos abiertos este mes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <p>Seleccione un mes o un año sobre el que desea obtener las estadísticas.<br>
+               Si quiere, puede seleccionar un rango de fechas para comparar los resultados.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h4>Filtrar por fecha</h4><hr>
+    </div>
+</div>
+
+<form id="form_estadisticas" action="/administrador/{{perfil.user.id}}/estadisticas" method="POST">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-lg-1 col-md-1 form-group">
+            <label for="mes">Mes: </label>
+        </div>
+        <div class="col-lg-2 col-md-2 form-group">
+            <select id="id_mes" name="mes" class="form-control">
+                <option value="0"></option>
+                {% for m in lista_meses %}
+                    <option value="{{forloop.counter}}"{% if forloop.counter == mes_buscar %}selected = "selected"{% endif %}>{{m}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-lg-1 col-md-1 form-group">
+            <label for="ano">Año: </label>
+        </div>
+        <div class="col-lg-2 col-md-2 form-group">
+            <select id="id_ano" name="ano" class="form-control">
+                <option value="0"></option>
+                {% for a in lista_anos %}
+                    <option value="{{a}}"{% if a == ano_buscar %}selected = "selected"{% endif %}>{{a}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-4 col-md-4 form-group">
+            <label class="checkbox-inline" for="varias_fechas">
+                <input type="checkbox" id="id_varias_fechas" name="varias_fechas" value="0" onclick="javascript:mostrarCapaOtraFecha();" {% if mes_comparar != 0 %}checked = "checked" {% endif %}>
+                Comparar con otra fecha
+            </label>
+        </div>
+    </div>
+
+    <div class="row" id="capa_otra_fecha" {% if mes_comparar != 0 %} style="display:block" {% else %} style="display:none" {% endif %} >
+        <div class="col-lg-1 col-md-1 form-group">
+            <label for="mes">Mes: </label>
+        </div>
+        <div class="col-lg-2 col-md-2 form-group">
+            <select id="id_mes_comparar" name="mes_comparar" class="form-control">
+                <option value="0"></option>
+                {% for m in lista_meses %}
+                    <option value="{{forloop.counter}}"{% if forloop.counter == mes_comparar %}selected = "selected"{% endif %}>{{m}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-lg-1 col-md-1 form-group">
+            <label for="ano">Año: </label>
+        </div>
+        <div class="col-lg-2 col-md-2 form-group">
+            <select id="id_ano_comparar" name="ano_comparar" class="form-control">
+                {% for a in lista_anos %}
+                    <option value="{{a}}"{% if a == ano_comparar %}selected = "selected"{% endif %}>{{a}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <button type="submit" id="btn_estadisticas" class="btn btn-success" aria-label="Right Align">
+                <i class="fa fa-search"></i> Filtrar
+            </button>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-lg-12">
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Columna izquierda -->
+    <div class="col-lg-6">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-clock-o fa-fw"></i>
+                        Partidos jugados en cada franja horaria
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div id="partidos_franja_horaria"></div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna derecha -->
+    <div class="col-lg-6">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-user fa-fw"></i>
+                        Jugador del mes {{mes_buscar}}/{{ano_buscar}}
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        {% if jugador_mes.imagen == "" or jugador_mes == None %}
+                                            <img src="{{STATIC_URL}}img/no-image.png" alt="{{jugador_mes.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                        {% else %}
+                                            <img src="{{MEDIA_URL}}{{perfil_jugador.imagen}}" alt="{{perfil_jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                        {% endif %}
+                                    </div>
+                                     <div class="col-lg-6">
+                                        <h5><strong>Nombre: </strong></h5>
+                                        <h5>{{jugador_mes.user.first_name}} {{jugador_mes.user.last_name}}</h5>
+                                        <h5><strong>Usuario: </strong></h5>
+                                        <h5>{{jugador_mes.user.username}}</h5>
+                                        <h5><strong>Partidos jugados: </strong></h5>
+                                        <h5>{{partidos_jugados_jugador_mes}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+        </div>
+        <!-- Jugador del mes a comparar -->
+        {% if not jugador_mes_comparar == None %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-user fa-fw"></i>
+                        Jugador del mes {{mes_comparar}}/{{ano_comparar}}
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        {% if jugador_mes_comparar.imagen == "" or jugador_mes_comparar == None %}
+                                            <img src="{{STATIC_URL}}img/no-image.png" alt="{{jugador_mes_comparar.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                        {% else %}
+                                            <img src="{{MEDIA_URL}}{{jugador_mes_comparar.imagen}}" alt="{{jugador_mes_comparar.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                        {% endif %}
+                                    </div>
+                                     <div class="col-lg-6">
+                                        <h5><strong>Nombre: </strong></h5>
+                                        <h5>{{jugador_mes_comparar.user.first_name}} {{jugador_mes_comparar.user.last_name}}</h5>
+                                        <h5><strong>Usuario: </strong></h5>
+                                        <h5>{{jugador_mes_comparar.user.username}}</h5>
+                                        <h5><strong>Partidos jugados: </strong></h5>
+                                        <h5>{{partidos_jugados_jugador_mes}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-bar-chart fa-fw"></i> Partidos jugados en {% now "Y" %}
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div id="grafico-partidos-ano"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+function incrementar_contadores_estadisticas(){
+
+    /*Partidos mes actual*/
+    var partidos_mes_actual = {{partidos_mes_actual}};
+    var i = 0;
+    $({someValue: 0}).animate({someValue: partidos_mes_actual} , {
+        duration: 5000,
+        easing:'swing',
+        step: function(){
+            if(i < partidos_mes_actual){
+                i++;
+            }
+            $('#contador_partidos_mes_actual').text(i);
+        }
+    });
+
+    /*Jugadores nuevos este mes*/
+    var num_jug = {{jugadores_nuevos}}
+    j = 0;
+    $({someValue: 0}).animate({someValue: num_jug} , {
+        duration: 5000,
+        easing:'swing',
+        step: function(){
+            if(j < num_jug){
+                j++;
+            }
+            $('#contador_jugadores_nuevos').text(j);
+        }
+    });
+}
+
+/*Partidos en cada franja horaria*/
+Morris.Bar({
+    element: 'partidos_franja_horaria',
+    data: [
+        {% for fh, num in partidos_franja_horaria.iteritems %}
+            {
+                y: '{{fh.inicio|time:'G:i'}}',
+                a: {{num}}
+                {% if partidos_franja_horaria_comparar and not partidos_franja_horaria_comparar|length == 0 %}
+                    {% for fh2, num2 in partidos_franja_horaria_comparar.iteritems %}
+                        {% if fh2 == fh %}
+                            , b: {{num2}}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            },
+        {% endfor %}
+    ],
+
+    xkey: 'y',
+    ykeys: ['a'
+        {% if partidos_franja_horaria_comparar and not partidos_franja_horaria_comparar|length == 0 %}
+            , 'b'
+        {% endif %}
+        ],
+    labels:
+        {% if partidos_franja_horaria_comparar and not partidos_franja_horaria_comparar|length == 0 %}
+            ['{{mes_buscar}}/{{ano_buscar}}', '{{mes_comparar}}/{{ano_comparar}}'],
+        {% else %}
+            ['Partidos'],
+        {% endif %}
+
+    hideHover: 'auto',
+    resize: true
+});
+
+$(function () {
+    $('#grafico-partidos-ano').highcharts({
+        title: {
+            {% if partidos_por_mes_comparar and not partidos_por_mes_comparar|length == 0 %}
+                text: 'Partidos jugados entre {{ano_buscar}} y {{ano_comparar}}',
+            {% else %}
+                text: 'Partidos jugados en {{ano_buscar}}',
+            {% endif %}
+            x: -20 //center
+        },
+        subtitle: {
+            text: '{% now "Y" %}',
+            x: -20
+        },
+        xAxis: {
+            categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        },
+        yAxis: {
+            title: {
+                text: 'Número de partidos'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: ' jugado(s)'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '{{mes_buscar}}/{{ano_buscar}}',
+            data: [
+                {% for p in partidos_por_mes.iteritems %}
+                    {% if not forloop.last %}
+                        {{p}} ,
+                    {% else %}
+                        {{p}}
+                    {% endif %}
+                {% endfor %}
+            ]}
+            {% if partidos_por_mes_comparar and not partidos_por_mes_comparar|length == 0 %}
+                ,{
+                name: '{{mes_comparar}}/{{ano_comparar}}',
+                data: [
+                {% for p in partidos_por_mes_comparar.iteritems %}
+                    {% if not forloop.last %}
+                        {{p}} ,
+                    {% else %}
+                        {{p}}
+                    {% endif %}
+                {% endfor %}
+                ]}
+            {% endif %}
+        ]
+    });
+});
+
+{% endblock %}
+
+{% block importaciones %}
+
+    <!-- Importación JS gráficas -->
+    <script src="{{STATIC_URL}}js/graficas/highcharts.js" ></script>
+    <script src="{{STATIC_URL}}js/graficas/exporting.js" ></script>
+
+{% endblock %}

@@ -60,7 +60,7 @@ WSGI_APPLICATION = 'SportManagement.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sportmanagement',
+        'NAME': 'sport_management_py',
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': '',
@@ -112,3 +112,7 @@ MEDIA_URL = 'http://127.0.0.1:8000/media/'
 
 #Extension de User de Django
 AUTH_PROFILE_MODULE = 'Core.Perfil'
+
+#Identificadores de los Roles
+ROL_ADMINISTRADOR = 1
+ROL_JUGADOR = 2
