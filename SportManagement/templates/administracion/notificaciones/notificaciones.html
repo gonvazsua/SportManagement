@@ -85,7 +85,7 @@
                             {% endif %}
                         </div>
                         <div class="col-lg-2">
-                            {% if n.inscripcionEnClub and n.inscripcionEnClub.estado == None or n.inscripcionEnPartido and n.inscripcionEnPartido.estado == None %}
+                            {% if n.inscripcionEnClub and n.inscripcionEnClub.estado == None or n.inscripcionEnPartido and n.inscripcionEnPartido.estado == None and not n.inscripcionEnPartido.partido.bloqueado %}
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <button type="button" id="btn_aceptar_inscripcion_{{n.id}}" class="btn btn-success btn-sm" aria-label="Right Align" onclick="javascript:inscripcion_clubes({{n.id}}, 'True');">

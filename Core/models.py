@@ -112,8 +112,7 @@ class Partido(models.Model):
         return self.pista.deporte.num_jugadores
     def bloqueado(self):
         if self.fecha < datetime.now().date()\
-                or (self.fecha < datetime.now().date() and self.franja_horaria.fin < datetime.now().time())\
-                or self.perfiles.count() == self.max_perfiles():
+                or (self.fecha < datetime.now().date() and self.franja_horaria.fin < datetime.now().time()):
             return True
         else:
             return False

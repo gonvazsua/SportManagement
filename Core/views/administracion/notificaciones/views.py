@@ -96,8 +96,10 @@ def aceptar_denegar_inscripcion(request):
                         notificacion_jugador.inscripcionEnPartido = notificacion.inscripcionEnPartido
                         notificacion.save()
 
-                if notificacion and notificacion_jugador:
+                if error == "" and notificacion and notificacion_jugador:
                     notificacion_jugador.save()
+                else:
+                    notificacion.save()
 
             except Exception:
                 logger.debug("administracion/notificaciones - Método aceptar_denegar_inscripcion")
