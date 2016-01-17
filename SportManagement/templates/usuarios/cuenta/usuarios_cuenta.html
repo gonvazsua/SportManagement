@@ -1,0 +1,306 @@
+{% extends 'usuarios/template_usuarios.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Mi cuenta
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/usuario/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Mi cuenta</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Gestiona tus datos</h4>
+            <p>
+                En esta página podrás modificar todos los datos de tu cuenta y elegir los deportes que practicas.<br>
+                Para actualizar tus datos, el sistema te obligará a meter tu contraseña.<br>
+                <strong>Recuerda que solo podrás elegir un nivel por cada deporte que se practique en el club.</strong>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+{% if error %}
+    <div class="row form-group">
+        <div class="col-lg-12 col-md-12">
+            <div class="alert alert-danger" role="alert">{{error}}</div>
+        </div>
+    </div>
+{% endif %}
+{% if success %}
+    <div class="row form-group">
+        <div class="col-lg-12 col-md-12">
+            <div class="alert alert-success" role="alert">{{success}}</div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Formulario de alta de jugador -->
+<div class="row" id="alta_jugador_titulo">
+    <div class="col-lg-12 col-md-12">
+        <h3>Mis datos: <i class="fa fa-user-plus fa-fw" title="Formulario de edición"></i></h3>
+        <hr>
+    </div>
+</div>
+
+<form method="POST" id="formulario_cuenta" action="/usuario/{{perfil.user.id}}/cuenta" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row" id="alta_jugador_form">
+        <div class="col-lg-4 col-md-4">
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    {% if not perfil.imagen %}
+                        <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% else %}
+                        <img src="{{MEDIA_URL}}{{perfil.imagen}}" title="{{perfil.user.first_name}}" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    <input type="file" id="imagen_perfil" name="imagen">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-8">
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="nombre">Nombre:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="nombre" id="nombre" placeholder="Nombre" value="{{perfil.user.first_name}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="apellidos">Apellidos:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="apellidos" id="apellidos" placeholder="Apellidos" value="{{perfil.user.last_name}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="email">Email:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="email" id="email" placeholder="Email" value="{{perfil.user.email}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="username">Nombre de usuario:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="username" id="username" placeholder="Nombre de usuario" value="{{perfil.user.username}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="password1">Contraseña:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="password" class="form-control obligatorio" name="password" id="password1" placeholder="Contraseña" value="">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="password2">Repetir contraseña:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="password" class="form-control obligatorio" name="password2" id="password2" placeholder="Repetir contraseña" value="">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="telefono">Teléfono:</label>
+                </div>
+                <div class="col-lg-7">
+                    <input type="text" class="form-control obligatorio" name="telefono" id="telefono" placeholder="Teléfono" value="{{perfil.telefono}}">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="provincia">Provincia:</label>
+                </div>
+                <div class="col-lg-7">
+                    <select id="id_provincia" name="provincia" class="form-control obligatorio" onchange="javascript:actualiza_municipios(this);">
+                        <option value="0">Seleccione...</option>
+                        {% for p in provincias %}
+                            <option value="{{p.id}}" {% if p.id == perfil.municipio.provincia.id %}selected="selected"{% endif %}>{{p.provincia}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3">
+                    <label for="municipio">Municipio:</label>
+                </div>
+                <div class="col-lg-7">
+                    <select id="id_municipio" name="municipio" class="form-control obligatorio">
+                        <option value="0">Seleccione...</option>
+                        {% for m in municipios %}
+                            <option value="{{m.id}}"{% if m.id == perfil.municipio.id %}selected="selected"{% endif %}>{{m.municipio}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group" id="error_pass" style="display:none">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-10">
+                    <div class="alert alert-danger" role="alert">Las contraseñas no coinciden</div>
+                </div>
+            </div>
+            <div class="row form-group" id="error_email" style="display:none">
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-10">
+                    <div class="alert alert-danger" role="alert">El formato del email no es correcto</div>
+                </div>
+            </div>
+            {% if error %}
+                <div class="row form-group" id="error" style="display:none">
+                    <div class="col-lg-1 col-md-1"></div>
+                    <div class="col-lg-10">
+                        <div class="alert alert-danger" role="alert">Ha habido un error al actualizar sus datos</div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-7">
+             <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_usuarios_cuenta();">
+                 <i class="fa fa-save fa-fw"></i> Actualizar información
+             </button>
+        </div>
+    </div>
+</form>
+<div class="row form-group">
+    <div class="col-lg-12 col-md-12">
+        <h3>Niveles y deportes que practico en cada club</h3><hr>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-md-6">
+        <ul id="menu_niveles_deportes">
+        {% for n in perfil.deporteNivel.all %}
+            <li id="nivel_{{n.id}}">{{n.club.nombre}}: {{n.deporte.deporte}} - {{n.nivel}} <a href="javascript:eliminar_nivel({{n.id}})">(Eliminar)</a> </li>
+            <form id="form_niveles_{{n.id}}" action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="perfil" value="{{perfil.id}}">
+                <input type="hidden" name="club" value="{{n.club.id}}">
+                <input type="hidden" name="deporte" value="{{n.deporte.id}}">
+                <input type="hidden" name="nivel" value="{{n.id}}">
+            </form>
+        {% empty %}
+            <li>No has seleccionado ningún deporte todavía.</li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="row" style="display:none">
+    <div class="col-lg-12 col-md-12">
+        <div class="alert alert-danger" id="errores_ajax" role="alert"></div>
+    </div>
+</div>
+
+<div class="row" id="row_form_deportes">
+    <div class="col-lg-12 col-md-12">
+        <h4>Agregar niveles y deportes:</h4><hr>
+    </div>
+</div>
+
+{% if perfil.clubes|length == 0 %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <h5>Aún no te has registrado en ningún club.</h5>
+        </div>
+    </div>
+{% else %}
+    <form id="form_deportes" action="/usuario/{{perfil.user.id}}/cuenta" method="POST">{% csrf_token %}
+        <input type="hidden" id="perfil_id" name="perfil_id" value="{{perfil.id}}">
+        <input type="hidden" id="action" name="action" value="niveles">
+        <div class="row form-group">
+            <div class="col-lg-3 col-md-3">
+                <label for="club">1. Seleccione un club:</label>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <select id="id_club" name="club" class="form-control obligatorio_deportes" onchange="javascript:actualiza_deportes(this);">
+                    <option value="0">Seleccione...</option>
+                    {% for c in perfil.clubes %}
+                        <option value="{{c.id}}">{{c.nombre}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-lg-3 col-md-3">
+                <label for="deporte">2. Seleccione un deporte:</label>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <select id="id_deporte" name="deporte" class="form-control obligatorio_deportes" disabled="disabled" onchange="javascript:actualiza_niveles(this);">
+                    <option value="0">Seleccione...</option>
+                </select>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-lg-3 col-md-3">
+                <label for="nivel">3. Seleccione un nivel:</label>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <select id="id_nivel" name="nivel" class="form-control obligatorio_deportes" disabled="disabled">
+                    <option value="0">Seleccione...</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-lg-7">
+            <button type="button" class="btn btn-info btn-sm  pull-right" aria-label="Right Align" onclick="javascript:submit_agregar_deportes();">
+                 <i class="fa fa-plus fa-fw"></i> Agregar deportes
+            </button>
+        </div>
+    </div>
+{% endif %}
+<div class="row row-margin-top-10">
+    <div class="col-lg-12"></div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    $(".botonera").removeClass("active");
+{% endblock %}
+
+{% block importaciones %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/cuenta.js"></script>
+{% endblock %}
+
+{% block document_ready %}
+    $(".botonera").removeClass("active");
+    $("#enlace_mi_cuenta").addClass("active");
+{% endblock %}

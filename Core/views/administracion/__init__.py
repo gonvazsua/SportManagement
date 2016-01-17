@@ -8,3 +8,4 @@ from estadisticas import *
 from inicio import *
 from jugadores import *
 from partidos import *
+from notificaciones import *

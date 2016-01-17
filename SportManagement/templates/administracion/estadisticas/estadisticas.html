@@ -8,6 +8,13 @@
     Estadísticas - {{club.nombre}}
 {% endblock %}
 
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Estadísticas</li>
+</ol>
+{% endblock %}
+
 {% block fila_superior %}
 <div class="row">
     <div class="col-lg-4 col-md-10">

@@ -1,0 +1,143 @@
+{% extends 'usuarios/template_usuarios.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Partidos
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+    <li><a href="/usuario/{{perfil.user.id}}">Inicio</a></li>
+    {% if retorno and texto_retorno %}
+        <li><a href="{{retorno}}">{{texto_retorno}}</a></li>
+    {% endif %}
+    <li class="active">Partidos</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h4>Datos del partido:</h4><hr>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary fondo-info">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h5><strong>Fecha: </strong>{{partido.fecha}}</h5>
+                    </div>
+                    <div class="col-lg-6">
+                        <h5><strong>Hora: </strong>{{partido.franja_horaria.inicio|time:'G:i'}} - {{partido.franja_horaria.fin|time:'G:i'}}</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h5><strong>Club: </strong>{{partido.club}}</h5>
+                    </div>
+                    <div class="col-lg-6">
+                        <h5><strong>Pista: </strong>{{partido.pista.nombre}}</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h5><strong>Nivel medio de juego: </strong>{{nivel_medio}}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h4>Jugadores: ({{partido.perfiles.all|length}})</h4><hr>
+    </div>
+</div>
+
+{% for jugador in partido.perfiles.all %}
+    <div class="panel panel-success">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-2">
+                    {% if jugador.imagen == "" %}
+                        <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% else %}
+                        <img src="{{MEDIA_URL}}{{jugador.imagen}}" title="{{jugador.user.first_name}}" alt="{{jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% endif %}
+                </div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12"><i class="fa fa-tag fa-1"></i> <strong>Nombre:</strong> {{jugador.user.first_name}} {{jugador.user.last_name}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12"><i class="fa fa-location-arrow fa-1"></i> <strong>Nivel:</strong>
+                            {% for n in jugador.deporteNivel.all %}
+                                {% if n.deporte.id == partido.pista.deporte.id %}
+                                    {{n.nivel}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <i class="fa fa-mobile fa-1"></i> <strong>Teléfono:</strong>
+                            {{perfil.telefono}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<div class="row">
+    <div class="col-lg-6">
+        {% if retorno and texto_retorno %}
+            <a class="btn btn-info pull-left" href="{{retorno}}" role="button"><i class="fa fa-angle-double-left"></i> Volver</a>
+        {% endif %}
+    </div>
+    <div class="col-lg-6">
+        {% if not partido.bloqueado and not bloqueo_usuario %}
+            <button type="button" id="btn_inscripcion" class="btn btn-info pull-right" aria-label="Right Align" onclick="javascript:inscripcion_partido();">
+                <i class="fa fa-check"></i> Inscribirme en este partido
+            </button>
+            <form id="peticion_partido" action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="partido" value="{{partido.id}}">
+                <input type="hidden" name="perfil" value="{{perfil.id}}">
+            </form>
+        {% else %}
+
+        {% endif %}
+    </div>
+</div>
+<div class="row form-group" style="display:none">
+    <div class="col-lg-12 col-md-12">
+        <div class="alert alert-danger" id="error_inscripcion" role="alert"></div>
+    </div>
+</div>
+
+<div class="row row-margin-top-10">
+    <div class="col-lg-12"></div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block importaciones %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/partidos.js"></script>
+{% endblock %}
+
+{% block document_ready %}
+    $(".botonera").removeClass("active");
+    $("#enlace_buscar_clubes").addClass("active");
+{% endblock %}

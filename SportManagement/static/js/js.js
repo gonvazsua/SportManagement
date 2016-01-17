@@ -1,47 +1,50 @@
+/*Desplazamiento animado, del origen ELEM al DESTINO*/
+function desplaza(destino){
+	$('html,body').animate({
+    	scrollTop: $('#'+destino).offset().top
+	}, 2000);
+}
+
 function loginDialog(){
-    $("#div_login").show();
-    $("#div_login").dialog({
-		modal: true,
-		height: "auto",
-        width: "35%",
-        title: "Acceder"
-    });
+    $('#login_modal').modal('show')
 }
 
 function submit_login(){
     var form = $("#form_login").serialize();
-    var username = $("#id_username").val();
+    var username = $("#id_usuario").val();
     var pass = $("#id_password").val();
-    $.ajax({
-        url: '/login',
-        data: form,
-        type: 'POST',
-        success: function(request){
-            var r = JSON.parse(request);
-            if(r.error == ""){
-                if(r.id != "" && r.rol_id == 1){
-                    window.location.href = '/administrador/'+r.id;
+    if(username != "" && pass != ""){
+        $("#icono_login").addClass("glyphicon-time");
+        $.ajax({
+            url: '/login',
+            data: form,
+            type: 'POST',
+            success: function(request){
+                var r = JSON.parse(request);
+                if(r.error == ""){
+                    if(r.id != "" && r.rol_id == 1){
+                        action = '/administrador/'+r.id;
+                        $("#form_redirige").attr("action", action);
+                        $("#form_redirige").submit();
+                    }
+                    else if(r.id != "" && r.rol_id == 2){
+                        action = '/usuario/'+r.id;
+                        $("#form_redirige").attr("action", action);
+                        $("#form_redirige").submit();
+                    }
                 }
-                else if(r.id != "" && r.rol_id != 1){
-                    window.location.href = '/usuario/'+r.id;
+                else{
+                    $("#form_error").html(r.error);
+                    $("#form_error").slideDown();
+                    $("#icono_login").removeClass("glyphicon-time");
                 }
             }
-            else{
-                $("#form_error").html(r.error);
-                $("#div_form_error").slideDown();
-            }
-        }
-    });
-}
-
-function registroDialog(){
-    $("#div_registro").show();
-    $("#div_registro").dialog({
-		modal: true,
-		height: "auto",
-        width: "35%",
-        title: "Registro"
-    });
+        });
+    }
+    else{
+        $("#form_error").html("Rellene correctamente todos los campos");
+        $("#form_error").slideDown();
+    }
 }
 
 function submit_registro(){
@@ -63,6 +66,8 @@ function submit_registro(){
         error_texto = "Las contraseñas no coinciden";
     }
     if(!error){
+        $("#icono_registro").removeClass("glyphicon-user");
+        $("#icono_registro").addClass("glyphicon-time");
         $.ajax({
             url: '/registro',
             data: form,
@@ -71,12 +76,16 @@ function submit_registro(){
                 var r = JSON.parse(request);
                 if(r.error == ""){
                     if(r.id != ""){
-                        window.location.href = '/profile?id='+r.id;
+                        action = '/usuario/'+r.id;
+                        $("#form_redirige").attr("action", action);
+                        $("#form_redirige").submit();
                     }
                 }
                 else{
-                    $("#form_error").html(r.error);
-                    $("#div_form_error").slideDown();
+                    $("#form_registro_error").html(r.error);
+                    $("#div_form_registro_error").slideDown();
+                    $("#icono_registro").removeClass("glyphicon-time");
+                    $("#icono_registro").addClass("glyphicon-user");
                 }
             }
         });
@@ -85,4 +94,38 @@ function submit_registro(){
         $("#form_registro_error").html(error_texto);
         $("#div_form_registro_error").slideDown();
     }
+}
+
+function validar_email(){
+    var subject = $("#subject").val();
+    var from_email = $("#from_email").val();
+    var message = $("#message").val();
+    if(subject != "" && from_email != "" && message != ""){
+        enviar_email(subject, from_email, message);
+    }
+    else{
+        $("#error_email .alert").html("Rellene todos los campos correctamente.");
+        $("#error_email").show();
+    }
+}
+
+function enviar_email(subject, from_email, message){
+    var form = $("#form_contacto").serialize();
+    $.ajax({
+        url: '/enviarEmail',
+        data: form,
+        type: 'POST',
+        success: function(request){
+            var r = JSON.parse(request);
+            if(r.error == ""){
+                $("#error_email .alert").removeClass("alert-danger").addClass("alert-success");
+                $("#error_email .alert").html("Su consulta se ha enviado correctamente.")
+                $("#error_email").show();
+            }
+            else{
+                $("#error_email .alert").html(r.error);
+                $("#error_email").show();
+            }
+        }
+    });
 }

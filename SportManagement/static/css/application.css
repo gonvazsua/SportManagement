@@ -66,3 +66,30 @@ footer{
 .color_blanco{
     color: #FFF !important;
 }
+
+.cursiva{
+    font-style: italic;
+}
+
+.fondo-info{
+    background-color: #d9edf7 !important;
+}
+.gris{
+    color: #6E6E6E;
+}
+
+.border-info{
+    border: solid 1px #d9edf7 !important;
+}
+
+.over-fondo-info:hover{
+    background-color: #d9edf7 !important;
+}
+
+.btn-redondo{
+    border-radius: 50px !important;
+}
+
+.oculto{
+    display: none !important;
+}

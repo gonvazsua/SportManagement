@@ -1,0 +1,316 @@
+{% extends 'usuarios/template_usuarios.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Página principal
+{% endblock %}
+
+{% block fila_superior %}
+{% endblock %}
+
+{% block pagina_central %}
+<!-- Información sobre datos que faltan -->
+{% if not perfil.municipio or not perfil.telefono %}
+    <div class="row" id="panel_completar_registro">
+        <div class="col-lg-12">
+            <div class="panel panel-info">
+                <div class="panel-heading"><i class="fa fa-info-circle fa-fw"></i><strong> ¡Completa tu registro!</strong> <i class="fa fa-times fa-fw pull-right" style="cursor:pointer;" title="Cerrar diálogo" onclick="javascript:cerrar_dialogo_informacion()"></i></div>
+                <div class="panel-body">
+                    Para que los clubes puedan contar contigo, necesitamos los siguientes datos:<br><br>
+                    <form id="form_completar_registro" action="/completar_datos_inicio" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="perfil_id" name="perfil_id" value="{{perfil.id}}">
+                        {%if not perfil.telefono %}
+                            <div class="row form-group">
+                                <div class="col-lg-1">
+                                    <label for="telefono">Teléfono:</label>
+                                </div>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" name="telefono" maxlength="9" id="telefono" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        {% endif %}
+                        {%if not perfil.municipio %}
+                        <div class="row form-group">
+                            <div class="col-lg-1">
+                                <label for="provincia">Provincia:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <select class="form-control" name="provincia" id="provincia_id" onchange="javascript:actualiza_municipios(this)">
+                                    <option selected="selected">Seleccione...</option>
+                                    {% for p in provincias %}
+                                        <option value="{{p.id}}">{{p.provincia}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-lg-1">
+                                <label for="municipio">Municipio:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <select class="form-control" name="municipio" id="id_municipio" disabled="disabled">
+                                    <option value="0">Seleccione...</option>
+                                </select>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="row form-group">
+                            <div class="col-lg-12 col-md-12">
+                                 <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_completar_registro();">
+                                     <i class="fa fa-save fa-fw" id="icono_completar_registro"></i> Actualizar datos
+                                 </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-clock-o fa-fw"></i> Partidos disponibles
+                <div class="pull-right">
+                    <p class="text-info" title="Ver más partidos"><a href="/usuario/{{perfil.user.id}}/partidos">Ver más partidos</a></p>
+                </div>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                {% for club, partidos in club_partidos_disponibles.iteritems %}
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4>Partidos de {{club.nombre}}</h4><hr>
+                        </div>
+                    </div>
+
+                    {% for partido in partidos.all %}
+                        {% if forloop.counter0|divisibleby:"2" %}
+                            <div class="row">
+                        {% endif %}
+                            <div class="col-lg-1"></div>
+                            <a href="/usuario/{{perfil.user.id}}/partidos/{{partido.id}}" title="Ver partido">
+                                <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10 {%if partido.perfiles.count == 4%} pista_verde {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla {%else%}pista_roja{%endif%}">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 row-centered">
+                                            <h4 class="color_blanco">{{partido.pista.nombre}}</h4>
+                                            <h4 class="color_blanco">- {{partido.pista.deporte.deporte}} -</h4>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="col-lg-1"></div>
+                        {% if not forloop.counter0|divisibleby:"2"  or forloop.last %}
+                            </div>
+                        {% endif %}
+
+                    {% empty %}
+                        No hay partidos disponibles para este club
+                    {% endfor %}
+
+                    <div class="row row-margin-top-10"><div class="col-lg-12"></div></div>
+
+                {% empty %}
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            No hay partidos para mostrar.<br>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-line-chart fa-fw"></i> Últimos partidos jugados
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                {% for p in partidos %}
+
+                {% empty %}
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            No hay partidos para mostrar.<br>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- /.col-lg-8 -->
+    <div class="col-lg-4">
+
+        <div class="panel {%if notificaciones|length > 0 %}panel-info{% else %}panel-default{%endif%}">
+            <div class="panel-heading">
+                <i class="fa fa-bell fa-fw"></i> Notificaciones <span class="badge">{{notificaciones|length}}</span>
+            </div>
+            <div class="panel-body">
+                {% for n in notificaciones|slice:":5" %}
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {% if n.inscripcionEnClub %}
+                                {% if n.inscripcionEnClub.jugador.imagen == "" %}
+                                    <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.inscripcionEnClub.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% else %}
+                                    <img src="{{MEDIA_URL}}{{n.inscripcionEnClub.jugador.imagen}}" title="{{n.inscripcionEnClub.jugador.user.first_name}}" alt="{{n.inscripcionEnClub.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% endif %}
+                            {% endif %}
+                            {% if n.inscripcionEnPartido %}
+                                {% if n.inscripcionEnPartido.jugador.imagen == "" %}
+                                    <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.inscripcionEnPartido.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% else %}
+                                    <img src="{{MEDIA_URL}}{{n.inscripcionEnPartido.jugador.imagen}}" title="{{n.inscripcionEnPartido.jugador.user.first_name}}" alt="{{n.inscripcionEnPartido.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-8">
+                            {% if n.inscripcionEnClub %}
+                                <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.inscripcionEnClub.club.nombre}}</strong></a>, ha aceptado tu petición para unirte al club.
+                            {% endif %}
+                            {% if n.inscripcionEnPartido %}
+                                <strong>{{n.inscripcionEnPartido.partido.pista.club.nombre}}</strong>, ha aceptado tu petición para unirte a <a href="/usuario/{{perfil.user.id}}/partidos/{{n.inscripcionEnPartido.partido.id}}">este partido</a> .
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    No tienes notificaciones nuevas
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-trophy fa-fw"></i> Mis clubes
+            </div>
+            <div class="panel-body">
+                {% if clubes_pendientes_aceptar %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5><strong>Inscripciones pendientes:</strong></h5><hr>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for c in clubes_pendientes_aceptar|slice:":5" %}
+                    <div class="row" title="Pendiente de inscripción">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    {% if c.imagen == "" %}
+                                        <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{c.nombre}}" class="img-rounded" style="max-width: 100%">
+                                    {% else %}
+                                        <img src="{{MEDIA_URL}}{{c.imagen}}" alt="{{c.nombre}}" class="img-rounded" style="max-width: 100%">
+                                    {% endif %}
+                                </div>
+                                <div class="col-lg-8">
+                                    <h5><strong>{{c.nombre}}</strong></h5>
+                                    <h5 class="cursiva">{{c.direccion}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if forloop.counter < clubes_pendientes_aceptar|length %}
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+                {% if clubes_pendientes_aceptar|length > 0 and clubes|length > 0 %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5><strong>Inscripciones completadas:</strong></h5><hr>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for c in clubes|slice:":5" %}
+                    <div class="row over-info">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    {% if c.imagen == "" %}
+                                        <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{c.nombre}}" class="img-rounded border-info" style="max-width: 100%">
+                                    {% else %}
+                                        <img src="{{MEDIA_URL}}{{c.imagen}}" alt="{{c.nombre}}" class="img-rounded border-info" style="max-width: 100%">
+                                    {% endif %}
+                                </div>
+                                <div class="col-lg-8">
+                                    <h5><strong>{{c.nombre}}</strong></h5>
+                                    <h5 class="cursiva">{{c.municipio.municipio}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                {% empty %}
+                    {% if not clubes_pendientes_aceptar %}
+                        <h5>Todavía no te has inscrito en ningún club. <br>
+                        <a href="/usuario/{{perfil.user.id}}/buscador/clubes">¡Inscríbete!</a></h5>
+                    {% endif %}
+                {% endfor %}
+                {% if clubes %}
+                    <a href="/usuario/{{perfil.user.id}}/clubes" class="btn btn-info btn-block">Ver todos <span class="badge">{{clubes.count}}</span></a>
+                {% endif %}
+            </div>
+        </div>
+        <!-- /.panel-body -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-sun-o fa-fw"></i> El tiempo en {{perfil.municipio.municipio}}
+            </div>
+            <div class="panel-body">
+                <div class="row-centered">
+                    {% if rutaTiempo %}
+                        {{rutaTiempo.ruta|safe}}
+                    {% else %}
+                        En estos momentos no podemos mostrarte el tiempo en tu ciudad.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-thumbs-up fa-fw"></i> ¿Quieres jugar?
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="list-group">
+                            <a href="/usuario/{{perfil.user.id}}/buscador/clubes" class="list-group-item active">
+                                <h5 class="list-group-item-heading">1. Inscríbete en un club</h5>
+                            </a>
+                            <a href="/usuario/{{perfil.user.id}}/cuenta" class="list-group-item ">
+                                <h5 class="list-group-item-heading">2. Elige tus deportes</h5>
+                            </a>
+                            <a href="#" class="list-group-item active">
+                                <h5 class="list-group-item-heading">3. Reserva tu pista</h5>
+                            </a>
+                            <a href="#" class="list-group-item ">
+                                <h5 class="list-group-item-heading">4. Inscríbete en partidos</h5>
+                            </a>
+                            <a href="#" class="list-group-item active">
+                                <h5 class="list-group-item-heading">5. Reta a un amigo</h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.col-lg-4 -->
+
+
+<!-- /.row -->
+{% endblock %}
+
+{% block js %}
+    $("#enlace_pagina_principal").addClass("active")
+{% endblock %}

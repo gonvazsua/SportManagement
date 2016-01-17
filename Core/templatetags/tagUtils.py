@@ -18,3 +18,8 @@ def hash(h, key):
 @register.filter
 def keyvalue(dict, key):
     return dict[key]
+
+@register.filter(name='contenido')
+def contenido(user, benefit_id):
+    b_id = int(benefit_id)
+    return user.benefits.filter(id=b_id).count() > 0

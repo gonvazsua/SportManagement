@@ -124,6 +124,14 @@
                     {% if not forloop.counter0|divisibleby:"2"  or forloop.last %}
                         </div>
                     {% endif %}
+
+                {% empty %}
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            Aún no se ha dado de alta ninguna pista.<br>
+                            <a href="/administrador/{{perfil.user.id}}/club#crear_pistas">Pulse para crearlas.</a>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
             <!-- /.panel-body -->
@@ -138,6 +146,60 @@
     </div>
     <!-- /.col-lg-8 -->
     <div class="col-lg-4">
+
+        <div class="panel {%if notificaciones|length > 0 %}panel-info{% else %}panel-default{%endif%}">
+            <div class="panel-heading">
+                <i class="fa fa-bell fa-fw"></i> Notificaciones <a href="/administrador/{{perfil.user.id}}/notificaciones" title="Ir a notificaciones"><span class="badge">{{notificaciones|length}}</span></a>
+            </div>
+            <div class="panel-body">
+                {% for n in notificaciones|slice:":5" %}
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {% if n.inscripcionEnClub %}
+                                {% if n.inscripcionEnClub.jugador.imagen == "" %}
+                                    <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.inscripcionEnClub.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% else %}
+                                    <img src="{{MEDIA_URL}}{{n.inscripcionEnClub.jugador.imagen}}" title="{{n.inscripcionEnClub.jugador.user.first_name}}" alt="{{n.inscripcionEnClub.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% endif %}
+                            {% endif %}
+                            {% if n.inscripcionEnPartido %}
+                                {% if n.inscripcionEnPartido.jugador.imagen == "" %}
+                                    <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.inscripcionEnPartido.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% else %}
+                                    <img src="{{MEDIA_URL}}{{n.inscripcionEnPartido.jugador.imagen}}" title="{{n.inscripcionEnPartido.jugador.user.first_name}}" alt="{{n.inscripcionEnPartido.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+
+                                    {% if n.inscripcionEnClub %}
+                                        <a href="/administrador/{{perfil.user.id}}/jugadores/{{n.inscripcionEnClub.jugador.id}}">
+                                            <strong>{{n.inscripcionEnClub.jugador.user.first_name}} {{n.jugador.user.last_name}}</strong>
+                                        </a>, quiere unirse al club.
+                                    {% endif %}
+                                    {% if n.inscripcionEnPartido %}
+                                        <a href="/administrador/{{perfil.user.id}}/jugadores/{{n.inscripcionEnPartido.jugador.id}}">
+                                            <strong>{{n.inscripcionEnPartido.jugador.user.first_name}} {{n.jugador.user.last_name}}</strong>
+                                        </a>, quiere unirse a un <a href="/administrador/{{perfil.user.id}}/partido/{{n.inscripcionEnPartido.partido.id}}/editar">partido</a>.<br>
+                                        <span class="gris cursiva">{{n.inscripcionEnPartido.partido.fecha}}</span><br>
+                                        <span class="gris cursiva">{{n.inscripcionEnPartido.partido.pista.nombre}} - {{n.inscripcionEnPartido.partido.franja_horaria.inicio|time:'G:i'}}</span>
+                                    {% endif %}
+
+                            </div><!--
+                            <div class="row">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-success btn-sm btn-redondo"><i class="fa fa-check"></i></button>
+                                        <button type="button" class="btn btn-danger btn-sm btn-redondo"><i class="fa fa-check"></i></button>
+                                    </div>
+                            </div>-->
+                        </div>
+                    </div>
+                {% empty %}
+                    No tienes notificaciones nuevas
+                {% endfor %}
+            </div>
+        </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -161,6 +223,11 @@
                                 <td>{{j.perfil.user.username}}</td>
                                 <td>{{j.perfil.telefono}}</td>
                             </tr>
+
+                        {% empty %}
+                            <tr class="{{rowclass}}">
+                                <td colspan="3">No hay jugadores disponibles</td>
+                            </tr>
                         {% endfor %}
                         </tbody>
                     </table>
@@ -176,7 +243,11 @@
                 </div>
                 <div class="panel-body">
                     <div class="row-centered">
-                        {{rutaTiempo.ruta|safe}}
+                        {% if rutaTiempo %}
+                            {{rutaTiempo.ruta|safe}}
+                        {% else %}
+                            En estos momentos no podemos mostrarle el tiempo en su ciudad.
+                        {% endif %}
                     </div>
                 </div>
             </div>

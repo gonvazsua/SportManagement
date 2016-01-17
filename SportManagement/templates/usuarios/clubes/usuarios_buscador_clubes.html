@@ -1,0 +1,145 @@
+{% extends 'usuarios/template_usuarios.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Buscador de clubes
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/usuario/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Buscador de clubes</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Buscador de clubes</h4>
+            <p>
+                En esta página podrás buscar e inscribirte en los clubes en los que te gustaría jugar.<br>
+                Selecciona un municipio, y te mostraremos todos los clubes que están dados de alta en nuestro sistema.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h3>Seleccione una provincia y un municipio para buscar los clubes</h3><hr>
+    </div>
+</div>
+
+<form action="/usuario/{{perfil.user.id}}/buscador/clubes" method="POST" id="form_buscador_clubes">{% csrf_token %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="form-group col-lg-1"><label for='provincia'>Provincia: </label></div>
+            <div class="form-group col-lg-4">
+                <select class="form-control" name="provincia" id="provincia_id" onchange="javascript:actualiza_municipios(this)">
+                    <option selected="selected" value="0">Seleccione...</option>
+                    {% for p in provincias %}
+                        <option value="{{p.id}}">{{p.provincia}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-lg-1"><label for='municipio'>Municipio: </label></div>
+            <div class="form-group col-lg-4">
+                <select class="form-control" name="municipio" id="id_municipio" disabled="disabled">
+                    <option value="0">Seleccione...</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="form-group col-lg-4">
+                <button type="button" id="btn_buscar" class="btn btn-success" aria-label="Right Align" onclick="javascript:buscar_clubes();">
+                    <i class="fa fa-search"></i> Encontrar clubes
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <h4>Resultados encontrados: </h4><hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        {% for club in clubes %}
+            <div class="row">
+                <div class="col-lg-12">
+                   <div class="panel panel-primary fondo-info">
+                       <div class="panel-body">
+                           <div class="row">
+                               <div class="col-lg-2">
+                                   {% if club.imagen == "" %}
+                                        <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{club.nombre}}" class="img-rounded" style="max-width: 100%">
+                                   {% else %}
+                                        <img src="{{MEDIA_URL}}{{club.imagen}}" alt="{{club.nombre}}" class="img-rounded" style="max-width: 100%">
+                                   {% endif %}
+                               </div>
+                               <div class="col-lg-8">
+                                   <div class="row">
+                                       <div class="col-lg-12"><i class="fa fa-tag fa-1"></i> <strong>Nombre:</strong> {{club.nombre}}</div>
+                                   </div>
+                                   <div class="row">
+                                       <div class="col-lg-12"><i class="fa fa-location-arrow fa-1"></i> <strong>Dirección:</strong> {{club.direccion}}, {{club.municipio.municipio}} ({{club.municipio.provincia.provincia}})</div>
+                                   </div>
+                                   <div class="row">
+                                       <div class="col-lg-12">
+                                           <i class="fa fa-quote-left fa-1"></i> <strong>Descripción:</strong>
+                                           {{club.descripcion}}
+                                       </div>
+                                   </div>
+                                   <div class="row">
+                                       <div class="col-lg-12"><p style="display:none;color:red" id="error_inscripcion_club_{{club.id}}"></p></div>
+                                   </div>
+                               </div>
+                               <div class="col-lg-2">
+                                   <div class="row">
+                                       <div class="col-lg-12">
+                                           <form id="form_inscripcion_club_{{club.id}}">
+                                               {% csrf_token %}
+                                               <input type="hidden" name="club_id" value="{{club.id}}">
+                                               <input type="hidden" name="perfil_id" value="{{perfil.id}}">
+                                           </form>
+                                           <button type="button" id="btn_inscripcion_{{club.id}}" class="btn btn-info btn-sm pull-right" aria-label="Right Align" onclick="javascript:inscripcion_clubes({{club.id}});">
+                                                <i class="fa fa-check"></i> Inscribirme
+                                           </button>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                </div>
+            </div>
+        {% empty %}
+            Lo sentimos, no hemos encontrado ningún club en esa provincia o municipio
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block importaciones %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/clubes.js"></script>
+{% endblock %}
+
+{% block document_ready %}
+    $(".botonera").removeClass("active");
+    $("#enlace_buscar_clubes").addClass("active");
+{% endblock %}

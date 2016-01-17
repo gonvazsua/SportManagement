@@ -11,7 +11,7 @@
 
 {% block barra_navegacion %}
 <ol class="breadcrumb">
-  <li><a href="/administrador">Inicio</a></li>
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
   <li class="active">Administración</li>
 </ol>
 {% endblock %}
@@ -38,7 +38,10 @@
 {% block pagina_central %}
 <div class="row">
     <div class="col-lg-12 col-md-12">
-        <h3>Información del club: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_configuracion_club_titulo','form_configuracion_club');"></i></h3>
+        <h3>Información del club:
+        <button type="button" class="btn btn-danger pull-right btn-redondo" aria-label="Right Align" title="Editar" onclick="javascript:form_editar('form_configuracion_club_titulo','form_configuracion_club');">
+          <i class="fa fa-pencil fa-fw"></i>
+        </button></h3>
         <hr>
     </div>
 </div>
@@ -83,7 +86,11 @@
 
 <div class="row">
     <div class="col-lg-12 col-md-12">
-        <h3>Franjas horarias: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_franjas_horarias_titulo','form_franjas_horarias');"></i></h3>
+        <h3>Franjas horarias:
+            <button type="button" class="btn btn-danger pull-right btn-redondo" aria-label="Right Align" title="Editar" onclick="javascript:form_editar('form_franjas_horarias_titulo','form_franjas_horarias');">
+              <i class="fa fa-pencil fa-fw"></i>
+            </button>
+        </h3>
         <hr>
     </div>
 </div>
@@ -91,10 +98,13 @@
     <ul>
     {% for fh in franjas_horarias %}
         <li>{{fh.inicio|time:'G:i'}} - {{fh.fin|time:'G:i'}}</li>
+    {% empty %}
+        <li>No has creado ninguna hora todavía.</li>
     {% endfor %}
     </ul>
 </div>
 
+<!--
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <h3>Deportes: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_deportes_titulo','form_deportes');"></i></h3>
@@ -108,10 +118,15 @@
     {% endfor %}
     </ul>
 </div>
+-->
 
 <div class="row">
     <div class="col-lg-12 col-md-12">
-        <h3>Niveles de juego: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_niveles_juego_titulo','form_niveles_juego');"></i></h3>
+        <h3>Niveles de juego:
+            <button type="button" class="btn btn-danger pull-right btn-redondo" aria-label="Right Align" title="Editar" onclick="javascript:form_editar('form_niveles_juego_titulo','form_niveles_juego');">
+              <i class="fa fa-pencil fa-fw"></i>
+            </button>
+        </h3>
         <hr>
     </div>
 </div>
@@ -119,13 +134,19 @@
     <ul>
     {% for nivel in niveles_juego %}
         <li>{{nivel.deporte.deporte}} - {{nivel.nivel}}</li>
+    {% empty %}
+        <li>No has creado ningun nivel de juego.</li>
     {% endfor %}
     </ul>
 </div>
 
 <div class="row">
     <div class="col-lg-12 col-md-12">
-        <h3>Pistas: <i class="fa fa-pencil fa-fw" title="Editar" style="cursor:pointer" onclick="javascript:form_editar('form_pistas_titulo','form_pistas');"></i></h3>
+        <h3 id="crear_pistas">Pistas:
+            <button type="button" class="btn btn-danger pull-right btn-redondo" aria-label="Right Align" title="Editar" onclick="javascript:form_editar('form_pistas_titulo','form_pistas');">
+              <i class="fa fa-pencil fa-fw"></i>
+            </button>
+        </h3>
         <hr>
     </div>
 </div>
@@ -144,6 +165,11 @@
                     <td>{{p.deporte.deporte}}</td>
                     <td>{{p.nombre}}</td>
                 </tr>
+
+            {% empty %}
+                <tr>
+                    <td colspan="3">Ninguna pista dada de alta</td>
+                </tr>
             {% endfor %}
             </table>
         </div>
@@ -152,15 +178,18 @@
 
 <!-- ************** FORMULARIOS *********************** -->
 
-<div class="row" id="form_configuracion_club_titulo" style="display:none;">
+<!-- Redireccion a administracion del club -->
+<form method="post" action="/administrador/{{perfil.user.id}}/club" id="form_redirige_administracion_club">{% csrf_token %}</form>
+
+<div class="row formulario_administracion" id="form_configuracion_club_titulo" style="display:none;">
     <div class="col-lg-12 col-md-12">
         <h3>Modificar información del club:</h3>
         <hr>
     </div>
 </div>
-<div class="row" id="form_configuracion_club" style="display:none;">
+<div class="row formulario_administracion" id="form_configuracion_club" style="display:none;">
     <div class="col-lg-12 col-md-12">
-        <form id='form_club' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
+        <form id='form_club' method='post' action='/guardar_administracion' role="form"  enctype="multipart/form-data">{% csrf_token %}
             <input type="hidden" name="action" id="action" value="club" />
             <input type="hidden" name="user_id" id="user_id" value="{{perfil.user.id}}" />
             <input type="hidden" name="club_id" id="club_id" value="{{club.id}}" />
@@ -197,6 +226,10 @@
                 <div class="form-group col-lg-10"><textarea name="descripcion" maxlength="300" id="id_descripcion" class="form-control" cols="10" rows="5">{{club.descripcion}}</textarea></div>
             </div>
             <div class="row">
+                <div class="form-group col-lg-1"><label for='imagen'>Imagen: </label></div>
+                <div class="form-group col-lg-10"><input type="file" name="imagen" ></div>
+            </div>
+            <div class="row">
                 <div class="form-group col-lg-11">
                     <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_club();">
                       <i class="fa fa-save fa-fw"></i> Guardar
@@ -208,128 +241,251 @@
 </div>
 
 <!-- Franjas horarias -->
-<div class="row" id="form_franjas_horarias_titulo" style="display:none;">
+<div class="row formulario_administracion" id="form_franjas_horarias_titulo" style="display:none;">
     <div class="col-lg-12 col-md-12">
         <h3>Modificar franjas horarias de juego:</h3>
         <hr>
     </div>
 </div>
-<div class="row" id="form_franjas_horarias" style="display:none;">
+<div class="row formulario_administracion" id="form_franjas_horarias" style="display:none;">
     <div class="col-lg-12 col-md-12">
-        <form id='form_franja_hora' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
-            <input type="hidden" name="action" id="action" value="franja_hora" />
-            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
-            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
-            <input type="hidden" name="ids_fh_eliminadas" id="ids_fh_eliminadas" value="" />
-            {% for fh in franjas_horarias %}
-            <div class="row" id="fila_form_franja_hora_{{fh.id}}">
-                <div class="form-group col-lg-1"><label for='inicio'>Inicio: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_inicio_{{fh.id}}" disabled="disabled" value="{{fh.inicio}}" name="inicio_{{fh.id}}" placeholder="Hora de inicio" class="form-control"/></div>
-                <div class="form-group col-lg-1"><label for='fin'>Fin: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_fin_{{fh.id}}" disabled="disabled" value="{{fh.fin}}" name="fin_{{fh.id}}" placeholder="Hora de fin" class="form-control"/></div>
-                <div class="form-group col-lg-1">
-                    <i class="fa fa-minus-square fa-2x" title="Eliminar" style="cursor:pointer" onclick="javascript:elimina_fila_fh({{fh.id}});"></i>
-                </div>
+        {% for fh in franjas_horarias %}
+        <div class="row" id="fila_form_franja_hora_{{fh.id}}">
+            <div class="col-lg-12">
+                <form id='form_franja_hora_{{fh.id}}' method='post' action='/guardar_franja_horaria' role="form">{% csrf_token %}
+                    <input type="hidden" name="fh_id" id="fh_id" value="{{fh.id}}" />
+                    <input type="hidden" name="user_id" id="user_id" value="{{perfil.user.id}}" />
+                    <input type="hidden" name="club_id" id="club_id" value="{{club.id}}" />
+                    <input type="hidden" name="action" id="action" value="editar" />
+                    <div class="row">
+                        <div class="form-group col-lg-1"><label for='inicio'>Inicio: </label></div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control select_fh_{{fh.id}}" id="inicio_horas_{{fh.id}}" name="inicio_horas_{{fh.id}}" disabled="disabled" title="Horas">
+                                {% for hora in horas %}
+                                    <option value="{{hora}}"{%if hora == fh.inicio.hour%}selected="selected"{%endif%}>{{hora}} h.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control select_fh_{{fh.id}}" id="inicio_minutos_{{fh.id}}" name="inicio_minutos_{{fh.id}}" disabled="disabled" title="Minutos">
+                                {% for min in minutos %}
+                                    <option value="{{min}}"{%if min == fh.inicio.minute%}selected="selected"{%endif%}>{{min}} m.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-1"><label for='fin'>Fin: </label></div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control select_fh_{{fh.id}}" id="fin_horas_{{fh.id}}" name="fin_horas_{{fh.id}}" disabled="disabled" title="Horas">
+                                {% for hora in horas %}
+                                    <option value="{{hora}}"{%if hora == fh.fin.hour%}selected="selected"{%endif%}>{{hora}} h.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control select_fh_{{fh.id}}" id="fin_minutos_{{fh.id}}" name="fin_minutos_{{fh.id}}" disabled="disabled" title="Minutos">
+                                {% for min in minutos %}
+                                    <option value="{{min}}"{%if min == fh.fin.minute%}selected="selected"{%endif%}>{{min}} m.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <button type="button" class="btn btn-danger btn-redondo" id="btn_eliminar_{{fh.id}}" aria-label="Right Align" title="Eliminar esta franja horaria" onclick="javascript:mostrar_efecto('#eliminar_franja_horaria_{{fh.id}}');">
+                              <i class="fa fa-trash fa-fw"></i>
+                            </button>
+                            <button type="button" class="btn btn-default btn-redondo" id="btn_editar_{{fh.id}}" aria-label="Right Align" title="Editar esta franja horaria" onclick="javascript:mostrar_efecto('#alerta_editar_franja_horaria_{{fh.id}}');">
+                              <i class="fa fa-pencil fa-fw"></i>
+                            </button>
+                            <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_{{fh.id}}" aria-label="Right Align" title="Guardar franja horaria" onclick="javascript:actualizar_franja_horaria('editar', {{fh.id}});" style="display:none;">
+                              <i class="fa fa-save fa-fw"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row alerta_franja_horaria" id="alerta_editar_franja_horaria_{{fh.id}}" style="display:none;">
+                        <div class="col-lg-12">
+                            <div class="alert alert-warning" role="alert">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                Se modificarán las horas de todos los partidos asociados a esta franja horaria. <a href="javascript:liberar_franja_horaria({{fh.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#alerta_editar_franja_horaria_{{fh.id}}');">cancelar</a>?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row alerta_franja_horaria" id="mensaje_franja_horaria_{{fh.id}}" style="display:none;">
+                        <div class="col-lg-12">
+                            <div class="alert alert-danger" id="texto_mensaje_franja_horaria_{{fh.id}}" role="alert"></div>
+                        </div>
+                    </div>
+                    <div class="row alerta_franja_horaria" id="eliminar_franja_horaria_{{fh.id}}" style="display:none;">
+                        <div class="col-lg-12">
+                            <div class="alert alert-warning" role="alert">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                Se eliminarán también todos los partidos de esta franja horaria. <a href="javascript:actualizar_franja_horaria('eliminar', {{fh.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#eliminar_franja_horaria_{{fh.id}}');">cancelar</a>?
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-            {% endfor %}
-            <div class="row">
-                <div class="form-group col-lg-1"><label for='inicio'>Inicio: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_inicio" value="" name="inicio" placeholder="Hora de inicio" class="form-control"/></div>
-                <div class="form-group col-lg-1"><label for='fin'>Fin: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_fin" value="" name="fin" placeholder="Hora de fin" class="form-control"/></div>
-            </div>
-            <div class="row">
-                <div class="form-group col-lg-11">
-                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
-                      <i class="fa fa-save fa-fw"></i> Guardar
-                    </button> &nbsp;
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Deportes -->
-<div class="row" id="form_deportes_titulo" style="display:none;">
-    <div class="col-lg-12 col-md-12">
-        <h3>Modificar deportes:</h3>
+        </div>
         <hr>
-    </div>
-</div>
-<div class="row" id="form_deportes" style="display:none;">
-    <div class="col-lg-12 col-md-12">
-        <form id='form_deporte' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
-            <input type="hidden" name="action" id="action" value="deporte" />
-            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
-            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
-            <input type="hidden" name="ids_deportes_eliminados" id="ids_deportes_eliminados" value="" />
-            {% for d in deportes %}
-            <div class="row" id="fila_form_deporte_{{d.id}}">
-                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_deporte_{{d.id}}" disabled="disabled" value="{{d.deporte}}" name="deporte_{{d.id}}" placeholder="Deporte" class="form-control"/></div>
-                <div class="form-group col-lg-1"><label for='num_jugadores'>Jugadores: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_num_jugadores_{{d.num_jugadores}}" disabled="disabled" value="{{d.num_jugadores}}" name="num_jugadores_{{d.id}}" placeholder="Numero de jugadores" class="form-control"/></div>
+        {% endfor %}
+
+        <div class="row" id="fila_form_franja_hora_nueva">
+            <div class="col-lg-12">
+                <!-- Formulario nueva franja horaria -->
+                <form id='form_franja_hora_nueva' method='post' action='/guardar_franja_horaria' role="form">{% csrf_token %}
+                    <input type="hidden" name="user_id" id="user_id" value="{{perfil.user.id}}" />
+                    <input type="hidden" name="club_id" id="club_id" value="{{club.id}}" />
+                    <input type="hidden" name="action" id="action" value="nuevo" />
+                    <div class="row">
+                        <div class="form-group col-lg-1"><label for='inicio'>Inicio: </label></div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control validar" id="id_inicio_horas" name="inicio_horas" title="Horas">
+                                <option value="">Hora...</option>
+                                {% for hora in horas %}
+                                    <option value="{{hora}}">{{hora}} h.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control validar" id="inicio_minutos" name="inicio_minutos" title="Minutos">
+                                <option value="">Minutos...</option>
+                                {% for min in minutos %}
+                                    <option value="{{min}}">{{min}} m.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-1"><label for='fin'>Fin: </label></div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control validar" id="id_fin_horas" name="fin_horas" title="Horas">
+                                <option value="">Hora...</option>
+                                {% for hora in horas %}
+                                    <option value="{{hora}}">{{hora}} h.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-2">
+                            <select class="form-control validar" id="fin_minutos" name="fin_minutos" title="Minutos">
+                                <option value="">Minutos...</option>
+                                {% for min in minutos %}
+                                    <option value="{{min}}">{{min}} m.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-1">
+                            <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar franja horaria nueva" onclick="javascript:actualizar_franja_horaria('nuevo', null);">
+                              <i class="fa fa-check fa-fw"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row alerta_franja_horaria" id="mensaje_nueva_franja_horaria" style="display:none;">
+                        <div class="col-lg-12">
+                            <div class="alert alert-danger" id="texto_mensaje_nueva_franja_horaria" role="alert"></div>
+                        </div>
+                    </div>
+                </form>
             </div>
-            {% endfor %}
-            <div class="row">
-                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_deporte" value="" name="deporte" placeholder="Nombre del deporte" class="form-control"/></div>
-                <div class="form-group col-lg-1"><label for='num_jugadores'>Jugadores: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_deporte_num_jugadores" value="" name="num_jugadores" placeholder="Máximo de jugadores" class="form-control"/></div>
-            </div>
-            <div class="row">
-                <div class="form-group col-lg-11">
-                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
-                      <i class="fa fa-save fa-fw"></i> Guardar
-                    </button> &nbsp;
-                </div>
-            </div>
-        </form>
+        </div>
+        <hr>
     </div>
 </div>
 
 <!-- Niveles de juego -->
-<div class="row" id="form_niveles_juego_titulo" style="display:none;">
+<div class="row formulario_administracion" id="form_niveles_juego_titulo" style="display:none;">
     <div class="col-lg-12 col-md-12">
         <h3>Modificar niveles de juego:</h3>
         <hr>
     </div>
 </div>
-<div class="row" id="form_niveles_juego" style="display:none;">
+<div class="row formulario_administracion" id="form_niveles_juego" style="display:none;">
     <div class="col-lg-12 col-md-12">
-        <form id='form_nivel_juego' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
-            <input type="hidden" name="action" id="action" value="nivel_juego" />
-            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
-            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
-            <input type="hidden" name="ids_nj_eliminadas" id="ids_nj_eliminadas" value="" />
-            {% for nj in niveles_juego %}
-            <div class="row" id="fila_form_nivel_juego_{{nj.id}}">
+
+        {% for nj in niveles_juego %}
+        <div class="row" id="fila_form_nivel_juego_{{nj.id}}">
+            <form id='form_nivel_juego_{{nj.id}}' method='post' action='/guardar_niveles_juego' role="form">{% csrf_token %}
+                <input type="hidden" name="nj_id" id="nj_id" value="{{nj.id}}" />
+                <input type="hidden" name="club_id" id="club_id" value="{{club.id}}" />
+                <input type="hidden" name="action" id="action" value="editar" />
+
                 <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_nj_deporte_{{nj.id}}" disabled="disabled" value="{{nj.deporte}}" name="nj_deporte_{{nj.id}}" placeholder="Deporte" class="form-control"/></div>
-                <div class="form-group col-lg-1"><label for='nivel'>Nivel: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_nj_nivel_{{nj.id}}" disabled="disabled" value="{{nj.nivel}}" name="nj_nivel_{{nj.id}}" placeholder="Nombre del nivel" class="form-control"/></div>
-                <div class="form-group col-lg-1">
-                    <i class="fa fa-minus-square fa-2x" title="Eliminar" style="cursor:pointer" onclick="javascript:elimina_fila_nj({{nj.id}});"></i>
+                <div class="form-group col-lg-4">
+                    <select id="id_nj_deporte_{{nj.id}}" name="nj_deporte_{{nj.id}}" class="form-control elemento_nivel_juego_{{nj.id}}" disabled="disabled">
+                        {% for d in deportes %}
+                            <option value="{{d.id}}" {%if nj.deporte.id == d.id%}selected = "selected"{%endif%}>{{d.deporte}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
-            {% endfor %}
+                <div class="form-group col-lg-1"><label for='nivel'>Nivel: </label></div>
+                <div class="form-group col-lg-3">
+                    <input type="text" id="id_nj_nivel_{{nj.id}}" class="form-control elemento_nivel_juego_{{nj.id}}" disabled="disabled" value="{{nj.nivel}}" name="nj_nivel_{{nj.id}}" placeholder="Nombre del nivel"/>
+                </div>
+
+                <div class="form-group col-lg-2">
+                    <button type="button" class="btn btn-danger btn-redondo" id="btn_eliminar_nj_{{nj.id}}" aria-label="Right Align" title="Eliminar este nivel de juego" onclick="javascript:mostrar_efecto('#eliminar_nivel_juego_{{nj.id}}');">
+                      <i class="fa fa-trash fa-fw"></i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-redondo" id="btn_editar_nj_{{nj.id}}" aria-label="Right Align" title="Editar este nivel de juego" onclick="javascript:mostrar_efecto('#alerta_editar_nivel_juego_{{nj.id}}');">
+                      <i class="fa fa-pencil fa-fw"></i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_nj_{{nj.id}}" aria-label="Right Align" title="Guardar este nivel de juego" onclick="javascript:actualizar_nivel_juego('editar', {{nj.id}});" style="display:none;">
+                      <i class="fa fa-save fa-fw"></i>
+                    </button>
+                </div>
+
+                <div class="row alerta_nivel_juego" id="alerta_editar_nivel_juego_{{nj.id}}" style="display:none;">
+                    <div class="col-lg-12">
+                        <div class="alert alert-warning" role="alert">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            Se modificarán los niveles de todos los jugadores. <a href="javascript:liberar_nivel_juego({{nj.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#alerta_editar_nivel_juego_{{fh.id}}');">cancelar</a>?
+                        </div>
+                    </div>
+                </div>
+                <div class="row alerta_nivel_juego" id="mensaje_nivel_juego_{{nj.id}}" style="display:none;">
+                    <div class="col-lg-12">
+                        <div class="alert alert-danger" id="texto_mensaje_nivel_juego_{{nj.id}}" role="alert"></div>
+                    </div>
+                </div>
+                <div class="row alerta_nivel_juego" id="eliminar_nivel_juego_{{nj.id}}" style="display:none;">
+                    <div class="col-lg-12">
+                        <div class="alert alert-warning" role="alert">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            Se eliminarán los niveles de todos los jugadores. <a href="javascript:actualizar_nivel_juego('eliminar', {{nj.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#eliminar_nivel_juego_{{fh.id}}');">cancelar</a>?
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endfor %}
+
+        <form id='form_nivel_juego_nuevo' method='post' action='/guardar_niveles_juego' role="form">{% csrf_token %}
+            <input type="hidden" name="user_id" id="user_id_nj" value="{{perfil.user.id}}" />
+            <input type="hidden" name="club_id" id="club_id_nj" value="{{club.id}}" />
+            <input type="hidden" name="action" id="action" value="nuevo" />
             <div class="row">
                 <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
                 <div class="form-group col-lg-4">
-                    <select id="id_nj_deporte" value="" name="nj_deporte" class="form-control">
+                    <select id="id_nj_deporte" value="" name="nj_deporte" class="form-control validar_nivel_juego">
+                        <option value="">Seleccione deporte</option>
                         {% for d in deportes %}
                             <option value="{{d.id}}">{{d.deporte}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group col-lg-1"><label for='nivel'>Nivel: </label></div>
-                <div class="form-group col-lg-4"><input type="text" id="id_nj_nivel" value="" name="nj_nivel" placeholder="Nombre del nivel de juego" class="form-control"/></div>
+                <div class="form-group col-lg-3">
+                    <input type="text" id="id_nj_nivel" value="" name="nj_nivel" placeholder="Nombre del nivel de juego" class="form-control validar_nivel_juego"/>
+                </div>
+
+                <div class="form-group col-lg-1">
+                    <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar nivel de juego nuevo" onclick="javascript:actualizar_nivel_juego('nuevo', null);">
+                      <i class="fa fa-check fa-fw"></i>
+                    </button>
+                </div>
             </div>
-            <div class="row">
-                <div class="form-group col-lg-11">
-                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
-                      <i class="fa fa-save fa-fw"></i> Guardar
-                    </button> &nbsp;
+            <div class="row alerta_nivel_juego" id="mensaje_nuevo_nivel_juego" style="display:none;">
+                <div class="col-lg-12">
+                    <div class="alert alert-danger" id="texto_mensaje_nuevo_nivel_juego" role="alert"></div>
                 </div>
             </div>
         </form>
@@ -337,56 +493,118 @@
 </div>
 
 <!-- Pistas -->
-<div class="row" id="form_pistas_titulo" style="display:none;">
+<div class="row formulario_administracion" id="form_pistas_titulo" style="display:none;">
     <div class="col-lg-12 col-md-12">
         <h3>Modificar pistas:</h3>
         <hr>
     </div>
 </div>
-<div class="row" id="form_pistas" style="display:none;">
+<div class="row formulario_administracion" id="form_pistas" style="display:none;">
     <div class="col-lg-12 col-md-12">
-        <form id='form_pista' method='post' action='/guardar_administracion' role="form">{% csrf_token %}
-            <input type="hidden" name="action" id="action" value="pistas" />
-            <input type="hidden" name="user_id" id="action" value="{{perfil.user.id}}" />
-            <input type="hidden" name="club_id" id="action" value="{{club.id}}" />
-            <input type="hidden" name="ids_pistas_eliminadas" id="ids_pistas_eliminadas" value="" />
-            {% for p in pistas %}
-            <div class="row" id="fila_form_pista_{{nj.id}}">
+
+        {% for p in pistas %}
+        <div class="row" id="fila_form_pista_{{p.id}}">
+            <form id='form_pista_{{p.id}}' method='post' action='/guardar_pistas' role="form">{% csrf_token %}
+                <input type="hidden" name="pista_id" id="pista_id" value="{{p.id}}" />
+                <input type="hidden" name="club_id" id="club_id" value="{{club.id}}" />
+                <input type="hidden" name="action" id="action" value="editar" />
+
                 <div class="form-group col-lg-1"><label for='orden'>Orden: </label></div>
-                <div class="form-group col-lg-1"><input type="text" id="id_pista_orden_{{p.id}}" disabled="disabled" value="{{p.orden}}" name="pista_orden_{{p.id}}" placeholder="Orden" class="form-control"/></div>
-                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
-                <div class="form-group col-lg-3"><input type="text" id="id_pista_deporte_{{p.id}}" disabled="disabled" value="{{p.deporte.deporte}}" name="pista_deporte_{{p.id}}" placeholder="Deporte" class="form-control"/></div>
-                <div class="form-group col-lg-1"><label for='nombre_pista'>Nombre: </label></div>
-                <div class="form-group col-lg-3"><input type="text" id="id_pista_nombre_{{p.id}}" disabled="disabled" value="{{p.nombre}}" name="pista_nombre_{{p.id}}" placeholder="Nombre" class="form-control"/></div>
                 <div class="form-group col-lg-1">
-                    <i class="fa fa-minus-square fa-2x" title="Eliminar" style="cursor:pointer" onclick="javascript:elimina_fila_pista({{p.id}});"></i>
+                    <input type="text" id="id_pista_orden_{{p.id}}" class="form-control elemento_pista_{{p.id}}" disabled="disabled" value="{{p.orden}}" name="pista_orden_{{p.id}}" />
                 </div>
-            </div>
-            {% endfor %}
-            <div class="row">
-                <div class="form-group col-lg-1"><label for='orden'>Orden: </label></div>
-                <div class="form-group col-lg-1"><input type="text" id="id_pista_orden" value="" name="pista_orden" placeholder="" title="Número de orden de la pista" class="form-control"/></div>
                 <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
                 <div class="form-group col-lg-3">
-                    <select id="id_pista_deporte" name="pista_deporte" class="form-control">
+                    <select id="id_pista_deporte_{{p.id}}" name="pista_deporte_{{p.id}}" class="form-control elemento_pista_{{p.id}}" disabled="disabled">
+                        {% for d in deportes %}
+                            <option value="{{d.id}}" {%if d.id = p.deporte.id %}selected = "selected"{%endif%} >{{d.deporte}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group col-lg-1"><label for='nombre_pista'>Nombre: </label></div>
+                <div class="form-group col-lg-3">
+                    <input type="text" id="id_pista_nombre_{{p.id}}" class="form-control elemento_pista_{{p.id}}" disabled="disabled" value="{{p.nombre}}" name="pista_nombre_{{p.id}}" placeholder="Nombre"/>
+                </div>
+
+                <div class="form-group col-lg-2">
+                    <button type="button" class="btn btn-danger btn-redondo" id="btn_eliminar_pista_{{p.id}}" aria-label="Right Align" title="Eliminar esta pista" onclick="javascript:ocultar_efecto('.alerta_pista');mostrar_efecto('#eliminar_pista_{{p.id}}');">
+                      <i class="fa fa-trash fa-fw"></i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-redondo" id="btn_editar_pista_{{p.id}}" aria-label="Right Align" title="Editar esta pista" onclick="javascript:ocultar_efecto('.alerta_pista');mostrar_efecto('#alerta_editar_pista_{{p.id}}');">
+                      <i class="fa fa-pencil fa-fw"></i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_pista_{{p.id}}" aria-label="Right Align" title="Guardar esta pista" onclick="javascript:ocultar_efecto('.alerta_pista');actualizar_pista('editar', {{p.id}});" style="display:none;">
+                      <i class="fa fa-save fa-fw"></i>
+                    </button>
+                </div>
+
+                <div class="row alerta_pista" id="alerta_editar_pista_{{p.id}}" style="display:none;">
+                    <div class="col-lg-12">
+                        <div class="alert alert-warning" role="alert">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            Va a modificar esta pista. <a href="javascript:liberar_pista({{p.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#alerta_editar_pista_{{p.id}}');">cancelar</a>?
+                        </div>
+                    </div>
+                </div>
+                <div class="row alerta_pista" id="mensaje_pista_{{p.id}}" style="display:none;">
+                    <div class="col-lg-12">
+                        <div class="alert alert-danger" id="texto_mensaje_pista_{{p.id}}" role="alert"></div>
+                    </div>
+                </div>
+                <div class="row alerta_pista" id="eliminar_pista_{{p.id}}" style="display:none;">
+                    <div class="col-lg-12">
+                        <div class="alert alert-warning" role="alert">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            Se eliminarán los partidos asociados a esta pista. <a href="javascript:actualizar_pista('eliminar', {{p.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#eliminar_pista_{{p.id}}');">cancelar</a>?
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endfor %}
+
+        <form id='form_pista_nuevo' method='post' action='/guardar_pistas' role="form">{% csrf_token %}
+            <input type="hidden" name="user_id" id="user_id_nj" value="{{perfil.user.id}}" />
+            <input type="hidden" name="club_id" id="club_id_nj" value="{{club.id}}" />
+            <input type="hidden" name="action" id="action" value="nuevo" />
+            <div class="row">
+                <div class="form-group col-lg-1"><label for='orden'>Orden: </label></div>
+                <div class="form-group col-lg-1">
+                    <input type="text" id="id_pista_orden" value="" name="pista_orden" class="form-control validar_pista"/>
+                </div>
+
+                <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+                <div class="form-group col-lg-3">
+                    <select id="id_pista_deporte" value="" name="pista_deporte" class="form-control validar_pista">
+                        <option value="">Seleccione deporte</option>
                         {% for d in deportes %}
                             <option value="{{d.id}}">{{d.deporte}}</option>
                         {% endfor %}
                     </select>
                 </div>
+
                 <div class="form-group col-lg-1"><label for='nombre'>Nombre: </label></div>
-                <div class="form-group col-lg-3"><input type="text" id="id_pista_nombre" value="" name="pista_nombre" placeholder="Nombre de la pista" class="form-control"/></div>
+                <div class="form-group col-lg-3">
+                    <input type="text" id="id_pista_nombre" value="" name="pista_nombre" placeholder="Nombre de la pista" class="form-control validar_pista"/>
+                </div>
+
+                <div class="form-group col-lg-1">
+                    <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar pista nueva" onclick="javascript:actualizar_pista('nuevo', null);">
+                      <i class="fa fa-check fa-fw"></i>
+                    </button>
+                </div>
             </div>
-            <div class="row">
-                <div class="form-group col-lg-11">
-                     <button type="submit" class="btn btn-primary  pull-right" aria-label="Right Align">
-                      <i class="fa fa-save fa-fw"></i> Guardar
-                    </button> &nbsp;
+            <div class="row alerta_pista" id="mensaje_nueva_pista" style="display:none;">
+                <div class="col-lg-12">
+                    <div class="alert alert-danger" id="texto_mensaje_nueva_pista" role="alert"></div>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<form id="actualizar" method="GET" action="/administrador/{{perfil.user.id}}/club"></form>
 
 {% endblock %}
 

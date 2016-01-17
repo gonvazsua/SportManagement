@@ -11,19 +11,19 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     #Ruta de Imagenes
-    url(r'^media/(?P<path>.*)$','django.views.static.serve',
-          {'document_root':settings.MEDIA_ROOT,}),
+    url(r'^media/(?P<path>.*)$','django.views.static.serve', {'document_root':settings.MEDIA_ROOT,}),
+    #url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT }),
 
     #Pagina principal
     url(r'^$', 'Core.views.inicio'),
     url(r'^logout', 'Core.views.logout'),
 
-    #Usuarios
-    url(r'^usuario/(?P<id_usuario>\d+)$', 'Core.views.perfil_usuario'),
-
     #Administracion de club
     url(r'^administrador/(?P<id_usuario>\d+)/club$', 'Core.views.administracion_club'),
     url(r'^guardar_administracion$', 'Core.views.guardar_administracion'),
+    url(r'^guardar_franja_horaria$', 'Core.views.guardar_franja_horaria_ajax'),
+    url(r'^guardar_niveles_juego$', 'Core.views.guardar_niveles_juego_ajax'),
+    url(r'^guardar_pistas$', 'Core.views.guardar_pistas_ajax'),
 
     #Administracion Jugadores
     url(r'^administrador/(?P<id_usuario>\d+)$', 'Core.views.perfil_administrador'),
@@ -42,6 +42,11 @@ urlpatterns = patterns('',
     #Administracion Estadisticas
     url(r'^administrador/(?P<id_usuario>\d+)/cuenta$', 'Core.views.administracion_cuenta'),
 
+    #Notificaciones
+    url(r'^administrador/(?P<id_usuario>\d+)/notificaciones$', 'Core.views.notificaciones'),
+    url(r'^marcar_leida$', 'Core.views.marcar_como_leida'),
+    url(r'^aceptar_denegar_inscripcion$', 'Core.views.aceptar_denegar_inscripcion'),
+
     #AJAX
     url(r'^login', 'Core.views.login'),
     url(r'^registro', 'Core.views.registro'),
@@ -51,6 +56,35 @@ urlpatterns = patterns('',
     url(r'^editar_partido', 'Core.views.editar_partido_ajax'),
     url(r'^baja_jugador_club', 'Core.views.baja_jugador_club'),
 
-    #Utiles
+    ###########################################################
+    ########## USUARIOS URLS
+    ###########################################################
+
+    #Inicio
+    url(r'^usuario/(?P<id_usuario>\d+)$', 'Core.views.usuario_inicio'),
+    url(r'^completar_datos_inicio', 'Core.views.completar_datos_inicio'),
+
+    #Clubes
+    url(r'^usuario/(?P<id_usuario>\d+)/clubes$', 'Core.views.usuario_mis_clubes'),
+    url(r'^usuario/(?P<id_usuario>\d+)/buscador/clubes$', 'Core.views.usuario_buscador_clubes'),
+    url(r'^buscador/clubes/inscripcion$', 'Core.views.usuario_club_inscripcion'),
+    url(r'^buscador/clubes/baja$', 'Core.views.usuario_club_baja'),
+
+    #Cuenta
+    url(r'^usuario/(?P<id_usuario>\d+)/cuenta$', 'Core.views.usuario_mi_cuenta'),
+    url(r'^clubes_niveles_cuenta', 'Core.views.clubes_niveles_cuenta'),
+    url(r'^clubes_deportes_cuenta', 'Core.views.clubes_deportes_cuenta'),
+    url(r'^eliminar_niveles_club_cuenta', 'Core.views.eliminar_niveles_club_cuenta'),
+
+    #Partidos
+    url(r'^usuario/(?P<id_usuario>\d+)/partidos/(?P<id_partido>\d+)$', 'Core.views.usuario_partido'),
+    url(r'^usuario/(?P<id_usuario>\d+)/partidos/buscador$', 'Core.views.usuario_buscador_partido'),
+    url(r'^inscripcion_partidos', 'Core.views.inscripcion_partidos'),
+    url(r'^usuario/(?P<id_usuario>\d+)/partidos$', 'Core.views.usuario_mis_partidos'),
+    url(r'^actualizar_franjas_club_ajax$', 'Core.views.actualizar_franjas_club_ajax'),
+
+    ###########################################################
+    ########## UTILES URLS
+    ###########################################################
     url(r'^enviarEmail', 'Core.views.send_email'),
 )

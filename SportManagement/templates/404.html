@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//ES"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <!-- jQuery -->
+    <script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+     <!-- Bootstrap Core CSS -->
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom CSS -->
+    <link href="{{ STATIC_URL }}css/landing-page.css" rel="stylesheet" type="text/css">
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <!-- Javascript -->
+    <script type="text/javascript" src="{{STATIC_URL}}js/js.js"></script>
+    <!-- Css propio -->
+    <link href="{{STATIC_URL}}css/application.css" rel="stylesheet" type="text/css">
+    <!-- jQuery UI -->
+    <script type="text/javascript" src="{{STATIC_URL}}jquery-ui/jquery-ui.js"></script>
+    <link href="{{STATIC_URL}}jquery-ui/jquery-ui.css" rel="stylesheet"/>
+
+    <title>Inicio - Sport Click</title>
+</head>
+<body>
+        <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+        <div class="container topnav">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Menu</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand topnav" href="#">Sport Click</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="javascript:loginDialog();">Acceder</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#services">Servicios</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#contact">Contacto</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+    <!-- Header -->
+    <a name="about"></a>
+    <div class="intro-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="alert alert-danger" role="alert">Error 404 - Ha habido un error en el proceso que acaba de ejecutar.</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="intro-message">
+                        <h1>Sport Click</h1>
+                        <h3>Gestión de pistas deportivas</h3>
+                        <hr class="intro-divider">
+                        <ul class="list-inline intro-social-buttons">
+                            <li>
+                                <a href="#" class="btn btn-warning btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Registro</span></a>
+                            </li>
+                            <li>
+                                <a href="javascript:loginDialog();" class="btn btn-primary btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Acceder</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.intro-header -->
+
+    <!-- Page Content -->
+
+	<a  name="services"></a>
+    <div class="content-section-a">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Gestión de partidos:</h2>
+                    <p class="lead">Inscribe a todos los jugadores de tu club en la página,</br>
+                        elige los que quieres que jueguen y ¡a jugar!
+                    </p>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <img class="img-responsive" src="{{STATIC_URL}}img/partidos.jpg" alt="">
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-a -->
+
+    <div class="content-section-b">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Estadísticas</h2>
+                    <p class="lead">
+                        Gestiona tus pistas, mira las estadísticas de todos los partidos que se han jugado y las pistas que se han utilizado. </p>
+                    </p>
+                </div>
+                <div class="col-lg-5 col-sm-pull-6  col-sm-6">
+                   <!-- <img class="img-responsive" src="img/dog.png" alt=""> -->
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-b -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="list-inline">
+                        <li>
+                            <a href="#">Inicio</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="#about">Acceder</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="#services">Servicios</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="#contact">Contacto</a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted small">Copyright &copy; Sport Click 2015. Todos los derechos reservados</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- modals -->
+    <div id="div_login" style="display: none">
+        <div class="container col-lg-12">
+            <form id='form_login' method='post' action='' role="form">{% csrf_token %}
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='username'>Nombre de Usuario: </label>
+                        {{login_form.username}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='password'>Contraseña: </label>
+                        {{login_form.password}}
+                    </div>
+                </div>
+                <div class="row error" id="div_form_error" style="display:none">
+                    <div class="form-group col-lg-12">
+                        <p class="bg-danger my_error" id="form_error"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <!--<button type="submit" class="btn btn-success">Acceder</button>-->
+                        <button type="button" class="btn btn-success  pull-right" aria-label="Right Align" onclick="javascript:submit_login();">
+                          <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Acceder
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- registro -->
+    <div id="div_registro" style="display: none">
+        <div class="container col-lg-12">
+            <form id='form_registro' method='post' action='' role="form">{% csrf_token %}
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='nombre'>Nombre: </label>
+                        {{registro_form.nombre}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='apellidos'>Apellidos: </label>
+                        {{registro_form.apellidos}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='username'>Nombre de Usuario: </label>
+                        {{registro_form.username}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='email'>Email: </label>
+                        {{registro_form.email}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='password'>Contraseña: </label>
+                        {{registro_form.password1}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <label for='password2'>Confirmar contraseña: </label>
+                        {{registro_form.password2}}
+                    </div>
+                </div>
+                <div class="row error" id="div_form_registro_error" style="display:none">
+                    <div class="form-group col-lg-12">
+                        <p class="bg-danger my_error" id="form_registro_error"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12">
+                        <button type="button" class="btn btn-success  pull-right" aria-label="Right Align" onclick="javascript:submit_registro();">
+                          <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Registrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

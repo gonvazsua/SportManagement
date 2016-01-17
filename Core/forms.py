@@ -2,7 +2,7 @@
 from django import forms
 
 class formulario_login(forms.Form):
-    username = forms.CharField(
+    usuario = forms.CharField(
         required=True, widget= forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de usuario'})
     )
     password = forms.CharField(

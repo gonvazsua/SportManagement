@@ -1,0 +1,89 @@
+{% extends 'usuarios/template_usuarios.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Mis partidos
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/usuario/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Mis partidos</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Partidos jugados</h4>
+            <p>
+                En esta página podrás ver todos los partidos en los que has participado.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12">
+        <h4>Listado de partidos:</h4><hr>
+    </div>
+</div>
+{% for partido in partidos %}
+
+    <div class="panel panel-primary over-fondo-info">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-1">
+                    {% if partido.pista.club.imagen == "" %}
+                        <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{partido.pista.club.nombre}}" class="img-rounded" style="max-width: 100%">
+                    {% else %}
+                        <img src="{{MEDIA_URL}}{{partido.pista.club.imagen}}" alt="{{partido.pista.club.nombre}}" class="img-rounded" style="max-width: 100%">
+                    {% endif %}
+                </div>
+                <div class="col-lg-10">
+                    <div class="row">
+                        <div class="col-lg-2"><strong>Club:</strong></div>
+                        <div class="col-lg-4">{{partido.club.nombre}}</div>
+                        <div class="col-lg-2"><strong>Pista:</strong></div>
+                        <div class="col-lg-4">{{partido.pista.nombre}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2"><strong>Fecha:</strong></div>
+                        <div class="col-lg-4">{{partido.fecha}}</div>
+                        <div class="col-lg-2"><strong>Hora:</strong></div>
+                        <div class="col-lg-4">{{partido.franja_horaria.inicio|time:'G:i'}} - {{partido.franja_horaria.fin|time:'G:i'}}</div>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <a class="btn btn-success btn-sm" href="/usuario/{{perfil.user.id}}/partidos/{{partido.id}}?origen=partidos" role="button"><i class="fa fa-trophy"></i> Ver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% empty %}
+    Todavía no has jugado ninún partido. <a href="/usuario/{{perfil.user.id}}/partidos/buscador">¡Busca partidos!</a>
+{% endfor %}
+
+<div class="row row-margin-top-10"><div class="col-lg-12"></div></div>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block importaciones %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/partidos.js"></script>
+{% endblock %}
+
+{% block document_ready %}
+    $(".botonera").removeClass("active");
+    $("#enlace_mis_partidos").addClass("active");
+{% endblock %}

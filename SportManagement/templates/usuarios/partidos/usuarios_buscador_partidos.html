@@ -1,0 +1,137 @@
+{% extends 'usuarios/template_usuarios.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Buscador de partidos
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/usuario/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Buscador de partidos</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Partidos</h4>
+            <p>
+                En esta página podrás buscar todos los partidos que tienen disponibles los clubes en los que estás inscrito.<br>
+                Puedes filtrar tus resultados como quieras utilizando el formulario de abajo.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Filtro para buscar partidos</h3><hr>
+    </div>
+</div>
+<form id="form_buscador_partidos" method="POST" action="/usuario/{{perfil.user.id}}/partidos/buscador" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            {% csrf_token %}
+            <div class="form-group col-lg-1"><label for='clubes'>Club: </label></div>
+            <div class="form-group col-lg-4">
+                 <select id="id_club" name="id_club" class="form-control" onchange="javascript:actualizar_franja_hora(this);">
+                     <option value="0">Seleccione club...</option>
+                     {% for c in clubes %}
+                     <option value="{{c.id}}" {% if id_club == c.id %}selected="selected"{%endif%}>
+                        {{c.nombre}}
+                     </option>
+                    {% endfor %}
+                 </select>
+            </div>
+            <div class="form-group col-lg-2"><label for='franja_hora'>Franja horaria: </label></div>
+            <div class="form-group col-lg-4">
+                 <select id="id_hora" name="franja_horaria" class="form-control" {%if not franjas_horas %}disabled="disabled"{%endif%}>
+                     <option value="0">Seleccione club...</option>
+                     {% for fh in franjas_horas %}
+                        <option value="{{fh.id}}" {% if id_fh == fh.id %}seleted="selected"{% endif %}>{{fh.inicio|time:'G:i'}} - {{fh.fin|time:'G:i'}}</option>
+                     {% endfor %}
+                 </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group col-lg-1"><label for='fecha'>Fecha: </label></div>
+            <div class="form-group col-lg-3">
+                <input type="text" id="id_fecha" name="fecha" placeholder="dd/mm/aaaa" class="form-control" value='{{fecha|date:"d/m/Y"}}' />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="form-group col-lg-4">
+                <button type="submit" id="btn_buscar" class="btn btn-success" aria-label="Right Align" onclick="javascript:busca_partidos();">
+                    <i class="fa fa-search"></i> Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr>
+
+{% for partido in partidos %}
+
+    <div class="panel panel-primary over-fondo-info">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-1">
+                    {% if partido.pista.club.imagen == "" %}
+                        <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{partido.pista.club.nombre}}" class="img-rounded" style="max-width: 100%">
+                    {% else %}
+                        <img src="{{MEDIA_URL}}{{partido.pista.club.imagen}}" alt="{{partido.pista.club.nombre}}" class="img-rounded" style="max-width: 100%">
+                    {% endif %}
+                </div>
+                <div class="col-lg-10">
+                    <div class="row">
+                        <div class="col-lg-2"><strong>Club:</strong></div>
+                        <div class="col-lg-4">{{partido.club.nombre}}</div>
+                        <div class="col-lg-2"><strong>Pista:</strong></div>
+                        <div class="col-lg-4">{{partido.pista.nombre}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2"><strong>Fecha:</strong></div>
+                        <div class="col-lg-4">{{partido.fecha}}</div>
+                        <div class="col-lg-2"><strong>Hora:</strong></div>
+                        <div class="col-lg-4">{{partido.franja_horaria.inicio|time:'G:i'}} - {{partido.franja_horaria.fin|time:'G:i'}}</div>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <a class="btn btn-success btn-sm" href="/usuario/{{perfil.user.id}}/partidos/{{partido.id}}?origen=buscador&id_club={{id_club}}&id_fh={{id_fh}}&fecha={{fecha}}" role="button"><i class="fa fa-trophy"></i> Ver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% empty %}
+    No hemos encontrados partidos con los datos que has elegido.
+{% endfor %}
+
+<div class="row row-margin-top-10"><div class="col-lg-12"></div></div>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block importaciones %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/partidos.js"></script>
+{% endblock %}
+
+{% block document_ready %}
+    $(".botonera").removeClass("active");
+    $("#enlace_buscador_partidos").addClass("active");
+    inicia_pagina_buscador_partidos();
+{% endblock %}

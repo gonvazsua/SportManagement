@@ -2,25 +2,28 @@
 from Core.utils import *
 from django.db.models import *
 from datetime import date,datetime
+from django.conf import settings
+from django.db.models import Q
+import logging
+from django.contrib.auth.decorators import login_required
+
+#Instancia del log
+logger = logging.getLogger(__name__)
 
 ruta_pagina_principal = 'administracion/inicio/pagina_principal.html'
 
+@login_required()
 def perfil_administrador(request, id_usuario):
     user = ""
-    perfil = ""
+    perfil = comprueba_usuario_administrador(id_usuario)
+    if perfil == None:
+        return HttpResponseRedirect("/")
+    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil = perfil, rol_id = settings.ROL_ADMINISTRADOR))
     try:
-        user = User.objects.get(id = id_usuario)
-        perfil = Perfil.objects.get(user = user)
-        if not PerfilRolClub.objects.filter(perfil = perfil, rol_id = 1).exists():
-            return HttpResponse('/inicio')
-        if not user.is_authenticated():
-            return HttpResponse('/inicio')
-    except User.DoesNotExist:
-        return HttpResponse('/inicio')
-
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil = perfil, rol_id = 1))
-    rutaTiempo = RutaTiempo.objects.get(municipio=club.municipio)
-    jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil=perfil).order_by("perfil__user__first_name")
+        rutaTiempo = RutaTiempo.objects.get(municipio=club.municipio)
+    except Exception:
+        rutaTiempo = ""
+    jugadores = PerfilRolClub.objects.filter(club = club).order_by("perfil__user__first_name")
     num_partidos_hoy = Partido.objects.annotate(num_perfiles=Count('perfiles')).filter(pista__club=club, fecha__startswith=date.today(), num_perfiles=4).count()
     num_partidos_abiertos_hoy = Partido.objects.annotate(num_perfiles=Count('perfiles')).filter(
         fecha__startswith=date.today(), num_perfiles__lt=4, num_perfiles__gt=0, pista__in=Pista.objects.filter(club=club)).count()
@@ -49,7 +52,18 @@ def perfil_administrador(request, id_usuario):
         except Partido.DoesNotExist:
             pistas_partidos[p] = ""
 
+    #Notificaciones
+    try:
+        inscripciones_club_id = InscripcionesEnClub.objects.values_list('id', flat=True).filter(club=club, estado=settings.ESTADO_NULL)
+        inscripciones_partido_id = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido__pista__club=club, estado=settings.ESTADO_NULL)
+        notificaciones = Notificacion.objects.filter(
+            Q(inscripcionEnClub__id__in=inscripciones_club_id) | Q(inscripcionEnPartido__id__in=inscripciones_partido_id),
+            destino=settings.NOTIF_CLUB, leido = settings.ESTADO_NO
+        ).order_by("-fecha")
+    except Exception:
+        notificaciones = []
+
     data = {'perfil':perfil, 'club':club, 'jugadores':jugadores, 'num_partidos_hoy':num_partidos_hoy, 'num_partidos_abiertos_hoy':num_partidos_abiertos_hoy,
         'num_partidos_en_juego':num_partidos_en_juego, 'franja_horaria_actual':franja_horaria_actual, 'pistas_partidos':pistas_partidos, 'pistas':pistas,
-        'rutaTiempo':rutaTiempo}
+        'rutaTiempo':rutaTiempo, 'notificaciones':notificaciones}
     return render_to_response(ruta_pagina_principal, data, context_instance=RequestContext(request))

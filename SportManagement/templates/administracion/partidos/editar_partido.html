@@ -48,10 +48,10 @@
                         <div class="row">
                             <div class="col-lg-12 col-md-12">
                                 <div class="form-group col-lg-1"><label for='fecha'>Fecha: </label></div>
-                                <div class="form-group col-lg-4"><input type="text" id="id_fecha" name="fecha" placeholder="dd/mm/aaaa" class="form-control" onchange="javascript:actualiza_form_partido('id_fecha')" value='{{partido.fecha|date:"d/m/Y"}}'/></div>
+                                <div class="form-group col-lg-4"><input type="text" id="id_fecha" name="fecha" placeholder="dd/mm/aaaa" class="form-control" onchange="javascript:actualiza_form_partido('id_fecha')" value='{{partido.fecha|date:"d/m/Y"}}' {% if partido.bloqueado %}disabled="disabled"{%endif%}/></div>
                                 <div class="form-group col-lg-1"><label for='hora'>Hora: </label></div>
                                 <div class="form-group col-lg-4">
-                                    <select id="id_hora" name="franja_horaria" class="form-control" onchange="javascript:actualiza_form_partido('id_hora')">
+                                    <select id="id_hora" name="franja_horaria" class="form-control" onchange="javascript:actualiza_form_partido('id_hora')" {% if partido.bloqueado %}disabled="disabled"{%endif%}>
                                         <option value="0">Seleccione hora...</option>
                                         {% for fh in franjas_horarias %}
                                             <option value="{{fh.id}}" {% if fh.id == partido.franja_horaria.id %}selected="selected"{% endif %}>
@@ -75,7 +75,7 @@
                     <div class="col-lg-12 col-md-12">
                         <div class="form-group col-lg-1"><label for='pista'>Pista: </label></div>
                         <div class="form-group col-lg-4">
-                            <select id="id_pista" name="pista" class="form-control" onchange="javascript:actualiza_form_partido('id_pista')">
+                            <select id="id_pista" name="pista" class="form-control" onchange="javascript:actualiza_form_partido('id_pista')"{% if partido.bloqueado %}disabled="disabled"{%endif%}>
                                 <option value="0">Seleccione pista...</option>
                                 {% for p in pistas %}
                                     <option value="{{p.id}}" {% if p.id == partido.pista.id %}selected="selected"{% endif %}>
@@ -89,7 +89,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
                         <div class="form-group col-lg-12">
-                            <button type="button" id="btn_disponibilidad" class="btn btn-primary  pull-left" aria-label="Right Align" onclick="javascript:comprobar_disponibilidad_partido(true);">
+                            <button type="button" id="btn_disponibilidad" class="btn btn-primary  pull-left" aria-label="Right Align" onclick="javascript:comprobar_disponibilidad_partido(true);"{% if partido.bloqueado %}disabled="disabled"{%endif%}>
                                 <i class="fa fa-times" id="icono_pista_no_disponible" style="display:none"></i>
                                 <i class="fa fa-check-square-o" id="icono_pista_disponible" style="display:none"></i>
                                 <i class="fa fa-refresh fa-spin" id="icono_comprobar_disponibilidad" style="display:none"></i> Comprobar disponibilidad
@@ -130,7 +130,7 @@
                                 <h4>Filtrar jugadores por nivel: </h4>
                             </div>
                             <div class="col-lg-6 col-md-6 form-group">
-                                <select class="form-control" id="nivel_filtro" onchange="javascript:filtrar_niveles_jugadores()">
+                                <select class="form-control" id="nivel_filtro" onchange="javascript:filtrar_niveles_jugadores()" {% if partido.bloqueado %}disabled="disabled"{%endif%}>
                                     <option value="0">Ver todos</option>
                                     {% for nivel in niveles %}
                                         <option value="{{nivel.id}}">{{nivel.nivel}}</option>
@@ -160,9 +160,9 @@
                                         {% if jugador.id in ids_jugadores_seleccionados %}class="seleccionado"  style="display:none"{% endif %}
                                     >
                                         <td>{{forloop.counter}}</td>
-                                        <td>{{jugador.perfil.user.first_name}}</td>
-                                        <td>{{jugador.perfil.user.username}}</td>
-                                        <td>{{jugador.perfil.telefono}}</td>
+                                        <td class="campo_busqueda">{{jugador.perfil.user.first_name}}</td>
+                                        <td class="campo_busqueda">{{jugador.perfil.user.username}}</td>
+                                        <td class="campo_busqueda">{{jugador.perfil.telefono}}</td>
                                         <td>
                                             {% for n in jugador.perfil.deporteNivel.all %}
                                                 {% if n.deporte.id == partido.pista.deporte.id %}
@@ -172,7 +172,11 @@
                                             {% endfor %}
                                         </td>
                                         <td align="center">
-                                            <a href="javascript:incluir_jugador('{{jugador.perfil.id}}','{{jugador.perfil.user.first_name}}', '{{jugador.perfil.user.username}}', '{{jugador.perfil.telefono}}');"><i title="Incluir jugador" class="fa fa-chevron-circle-right"></i></a>
+                                            {% if not partido.bloqueado %}
+                                                <a href="javascript:incluir_jugador('{{jugador.perfil.id}}','{{jugador.perfil.user.first_name}}', '{{jugador.perfil.user.username}}', '{{jugador.perfil.telefono}}');"><i title="Incluir jugador" class="fa fa-chevron-circle-right"></i></a>
+                                            {% else %}
+                                                <i title="Incluir jugador" class="fa fa-chevron-circle-right"></i>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -212,6 +216,7 @@
                                     <input type="hidden" id="id_usuario_form" name="user" value="{{perfil.user.id}}"/>
                                     <input type="hidden" id="max_jugadores" value="{{map_jugadores|length}}">
                                     <input type="hidden" id="partido_id_form" name="partido_id" value="{{partido.id}}">
+                                    <input type="hidden" id="visible" name="visible" {%if partido.visible%}value="1"{%else%}value="0"{%endif%}>
                                     {% for num, jug in map_jugadores.iteritems %}
                                         {% if jug == "" %}
                                         <tr class="warning vacio">
@@ -231,7 +236,11 @@
                                             <td><h5 class="username">{{jug.user.username}}</h5></td>
                                             <td><h5 class="telefono">{{jug.telefono}}</h5></td>
                                             <td align="right">
-                                                <h5><i class="fa fa-times fa-fw" style="cursor:pointer" onclick="javascript:elimina_jugador_partido({{jug.id}})"></i></h5>
+                                                {% if not partido.bloqueado %}
+                                                    <h5><i class="fa fa-times fa-fw" style="cursor:pointer" onclick="javascript:elimina_jugador_partido({{jug.id}})"></i></h5>
+                                                {% else %}
+                                                    <h5><i class="fa fa-times fa-fw"></i></h5>
+                                                {%endif%}
                                             </td>
                                             <input type="hidden" class="perfil_id" value="{{jug.id}}" name="jugador{{num}}">
                                         </tr>
@@ -243,16 +252,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="checkbox" title="Los jugadores podrán ver e inscribirse en este partido desde su cuenta.">
+                            <label>
+                                <input type="checkbox" {%if partido.perfiles.all|length > 0 or partido.bloqueado %}disabled="disabled"{%endif%} {% if partido.visible == True %}checked="checked"{%endif%} onchange="javascript:actualiza_estado_visible(this);"> Partido público
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="row" id="botonera_form_nuevo_partido">
                     <div class="col-lg-12 col-md-12">
                         <div class="row">
                             <div class="col-lg-6 col-md-6">
-                                <button type="button" id="btn-reiniciar-partido" title="Reiniciar valores" class="btn btn-warning pull-left" aria-label="Right Align" onclick="javascript:reiniciar_jugadores_nuevo_partido();">
+                                <button type="button" id="btn-reiniciar-partido" title="Reiniciar valores" class="btn btn-warning pull-left" aria-label="Right Align" onclick="javascript:reiniciar_jugadores_nuevo_partido();" {% if partido.bloqueado %}disabled="disabled"{%endif%}>
                                   <i class="fa fa-share fa-fw"></i> Reiniciar
                                 </button>
                             </div>
                             <div class="col-lg-6">
-                                <button type="button" id="btn-submit-partido" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_nuevo_partido('editar_partido');">
+                                <button type="button" id="btn-submit-partido" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_nuevo_partido('editar_partido');" {% if partido.bloqueado %}disabled="disabled"{%endif%}>
                                   <i class="fa fa-plus-circle fa-fw"></i> Guardar partido
                                 </button>
                             </div>

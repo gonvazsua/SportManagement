@@ -5,11 +5,19 @@ from django.db.models import *
 from datetime import date,datetime
 import collections
 import json
+import logging
+from django.contrib.auth.decorators import login_required
+
+#Instancia del log
+logger = logging.getLogger(__name__)
 
 ruta_administracion_estadisticas = 'administracion/estadisticas/estadisticas.html'
 
+@login_required()
 def administrador_estadisticas(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
+    if perfil == None:
+        return HttpResponseRedirect("/")
     club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
     error = ""
     mes_buscar = date.today().month
@@ -101,6 +109,9 @@ def administrador_estadisticas(request, id_usuario):
         jugador_mes = ""
         jugador_mes_comparar = None
     except Perfil.DoesNotExist:
+        jugador_mes = ""
+        jugador_mes_comparar = None
+    except Exception:
         jugador_mes = ""
         jugador_mes_comparar = None
 

@@ -1,0 +1,281 @@
+[23/Oct/2015 20:23:59] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:23:59] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:23:59] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:00] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 
+[23/Oct/2015 20:24:30] ERROR [django.request:226] Internal Server Error: /administrador/1
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\inicio\views.py", line 12, in perfil_administrador
+    perfil = comprueba_usuario_administrador(id_usuario)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\utils.py", line 25, in comprueba_usuario_administrador
+    logger.debug("util/utils - MÃ©todo comprueba_usuario_administrador: id_usuario " + id_usuario)
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 14: ordinal not in range(128)
+[23/Oct/2015 20:25:22] ERROR [django.request:226] Internal Server Error: /administrador/1
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\inicio\views.py", line 12, in perfil_administrador
+    perfil = comprueba_usuario_administrador(id_usuario)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\utils.py", line 25, in comprueba_usuario_administrador
+    logger.debug("util/utils - MÃ©todo comprueba_usuario_administrador: id_usuario " + String(id_usuario))
+NameError: global name 'String' is not defined
+[23/Oct/2015 20:25:57] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:57] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:57] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:57] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:57] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:58] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:58] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:58] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:58] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:58] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[23/Oct/2015 20:25:58] DEBUG [Core.utils:25] util/utils - Método comprueba_usuario_administrador: id_usuario 1
+[24/Oct/2015 18:48:06] DEBUG [Core.views.administracion.partidos.views:224] administracion/partidos - Método crear_partido_ajax. 
+[24/Oct/2015 18:50:45] DEBUG [Core.views.administracion.partidos.views:224] administracion/partidos - Método crear_partido_ajax. 
+[24/Oct/2015 19:20:43] ERROR [django.request:226] Internal Server Error: /guardar_administracion
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 117, in guardar_administracion
+    logger.debug("administracion/administracion - MÃ©todo guardar_administracion: id_usuario " + str(id_usuario) + ", accion: " + accion)
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 33: ordinal not in range(128)
+[24/Oct/2015 19:25:42] ERROR [django.request:226] Internal Server Error: /guardar_administracion
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 117, in guardar_administracion
+    logger.debug("administracion/administracion - MÃ©todo guardar_administracion: id_usuario " + str(id_usuario) + ", accion: " + accion)
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 33: ordinal not in range(128)
+[24/Oct/2015 19:27:33] ERROR [django.request:226] Internal Server Error: /guardar_administracion
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 117, in guardar_administracion
+    logger.debug("administracion/administracion - MÃ©todo guardar_administracion: id_usuario " + str(id_usuario) + ", accion: " + accion + ". " + e)
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 33: ordinal not in range(128)
+[24/Oct/2015 19:30:13] ERROR [django.request:226] Internal Server Error: /guardar_administracion
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 120, in guardar_administracion
+    logger.debug("administracion/administracion - MÃ©todo guardar_administracion: id_usuario " + str(id_usuario) + ", accion: " + accion + ". " + e)
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 33: ordinal not in range(128)
+[27/Oct/2015 21:16:08] ERROR [django.request:226] Internal Server Error: /administrador/1/club
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 40, in administracion_club
+    horas = cargar_horas()
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 164, in cargar_horas
+    datetime.time(8, 00),
+TypeError: descriptor 'time' requires a 'datetime.datetime' object but received a 'int'
+[27/Oct/2015 21:16:09] WARNING [django.request:145] Not Found: /favicon.ico
+[27/Oct/2015 21:16:09] WARNING [django.request:145] Not Found: /favicon.ico
+[27/Oct/2015 21:20:35] ERROR [django.request:226] Internal Server Error: /administrador/1/club
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 40, in administracion_club
+    horas = cargar_horas()
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 164, in cargar_horas
+    datetime.time(8, 00, 00),
+TypeError: descriptor 'time' requires a 'datetime.datetime' object but received a 'int'
+[27/Oct/2015 21:20:57] ERROR [django.request:226] Internal Server Error: /administrador/1/club
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 40, in administracion_club
+    horas = cargar_horas()
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 164, in cargar_horas
+    datetime.time(8, 00, 00),
+TypeError: descriptor 'time' requires a 'datetime.datetime' object but received a 'int'
+[27/Oct/2015 21:21:27] ERROR [django.request:226] Internal Server Error: /administrador/1/club
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 40, in administracion_club
+    horas = cargar_horas()
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 163, in cargar_horas
+    t = datetime.time(8,0,0)
+TypeError: descriptor 'time' requires a 'datetime.datetime' object but received a 'int'
+[01/Nov/2015 11:30:33] ERROR [django.request:226] Internal Server Error: /administrador/1/club
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 40, in administracion_club
+    horas = cargar_horas()
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 164, in cargar_horas
+    datetime.time(8, 00, 00),
+TypeError: descriptor 'time' requires a 'datetime.datetime' object but received a 'int'
+[01/Nov/2015 11:30:34] WARNING [django.request:145] Not Found: /favicon.ico
+[01/Nov/2015 11:30:34] WARNING [django.request:145] Not Found: /favicon.ico
+[01/Nov/2015 11:51:55] ERROR [django.request:226] Internal Server Error: /administrador/1/club
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 46, in administracion_club
+    return render_to_response(ruta_administracion_club, data, context_instance=RequestContext(request))
+  File "C:\Python27\lib\site-packages\django\shortcuts\__init__.py", line 29, in render_to_response
+    return HttpResponse(loader.render_to_string(*args, **kwargs), **httpresponse_kwargs)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 162, in render_to_string
+    t = get_template(template_name)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 138, in get_template
+    template, origin = find_template(template_name)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 127, in find_template
+    source, display_name = loader(name, dirs)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 43, in __call__
+    return self.load_template(template_name, template_dirs)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 49, in load_template
+    template = get_template_from_string(source, origin, template_name)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 149, in get_template_from_string
+    return Template(source, origin, name)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 125, in __init__
+    self.nodelist = compile_string(template_string, origin)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 153, in compile_string
+    return parser.parse()
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\loader_tags.py", line 215, in do_extends
+    nodelist = parser.parse()
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\loader_tags.py", line 190, in do_block
+    nodelist = parser.parse(('endblock',))
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\defaulttags.py", line 806, in do_for
+    nodelist_loop = parser.parse(('empty', 'endfor',))
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\defaulttags.py", line 806, in do_for
+    nodelist_loop = parser.parse(('empty', 'endfor',))
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 254, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 360, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 577, in __init__
+    "from '%s'" % (token[upto:], token))
+TemplateSyntaxError: Could not parse the remainder: ' == fh.inicio.hour' from 'hora == fh.inicio.hour'
+[01/Nov/2015 11:52:03] ERROR [django.request:226] Internal Server Error: /administrador/1/club
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 46, in administracion_club
+    return render_to_response(ruta_administracion_club, data, context_instance=RequestContext(request))
+  File "C:\Python27\lib\site-packages\django\shortcuts\__init__.py", line 29, in render_to_response
+    return HttpResponse(loader.render_to_string(*args, **kwargs), **httpresponse_kwargs)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 162, in render_to_string
+    t = get_template(template_name)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 138, in get_template
+    template, origin = find_template(template_name)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 127, in find_template
+    source, display_name = loader(name, dirs)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 43, in __call__
+    return self.load_template(template_name, template_dirs)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 49, in load_template
+    template = get_template_from_string(source, origin, template_name)
+  File "C:\Python27\lib\site-packages\django\template\loader.py", line 149, in get_template_from_string
+    return Template(source, origin, name)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 125, in __init__
+    self.nodelist = compile_string(template_string, origin)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 153, in compile_string
+    return parser.parse()
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\loader_tags.py", line 215, in do_extends
+    nodelist = parser.parse()
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\loader_tags.py", line 190, in do_block
+    nodelist = parser.parse(('endblock',))
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\defaulttags.py", line 806, in do_for
+    nodelist_loop = parser.parse(('empty', 'endfor',))
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 278, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Python27\lib\site-packages\django\template\defaulttags.py", line 806, in do_for
+    nodelist_loop = parser.parse(('empty', 'endfor',))
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 254, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 360, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Python27\lib\site-packages\django\template\base.py", line 577, in __init__
+    "from '%s'" % (token[upto:], token))
+TemplateSyntaxError: Could not parse the remainder: ' == fh.inicio.hour' from 'hora == fh.inicio.hour'
+[01/Nov/2015 15:32:49] ERROR [django.request:226] Internal Server Error: /guardar_franja_horaria
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\administracion\views.py", line 185, in guardar_franja_horaria_ajax
+    return HttpResponse(json.dumps(data))
+NameError: global name 'json' is not defined
+[01/Nov/2015 16:04:31] DEBUG [Core.views.administracion.administracion.views:183] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[01/Nov/2015 17:12:13] DEBUG [Core.views.administracion.administracion.views:183] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[01/Nov/2015 18:15:46] DEBUG [Core.views.administracion.administracion.views:188] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[01/Nov/2015 18:16:28] DEBUG [Core.views.administracion.administracion.views:188] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[01/Nov/2015 18:21:37] DEBUG [Core.views.administracion.administracion.views:195] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[01/Nov/2015 18:22:53] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[27/Nov/2015 18:40:03] DEBUG [Core.views.administracion.administracion.views:236] administracion/administracion - Método es_inicio_menor_que_fin
+[27/Nov/2015 18:40:03] DEBUG [Core.views.administracion.administracion.views:196] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[27/Nov/2015 18:45:28] DEBUG [Core.views.administracion.administracion.views:236] administracion/administracion - Método es_inicio_menor_que_fin
+[27/Nov/2015 18:45:28] DEBUG [Core.views.administracion.administracion.views:196] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[27/Nov/2015 19:41:15] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[27/Nov/2015 19:42:27] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[27/Nov/2015 19:44:17] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[27/Nov/2015 19:45:42] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[27/Nov/2015 19:46:50] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[29/Nov/2015 12:59:43] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[29/Nov/2015 13:01:24] WARNING [django.request:99] Forbidden (CSRF token missing or incorrect.): /administrador/1/club
+[29/Nov/2015 13:03:16] DEBUG [Core.views.administracion.administracion.views:243] administracion/administracion - Método es_inicio_menor_que_fin
+[29/Nov/2015 13:03:16] DEBUG [Core.views.administracion.administracion.views:203] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[29/Nov/2015 13:24:18] DEBUG [Core.views.administracion.administracion.views:243] administracion/administracion - Método es_inicio_menor_que_fin
+[29/Nov/2015 13:24:18] DEBUG [Core.views.administracion.administracion.views:203] administracion/administracion - Método guardar_franja_horaria_ajax: 
+[29/Nov/2015 18:17:16] DEBUG [Core.views.administracion.administracion.views:246] administracion/administracion - Método guardar_nivel_juego_ajax: 
+[29/Nov/2015 18:17:52] DEBUG [Core.views.administracion.administracion.views:246] administracion/administracion - Método guardar_nivel_juego_ajax: 
+[29/Nov/2015 18:51:45] WARNING [django.request:145] Not Found: /accounts/login/
+[29/Nov/2015 18:51:45] WARNING [django.request:145] Not Found: /favicon.ico
+[29/Nov/2015 18:51:45] WARNING [django.request:145] Not Found: /favicon.ico
+[29/Nov/2015 19:13:38] WARNING [django.request:145] Not Found: /media/
+[04/Dec/2015 19:54:08] ERROR [django.request:226] Internal Server Error: /usuario/2/cuenta
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Python27\lib\site-packages\django\contrib\auth\decorators.py", line 22, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\usuarios\usuarios_cuenta\views.py", line 48, in usuario_mi_cuenta
+    logger.debug("usuarios/cuenta - MÃ©todo usuario_mi_cuenta. id_usuario " + str(id_usuario) +". " + e)
+TypeError: cannot concatenate 'str' and 'exceptions.AttributeError' objects
+[04/Dec/2015 19:54:09] WARNING [django.request:145] Not Found: /favicon.ico
+[04/Dec/2015 19:54:09] WARNING [django.request:145] Not Found: /favicon.ico
+[04/Dec/2015 20:00:58] DEBUG [Core.views.usuarios.usuarios_cuenta.views:48] usuarios/cuenta - Método usuario_mi_cuenta. id_usuario 2. 'QuerySet' object has no attribute 'user'
+[04/Dec/2015 20:01:49] DEBUG [Core.views.usuarios.usuarios_cuenta.views:48] usuarios/cuenta - Método usuario_mi_cuenta. id_usuario 2. 'QuerySet' object has no attribute 'user'
+[04/Dec/2015 20:02:23] DEBUG [Core.views.usuarios.usuarios_cuenta.views:48] usuarios/cuenta - Método usuario_mi_cuenta. id_usuario 2. 'QuerySet' object has no attribute 'user'
+[04/Dec/2015 20:04:03] DEBUG [Core.views.usuarios.usuarios_cuenta.views:48] usuarios/cuenta - Método usuario_mi_cuenta. id_usuario 2. 'QuerySet' object has no attribute 'user'
+[04/Dec/2015 20:05:29] DEBUG [Core.views.usuarios.usuarios_cuenta.views:48] usuarios/cuenta - Método usuario_mi_cuenta. id_usuario 2. 'QuerySet' object has no attribute 'user'
+[04/Dec/2015 20:14:59] ERROR [django.request:226] Internal Server Error: /administrador/1/cuenta
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Python27\lib\site-packages\django\contrib\auth\decorators.py", line 22, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\cuenta\views.py", line 44, in administracion_cuenta
+    perfil.imagen = formImagen.cleaned_data["imagen"]
+AttributeError: 'FormImagen' object has no attribute 'cleaned_data'
+[04/Dec/2015 20:16:14] ERROR [django.request:226] Internal Server Error: /administrador/1/cuenta
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\django\core\handlers\base.py", line 114, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Python27\lib\site-packages\django\contrib\auth\decorators.py", line 22, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:/SportManagement/01 - Proyecto/SportManagement\Core\views\administracion\cuenta\views.py", line 44, in administracion_cuenta
+    perfil.imagen = formImagen.cleaned_data["imagen"]
+AttributeError: 'FormImagen' object has no attribute 'cleaned_data'

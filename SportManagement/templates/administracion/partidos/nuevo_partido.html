@@ -144,9 +144,19 @@
                                 <select class="form-control" id="nivel_filtro" onchange="javascript:filtrar_niveles_jugadores()">
                                     <option value="0">Ver todos</option>
                                     {% for nivel in niveles %}
-                                        <option value="{{nivel.id}}">{{nivel.nivel}}</option>
+                                        {% if nivel.deporte.id == deporte_id %}
+                                            <option value="{{nivel.id}}">{{nivel.nivel}}</option>
+                                        {% endif %}
                                     {% endfor %}
                                 </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 form-group">
+                                <h4>Filtrar por palabra clave: </h4>
+                            </div>
+                            <div class="col-lg-6 col-md-6 form-group">
+                                <input type="text" id="palabra_clave" value="" class="form-control" onkeyup="javascript:filtrar_palabra_clave()">
                             </div>
                         </div>
                     </div>
@@ -154,7 +164,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
                         <div class="dataTable_wrapper">
-                            <table class="table table-striped table-bordered table-hover" id=""><!-- dataTables-jugadores-busqueda -->
+                            <table class="table table-striped table-bordered table-hover" id="tabla_jugadores"><!-- dataTables-jugadores-busqueda -->
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -169,15 +179,19 @@
                                 {% for jugador in jugadores %}
                                     <tr id="fila_{{jugador.perfil.id}}" title="{{jugador.perfil.user.first_name}} {{jugador.perfil.user.last_name}}">
                                         <td>{{forloop.counter}}</td>
-                                        <td>{{jugador.perfil.user.first_name}}</td>
-                                        <td>{{jugador.perfil.user.username}}</td>
-                                        <td>{{jugador.perfil.telefono}}</td>
+                                        <td class="campo_busqueda">{{jugador.perfil.user.first_name}}</td>
+                                        <td class="campo_busqueda">{{jugador.perfil.user.username}}</td>
+                                        <td class="campo_busqueda">{{jugador.perfil.telefono}}</td>
                                         <td>
                                             {% for n in jugador.perfil.deporteNivel.all %}
                                                 {% if n.deporte.id == deporte_id %}
                                                     {{n.nivel}}
                                                     <input type="hidden" id="nivel_jugador_{{jugador.perfil.id}}" class="nivel" value="{{n.id}}">
+                                                {% else %}
+                                                    <input type="hidden" id="nivel_jugador_{{jugador.perfil.id}}" class="nivel" value="">
                                                 {% endif %}
+                                            {% empty %}
+                                                <input type="hidden" id="nivel_jugador_{{jugador.perfil.id}}" class="nivel" value="">
                                             {% endfor %}
                                         </td>
                                         <td align="center">
@@ -220,6 +234,7 @@
                                     <input type="hidden" id="id_pista_form" name="pista" value="{{pista}}"/>
                                     <input type="hidden" id="id_usuario_form" name="user" value="{{perfil.user.id}}"/>
                                     <input type="hidden" id="max_jugadores" value="{{map_jugadores|length}}">
+                                    <input type="hidden" id="visible" name="visible" value="1">
                                     {% for num, jug in map_jugadores.iteritems %}
                                         {% if jug == "" %}
                                         <tr class="warning vacio">
@@ -242,6 +257,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="checkbox" title="Los jugadores podrán ver e inscribirse en este partido desde su cuenta.">
+                            <label>
+                                <input type="checkbox" checked="checked" onchange="javascript:actualiza_estado_visible(this);"> Partido público
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="row" id="botonera_form_nuevo_partido">
                     <div class="col-lg-12 col-md-12">
                         <div class="row">
@@ -250,7 +274,7 @@
                                   <i class="fa fa-share fa-fw"></i> Reiniciar
                                 </button>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-6 col-md-6">
                                 <button type="button" id="btn-submit-partido" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_nuevo_partido('nuevo_partido');">
                                   <i class="fa fa-plus-circle fa-fw"></i> Crear partido
                                 </button>
@@ -307,6 +331,10 @@
         </div>
     </div>
 </div>
+
+<form action="/administrador/{{perfil.user.id}}/nuevo" id="form_redireccion">
+    <input type="hidden">
+</form>
 {% endif %}
 
 {% endblock %}

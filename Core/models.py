@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import *
 
 # Create your models here.
 class Comunidades(models.Model):
@@ -67,11 +68,17 @@ class Perfil(models.Model):
     user = models.ForeignKey(User, unique=True, related_name='perfil_user')
     imagen = models.ImageField(upload_to='Imagenes', verbose_name='Imagen', blank=True)
     municipio = models.ForeignKey(Municipios, related_name='perfil_municipio', blank=True, null=True, on_delete=models.SET_NULL)
-    #deportes = models.ManyToManyField(Nivel, related_name="perfil_deportes", blank=True)
     telefono = models.CharField(max_length=12, verbose_name="Teléfono", blank=True)
     deporteNivel = models.ManyToManyField(Nivel)
     def __unicode__(self):
 		return self.user.first_name + ", " + self.user.last_name
+    def deportes(self):
+        deportes = []
+        for n in self.deporteNivel.all():
+            deportes.append(n.deporte)
+        return deportes
+    def clubes(self):
+        return Club.objects.filter(id__in = PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil=self))
 
 class PerfilRolClub(models.Model):
     rol = models.ForeignKey(Rol)
@@ -94,9 +101,47 @@ class Partido(models.Model):
     perfiles = models.ManyToManyField(Perfil, related_name="partido_perfiles")
     pista = models.ForeignKey(Pista, related_name="partido_pista")
     creado_por = models.ForeignKey(Perfil)
+    visible = models.BooleanField(verbose_name="Es visible")
     def __unicode__(self):
 		return "Fecha: " + self.fecha.strftime('%d-%m-%Y') + ", Hora:" + self.franja_horaria.inicio.strftime('%H:%M:%S')
+    def club(self):
+        return self.pista.club
+    def num_perfiles(self):
+        return self.perfiles.count()
+    def max_perfiles(self):
+        return self.pista.deporte.num_jugadores
+    def bloqueado(self):
+        if self.fecha < datetime.now().date()\
+                or (self.fecha < datetime.now().date() and self.franja_horaria.fin < datetime.now().time())\
+                or self.perfiles.count() == self.max_perfiles():
+            return True
+        else:
+            return False
+
 
 class RutaTiempo(models.Model):
     municipio = models.ForeignKey(Municipios)
     ruta = models.TextField(blank=True)
+
+class InscripcionesEnClub(models.Model):
+    club = models.ForeignKey(Club, verbose_name="Club")
+    jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
+    estado = models.NullBooleanField(verbose_name="Estado aceptación")
+    def __unicode__(self):
+		return "Club: "+self.club.nombre
+
+class InscripcionesEnPartido(models.Model):
+    partido = models.ForeignKey(Partido, verbose_name="Partido")
+    jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
+    estado = models.NullBooleanField(verbose_name="Estado aceptación")
+    def __unicode__(self):
+		return "Club: "+self.club.nombre
+
+class Notificacion(models.Model):
+    leido = models.BooleanField(verbose_name="Estado lectura")
+    fecha = models.DateField(auto_now=False, verbose_name="Fecha")
+    inscripcionEnClub = models.ForeignKey(InscripcionesEnClub, null=True, blank=True)
+    inscripcionEnPartido = models.ForeignKey(InscripcionesEnPartido, null=True, blank=True)
+    destino = models.IntegerField(max_length=1, verbose_name="Destino")
+    def __unicode__(self):
+		return "Club: "+self.fecha

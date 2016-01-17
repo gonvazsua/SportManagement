@@ -1,6 +1,8 @@
 
 
 $(document).ready(function() {
+
+    /*
     $('#dataTables-jugadores-busqueda').DataTable({
         responsive: true,
         "language":{
@@ -29,11 +31,29 @@ $(document).ready(function() {
         }
     });
 
+    */
+
     actualiza_enlace_menu();
     inicia_pagina_nuevo_partido();
     //inicia_pagina_estadisticas();
 
 });
+
+function mostrar(id){
+    $(id).show();
+}
+
+function mostrar_efecto(id){
+    $(id).show("slide", {direction: "down" }, "slow");
+}
+
+function ocultar(id){
+    $(id).hide();
+}
+
+function ocultar_efecto(id){
+    $(id).hide("slide", {direction: "up" }, "slow");
+}
 
 function actualiza_enlace_menu(){
     $("#side-menu").find("a").each(function(index){
@@ -76,6 +96,8 @@ function comprobar_disponibilidad_partido(isAjax){
         $("#error_campos_partido").show();
     }
     else{
+        $("#error_campos_partido").hide();
+
         if(esFechaMenorActual($("#id_fecha").val())){
             //Comprobar que no es anterior a hoy
             $("#error_fecha_disponibilidad").show();
@@ -133,6 +155,51 @@ function filtrar_niveles_jugadores(){
                 $(this).parent().parent().hide();
             }
         });
+    }
+}
+
+function filtrar_palabra_clave(){
+    $("#nivel_filtro").val(0);
+    filtrar_niveles_jugadores();
+
+    var palabra_clave = $("#palabra_clave").val();
+    var ya_mostrado = false;
+    var contador_tds = 0;
+
+    if(palabra_clave != ""){
+        $(".campo_busqueda").each(function(){
+
+            var texto_td = $(this).html();
+
+            //Actualizamos valor contador, si es >3 significa que vamos a una fila nueva y se reinicia su valor.
+            contador_tds = contador_tds > 3 ? 1 : contador_tds + 1;
+            if(contador_tds == 1) ya_mostrado = false;
+
+            //Nos saltamos los tds que tienen el texto vacio
+            // y los elementos que tienen hijos ocultos, es decir,
+            // los que son elementos para seleccionar y el campo Nivel
+
+            if(texto_td != "" && $(this).children().length == 0){
+                var td_formateado = texto_td.toLowerCase();
+                var pc_formateado = palabra_clave.toLowerCase();
+
+                //Para que no se compruebe varias veces el mismo TR
+                if(td_formateado.indexOf(pc_formateado) != -1 && !$(this).parent().parent().hasClass("seleccionado")){
+                    $(this).parent().show();
+                    ya_mostrado = true;
+                }
+                else{
+                    if(contador_tds == 3){
+                        if(!ya_mostrado)
+                            $(this).parent().hide();
+                        contador_tds = 0;
+                    }
+                }
+            }
+        });
+    }
+    else{
+        filtrar_niveles_jugadores();
     }
 }
 
@@ -247,9 +314,10 @@ function guardar_partido(url_guardar){
                 $("#form_partido_nuevo").hide("slide", {direction: "up" }, "slow");
                 $("#advertencia_nuevo_partido").hide("slide", {direction: "up" }, "slow");
                 $("#error_nuevo_partido").hide("slide", {direction: "up" }, "slow");
-                $("#confirmado_nuevo_partido").show("slide", {direction: "down" }, "slow").delay(2000);
+                $("#confirmado_nuevo_partido").show("slide", {direction: "down" }, "slow").delay(5000);
                 if(url_guardar == "nuevo_partido"){
-                    actualiza_pagina("nuevo");
+                    //actualiza_pagina("nuevo");
+                    $("#form_redireccion").delay(5000).submit();
                 }
                 else{
                     $("#confirmado_nuevo_partido").show("slide", {direction: "down" }, "slow");
@@ -278,6 +346,15 @@ function activa_enlace_menu(id){
     $("#"+id).addClass("active");
 }
 
+function actualiza_estado_visible(elem){
+    if($(elem).is(":checked")){
+        $("#visible").val(1);
+    }
+    else{
+        $("#visible").val(0);
+    }
+}
+
 /************************************************************************************/
 /* BUSCADOR DE PARTIDOS */
 /************************************************************************************/
@@ -299,7 +376,21 @@ function desplaza(destino){
 	}, 2000);
 }
 
+/************************************************************************************/
+/* ADMINISTRACION DE CLUB */
+/************************************************************************************/
+
 function form_editar(id_titulo, id_form){
+    //Vaciar filas de pistas eliminadas
+    $("#ids_pistas_eliminadas").val("");
+    $("#ids_nj_eliminadas").val("");
+    $("#ids_deportes_eliminados").val("");
+    $("#ids_fh_eliminadas").val("");
+
+    //Ocultamos todos los formularios
+    $(".formulario_administracion").hide();
+
+    //Mostramos el que corresponde
     $("#"+id_form).show();
     $("#"+id_titulo).show();
     desplaza(id_titulo);
@@ -371,42 +462,313 @@ function submit_club(){
     }
 }
 
-function elimina_fila_nj(num_fila){
-    if(confirm("¿Está seguro que desea eliminar este nivel de juego?")){
-        if($("#ids_nj_eliminadas").val() == ""){
-            $("#ids_nj_eliminadas").val(num_fila);
-        }
-        else{
-            $("#ids_nj_eliminadas").val($("#ids_nj_eliminadas").val() + "," + num_fila);
-        }
-        $("#fila_form_nivel_juego_"+num_fila).fadeOut("slow")
-        $("#fila_form_nivel_juego_"+num_fila).remove();
+//Franjas horarias
+function liberar_franja_horaria(franja_horaria_id){
+
+    ocultar_efecto(".alerta_franja_horaria");
+    ocultar("#btn_editar_"+franja_horaria_id);
+    mostrar("#btn_guardar_"+franja_horaria_id);
+    $(".select_fh_"+franja_horaria_id).attr("disabled", false);
+}
+
+function actualizar_franja_horaria(accion, franja_horaria_id){
+    var form;
+    var guardar = false;
+
+    ocultar_efecto(".alerta_franja_horaria");
+
+    if(accion == "nuevo"){
+        form = $("#form_franja_hora_nueva");
+        guardar = true;
+        $(".validar").each(function(e){
+            if($(this).val() == ""){
+                $(this).parent().removeClass("has-success").addClass("has-error");
+                guardar = false;
+                return;
+            }
+            else{
+                $(this).parent().removeClass("has-error").addClass("has-success");
+            }
+        });
+
+    }
+    else if(accion == "editar"){
+        form = $("#form_franja_hora_"+franja_horaria_id);
+        guardar = true;
+    }
+    else if(accion == "eliminar"){
+        //Actualizar valor accion del formulario a eliminar
+        $("#form_franja_hora_"+franja_horaria_id + " #action").val(accion);
+        form = $("#form_franja_hora_"+franja_horaria_id);
+        guardar = true;
+    }
+
+    if(guardar){
+        guardar_franja_horaria(accion, franja_horaria_id, form);
     }
 }
 
-function elimina_fila_fh(num_fila){
-    if(confirm("¿Está seguro que desea eliminar esta franja horaria de juego?")){
-        if($("#ids_fh_eliminadas").val() == ""){
-            $("#ids_fh_eliminadas").val(num_fila);
+function guardar_franja_horaria(accion, franja_horaria_id, formulario){
+    $.ajax({
+        data: formulario.serialize(),
+        url: formulario.attr("action"),
+        type: 'POST',
+        success: function(data){
+            var r = JSON.parse(data);
+            var id_texto, id_mensaje;
+
+            if(accion == "nuevo"){
+                id_texto = "texto_mensaje_nueva_franja_horaria";
+                id_mensaje = "mensaje_nueva_franja_horaria";
+            }
+            else{
+                id_texto = "texto_mensaje_franja_horaria_"+franja_horaria_id;
+                id_mensaje = "mensaje_franja_horaria_"+franja_horaria_id;
+            }
+
+            if(r.error != null && r.error != ""){
+                $("#"+id_texto).html(r.error);
+                $("#"+id_texto).removeClass("alert-success").addClass("alert-error");
+            }
+            else{
+                $("#"+id_texto).html("Se ha guardado la franja horaria correctamente");
+                $("#"+id_texto).removeClass("alert-danger").addClass("alert-success");
+            }
+            mostrar_efecto("#"+id_mensaje);
+
+            //Actualizar página si es una franja horaria nueva
+            if(accion == "nuevo" && (r.error == null || r.error == "")){
+                $("#actualizar").delay(5000).submit();
+            }
+
+            if(accion == "eliminar" && (r.error == null || r.error == "")){
+                if($("#fila_form_franja_hora_"+franja_horaria_id).next().is("hr")){
+                    $("#fila_form_franja_hora_"+franja_horaria_id).next().remove();
+                }
+                $("#fila_form_franja_hora_"+franja_horaria_id).delay(5000).remove();
+            }
+
+            if(accion == "editar"){
+                $(".select_fh_"+franja_horaria_id).attr("disabled", "disabled");
+                ocultar("#btn_guardar_"+franja_horaria_id);
+                mostrar("#btn_editar_"+franja_horaria_id);
+            }
         }
-        else{
-            $("#ids_fh_eliminadas").val($("#ids_fh_eliminadas").val() + "," + num_fila);
-        }
-        $("#fila_form_franja_hora_"+num_fila).fadeOut("slow")
-        $("#fila_form_franja_hora_"+num_fila).remove();
+    });
+}
+
+//Niveles de juego
+function liberar_nivel_juego(nivel_juego_id){
+
+    ocultar_efecto(".alerta_nivel_juego");
+    ocultar("#btn_editar_nj_"+nivel_juego_id);
+    mostrar("#btn_guardar_nj_"+nivel_juego_id);
+    $(".elemento_nivel_juego_"+nivel_juego_id).attr("disabled", false);
+}
+
+function actualizar_nivel_juego(accion, nivel_juego_id){
+    var form;
+    var guardar = false;
+
+    ocultar_efecto(".alerta_nivel_juego");
+
+    if(accion == "nuevo"){
+        form = $("#form_nivel_juego_nuevo");
+        guardar = true;
+        $(".validar_nivel_juego").each(function(e){
+            if($(this).val() == ""){
+                $(this).parent().removeClass("has-success").addClass("has-error");
+                guardar = false;
+                return;
+            }
+            else{
+                $(this).parent().removeClass("has-error").addClass("has-success");
+            }
+        });
+
     }
+    else if(accion == "editar"){
+        form = $("#form_nivel_juego_"+nivel_juego_id);
+        if($("#id_nj_nivel_"+nivel_juego_id).val() != ""){
+            guardar = true;
+        }else{
+            $("#id_nj_nivel_"+nivel_juego_id).parent().addClass("has-error");
+        }
+    }
+    else if(accion == "eliminar"){
+        //Actualizar valor accion del formulario a eliminar
+        $("#form_nivel_juego_"+nivel_juego_id + " #action").val(accion);
+        form = $("#form_nivel_juego_"+nivel_juego_id);
+        guardar = true;
+    }
+
+    if(guardar){
+        guardar_nivel_juego(accion, nivel_juego_id, form);
+    }
+}
+
+function guardar_nivel_juego(accion, nivel_juego_id, formulario){
+    $.ajax({
+        data: formulario.serialize(),
+        url: formulario.attr("action"),
+        type: 'POST',
+        success: function(data){
+            var r = JSON.parse(data);
+            var id_texto, id_mensaje;
+
+            if(accion == "nuevo"){
+                id_texto = "texto_mensaje_nuevo_nivel_juego";
+                id_mensaje = "mensaje_nuevo_nivel_juego";
+            }
+            else{
+                id_texto = "texto_mensaje_nivel_juego_"+nivel_juego_id;
+                id_mensaje = "mensaje_nivel_juego_"+nivel_juego_id;
+            }
+
+            if(r.error != null && r.error != ""){
+                $("#"+id_texto).html(r.error);
+                $("#"+id_texto).removeClass("alert-success").addClass("alert-error");
+            }
+            else{
+                $("#"+id_texto).html("Se ha guardado el nivel de juego correctamente");
+                $("#"+id_texto).removeClass("alert-danger").addClass("alert-success");
+            }
+            mostrar_efecto("#"+id_mensaje);
+
+            //Actualizar página si es una franja horaria nueva
+            if(accion == "nuevo" && (r.error == null || r.error == "")){
+                $("#actualizar").delay(5000).submit();
+            }
+
+            if(accion == "eliminar" && (r.error == null || r.error == "")){
+                if($("#fila_form_nivel_juego_"+nivel_juego_id).next().is("hr")){
+                    $("#fila_form_nivel_juego_"+nivel_juego_id).next().remove();
+                }
+                $("#fila_form_nivel_juego_"+nivel_juego_id).delay(5000).remove();
+            }
+
+            if(accion == "editar"){
+                $(".has-error").removeClass("has-error");
+                $(".elemento_nivel_juego_"+nivel_juego_id).attr("disabled", "disabled");
+                ocultar("#btn_guardar_nj_"+nivel_juego_id);
+                mostrar("#btn_editar_nj_"+nivel_juego_id);
+            }
+        }
+    });
+}
+
+//Pistas
+function liberar_pista(pista_id){
+
+    ocultar_efecto(".alerta_pista");
+    ocultar("#btn_editar_pista_"+pista_id);
+    mostrar("#btn_guardar_pista_"+pista_id);
+    $(".elemento_pista_"+pista_id).attr("disabled", false);
+}
+
+function actualizar_pista(accion, pista_id){
+    var form;
+    var guardar = false;
+
+    ocultar_efecto(".alerta_pista");
+
+    if(accion == "nuevo"){
+        form = $("#form_pista_nuevo");
+        guardar = true;
+        $(".validar_pista").each(function(e){
+            if($(this).val() == "" || ($(this).is("select") && $(this).find('option:selected').val() != "")){
+                $(this).parent().removeClass("has-success").addClass("has-error");
+                guardar = false;
+                return;
+            }
+            else{
+                $(this).parent().removeClass("has-error").addClass("has-success");
+            }
+        });
+
+    }
+    else if(accion == "editar"){
+        form = $("#form_pista_"+pista_id);
+        if($("#id_pista_orden_"+pista_id).val() != "" && $("#id_pista_deporte_"+pista_id).val() != "" && $("#id_pista_nombre_"+pista_id).val() != ""){
+            guardar = true;
+        }else{
+            $("#id_pista_orden_"+pista_id).parent().addClass("has-error");
+            $("#id_pista_deporte_"+pista_id).parent().addClass("has-error");
+            $("#id_pista_nombre_"+pista_id).parent().addClass("has-error");
+        }
+    }
+    else if(accion == "eliminar"){
+        //Actualizar valor accion del formulario a eliminar
+        $("#form_pista_"+pista_id + " #action").val(accion);
+        form = $("#form_pista_"+pista_id);
+        guardar = true;
+    }
+
+    if(guardar){
+        guardar_pista(accion, pista_id, form);
+    }
+}
+
+function guardar_pista(accion, pista_id, formulario){
+    $.ajax({
+        data: formulario.serialize(),
+        url: formulario.attr("action"),
+        type: 'POST',
+        success: function(data){
+            var r = JSON.parse(data);
+            var id_texto, id_mensaje;
+
+            if(accion == "nuevo"){
+                id_texto = "texto_mensaje_nueva_pista";
+                id_mensaje = "mensaje_nueva_pista";
+            }
+            else{
+                id_texto = "texto_mensaje_pista_"+pista_id;
+                id_mensaje = "mensaje_pista_"+pista_id;
+            }
+
+            if(r.error != null && r.error != ""){
+                $("#"+id_texto).html(r.error);
+                $("#"+id_texto).removeClass("alert-success").addClass("alert-error");
+            }
+            else{
+                $("#"+id_texto).html("Se ha guardado la pista correctamente");
+                $("#"+id_texto).removeClass("alert-danger").addClass("alert-success");
+            }
+            mostrar_efecto("#"+id_mensaje);
+
+            //Actualizar página si es una franja horaria nueva
+            if(accion == "nuevo" && (r.error == null || r.error == "")){
+                $("#actualizar").delay(5000).submit();
+            }
+
+            if(accion == "eliminar" && (r.error == null || r.error == "")){
+                if($("#fila_form_pista_"+pista_id).next().is("hr")){
+                    $("#fila_form_pista_"+pista_id).next().remove();
+                }
+                $("#fila_form_pista_"+pista_id).delay(5000).remove();
+            }
+
+            if(accion == "editar"){
+                $(".has-error").removeClass("has-error");
+                $(".elemento_pista_"+pista_id).attr("disabled", "disabled");
+                ocultar("#btn_guardar_pista_"+pista_id);
+                mostrar("#btn_editar_pista_"+pista_id);
+            }
+        }
+    });
 }
 
 function elimina_fila_pista(num_fila){
-    if(confirm("¿Está seguro que desea eliminar esta pista?")){
+    if(confirm("¿Está seguro que desea eliminar esta pista? Se eliminarán todos los partidos que se han jugado o están programados en ella")){
         if($("#ids_pistas_eliminadas").val() == ""){
             $("#ids_pistas_eliminadas").val(num_fila);
         }
         else{
             $("#ids_pistas_eliminadas").val($("#ids_pistas_eliminadas").val() + "," + num_fila);
         }
-        $("#fila_form_pista_"+num_fila).fadeOut("slow")
-        $("#fila_form_pista_"+num_fila).remove();
+        $("#fila_form_pista_"+num_fila).hide("slide", {direction: "up" }, "slow");
+        //$("#fila_form_pista_"+num_fila).remove();
     }
 }
 
@@ -420,7 +782,7 @@ function esFechaMenorActual(date){
       var x = new Date();
       var fecha = date.split("/");
       x.setDate(fecha[0]);
-      x.setMonth(fecha[1]);
+      x.setMonth(fecha[1] - 1);
       x.setFullYear(fecha[2]);
       var today = new Date();
 
@@ -546,4 +908,99 @@ function dar_baja_jugador(user_id, club_id){
 function form_crear_jugador(){
     $("#alta_jugador_titulo").show();
     $("#alta_jugador_form").show();
+}
+
+/******************************************************************************/
+/* Página de notificaciones */
+/******************************************************************************/
+
+function marcar_como_leida(notif_id){
+    $.ajax({
+        data: {'notificacion_id':notif_id},
+        url: '/marcar_leida',
+        type: 'GET',
+        success: function(data){
+            var r = JSON.parse(data);
+            if(r.error == ""){
+                actualiza_css_notificacion_leida(notif_id);
+            }
+            else{
+                $("#error_notificacion_texto_"+notif_id).html(r.error);
+                $("#error_notificacion_"+notif_id).show();
+            }
+        }
+    });
+}
+
+function inscripcion_clubes(notif_id, estado){
+    $("#estado_id_"+notif_id).val(estado);
+    $.ajax({
+        data: $("#form_inscripcion_"+notif_id).serialize(),
+        url: '/aceptar_denegar_inscripcion',
+        type: 'POST',
+        success: function(data){
+            var r = JSON.parse(data);
+            if(r.error == ""){
+                if(estado == "True"){
+                    $("#btn_denegar_inscripcion_"+notif_id).hide("slide", {direction: "up" }, "slow");
+                    $("#btn_aceptar_inscripcion_"+notif_id).html("Aceptada");
+                    $("#btn_aceptar_inscripcion_"+notif_id).attr("disabled", "disabled");
+                }
+                else{
+                    $("#btn_aceptar_inscripcion_"+notif_id).hide("slide", {direction: "up" }, "slow");
+                    $("#btn_denegar_inscripcion_"+notif_id).html("Denegada");
+                    $("#btn_denegar_inscripcion_"+notif_id).attr("disabled", "disabled");
+                    $("#btn_denegar_inscripcion_"+notif_id).removeClass("btn-info");
+                    $("#btn_denegar_inscripcion_"+notif_id).addClass("btn-danger");
+                }
+                actualiza_css_notificacion_leida(notif_id);
+            }
+            else{
+                $("#error_notificacion_texto_"+notif_id).html(r.error);
+                $("#error_notificacion_"+notif_id).show();
+            }
+        }
+    });
+
+    actualiza_css_notificacion_leida(notif_id);
+}
+
+function actualiza_css_notificacion_leida(notif_id){
+    $("#panel_"+notif_id).removeClass("fondo-info");
+    $("#texto_leida_"+notif_id).hide();
+    $("#texto_leida_"+notif_id).remove();
+}
+
+function validar_email(){
+    var subject = $("#subject").val();
+    var from_email = $("#from_email").val();
+    var message = $("#message").val();
+    if(subject != "" && from_email != "" && message != ""){
+        enviar_email(subject, from_email, message);
+    }
+    else{
+        $("#error_email .alert").html("Rellene todos los campos correctamente.");
+        $("#error_email").show();
+    }
+}
+
+function enviar_email(subject, from_email, message){
+    var form = $("#form_contacto_formulario").serialize();
+    $.ajax({
+        url: '/enviarEmail',
+        data: form,
+        type: 'POST',
+        success: function(request){
+            var r = JSON.parse(request);
+            if(r.error == ""){
+                $("#error_email .alert").removeClass("alert-danger").addClass("alert-success");
+                $("#error_email .alert").html("Su consulta se ha enviado correctamente.")
+                $("#error_email").show();
+            }
+            else{
+                $("#error_email .alert").html(r.error);
+                $("#error_email").show();
+            }
+        }
+    });
 }

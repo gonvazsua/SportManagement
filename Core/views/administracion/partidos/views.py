@@ -3,13 +3,22 @@ from Core.views import *
 from Core.utils import *
 from datetime import date,datetime
 import json
+import logging
+from django.contrib.auth.decorators import login_required
+
+#Instancia del log
+logger = logging.getLogger(__name__)
 
 ruta_administracion_nuevo_partido = 'administracion/partidos/nuevo_partido.html'
 ruta_administracion_editar_partido = 'administracion/partidos/editar_partido.html'
 ruta_administracion_buscador_partidos = 'administracion/partidos/buscador_partidos.html'
+ruta_administracion_ver_partido = 'administracion/partidos/ver_partido.html'
 
+@login_required()
 def administrador_crear_partido(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
+    if perfil == None:
+        return HttpResponseRedirect("/")
     club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
     error = ""
     pistas = Pista.objects.filter(club=club).order_by('deporte__deporte', 'orden')
@@ -37,36 +46,45 @@ def administrador_crear_partido(request, id_usuario):
                 disponible = comprueba_pista_disponible(request.POST["franja_horaria"], request.POST["pista"], fecha)
                 data["disponible"] = disponible
                 if disponible:
-                    partidos = Partido.objects.filter(fecha__startswith=fecha, franja_horaria__id = request.POST["franja_horaria"])
-                    jug_no_disponibles = []
-                    for p in partidos:
-                        for perfil in p.perfiles.all():
-                            jug_no_disponibles.append(perfil.id)
-                    jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil__in = list(jug_no_disponibles))
-                    data["jugadores"] = jugadores
-                    map_jugadores = {}
-                    deporte_id = Pista.objects.values_list('deporte_id', flat=True).get(id=request.POST["pista"])
-                    num_jugadores = Deporte.objects.values_list('num_jugadores', flat=True).get(id=deporte_id)
-                    for i in range(1,num_jugadores+1):
-                        map_jugadores[i] = ""
-                    data["map_jugadores"] = map_jugadores
-                    niveles = Nivel.objects.filter(club=club)
-                    data["niveles"] = niveles
-                    data["deporte_id"] = deporte_id
+                    try:
+                        partidos = Partido.objects.filter(fecha__startswith=fecha, franja_horaria__id = request.POST["franja_horaria"])
+                        jug_no_disponibles = []
+                        for p in partidos:
+                            for perfil in p.perfiles.all():
+                                jug_no_disponibles.append(perfil.id)
+                        jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil__in = list(jug_no_disponibles))
+                        data["jugadores"] = jugadores
+                        map_jugadores = {}
+                        deporte_id = Pista.objects.values_list('deporte_id', flat=True).get(id=request.POST["pista"])
+                        num_jugadores = Deporte.objects.values_list('num_jugadores', flat=True).get(id=deporte_id)
+                        for i in range(1,num_jugadores+1):
+                            map_jugadores[i] = ""
+                        data["map_jugadores"] = map_jugadores
+                        niveles = Nivel.objects.filter(club=club)
+                        data["niveles"] = niveles
+                        data["deporte_id"] = deporte_id
+                    except Exception:
+                        logger.debug("administracion/partidos - Método administrador_crear_partido - id_usuario " + str(id_usuario))
+                        error = "Ha habido un error al comprobar la disponibilidad. Inténtelo de nuevo. <br> Si el problema persiste, contacte con el adminstrador."
             else:
+                logger.debug("administracion/partidos - Método administrador_crear_partido - id_usuario " + str(id_usuario))
                 error = "Ha habido un error al comprobar la disponibilidad. Inténtelo de nuevo. <br> Si el problema persiste, contacte con el adminstrador."
             data["error"] = error
             return render_to_response(ruta_administracion_nuevo_partido, data, context_instance=RequestContext(request))
     return render_to_response(ruta_administracion_nuevo_partido, data, context_instance=RequestContext(request))
 
+@login_required()
 def administrador_editar_partido(request, id_usuario, id_partido):
     perfil = comprueba_usuario_administrador(id_usuario)
+    if perfil == None:
+        return HttpResponseRedirect("/")
     club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
     partido = ""
     error = ""
     try:
         partido = Partido.objects.get(id=id_partido)
     except Partido.DoesNotExist:
+        logger.debug("administracion/partidos - Método administrador_editar_partido - id_usuario " + str(id_usuario) + ", id_partido " + str(id_partido))
         error = "Ha habido un error al editar el partido."
     map_jugadores = {}
     ids_jugadores = []
@@ -101,8 +119,11 @@ def administrador_editar_partido(request, id_usuario, id_partido):
     }
     return render_to_response(ruta_administracion_editar_partido, data, context_instance=RequestContext(request))
 
+@login_required()
 def buscador_partidos(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
+    if perfil == None:
+        return HttpResponseRedirect("/")
     club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
     franjas_horarias = FranjaHora.objects.filter(club = club)
     data = {
@@ -144,6 +165,7 @@ def comprueba_pista_disponible(franja_horaria_id, pista_id, fecha):
 #FUNCIONES AJAX
 #****************************************************************************************************
 
+@login_required()
 def comprueba_disponibilidad_partido_ajax(request):
     fecha = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
     id_pista = request.POST["pista"]
@@ -155,6 +177,7 @@ def comprueba_disponibilidad_partido_ajax(request):
     data = {'disponible':disponible}
     return HttpResponse(json.dumps(data))
 
+@login_required()
 def crear_partido_ajax(request):
     error = ""
     if request.method == "POST":
@@ -164,14 +187,15 @@ def crear_partido_ajax(request):
         error = ""
         jugadores = []
         max_jugadores = 0
-        if request.POST["fecha"] and request.POST["hora"] and request.POST["pista"] and request.POST["user"]:
+        if request.POST.get("fecha") and request.POST.get("hora") and request.POST.get("pista") and request.POST.get("user") and request.POST.get("visible"):
 
             try:
                 creado_por = Perfil.objects.get(user__id = request.POST["user"])
                 fh = FranjaHora.objects.get(id=request.POST["hora"])
                 fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
                 pista_partido = Pista.objects.get(id=request.POST["pista"])
-                nuevo_partido = Partido(creado_por = creado_por, franja_horaria = fh, fecha = fecha_partido, pista = pista_partido)
+                visible = bool(request.POST.get("visible"))
+                nuevo_partido = Partido(creado_por = creado_por, franja_horaria = fh, fecha = fecha_partido, pista = pista_partido, visible=visible)
 
                 if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
                     #Actualizar valor max_jugadores
@@ -179,9 +203,11 @@ def crear_partido_ajax(request):
                 else:
                     error = "La pista seleccionada no está disponible"
 
-            except FranjaHora.DoesNotExist:
+            except FranjaHora.DoesNotExist, e:
+                logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
                 error = "¡Ups! Ha habido un error al crear el partido"
-            except Pista.DoesNotExist:
+            except Pista.DoesNotExist, e:
+                logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
                 error = "¡Ups! Ha habido un error al crear el partido"
             if max_jugadores != 0 and error == "":
                 for i in range(1,max_jugadores+1):
@@ -190,16 +216,19 @@ def crear_partido_ajax(request):
                         try:
                             jugador = Perfil.objects.get(id=id)
                             jugadores.append(jugador)
-                        except Perfil.DoesNotExist:
+                        except Perfil.DoesNotExist, e:
+                            logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
                             error = "¡Ups! Ha habido un error al crear el partido."
 
-            if error == "" and len(jugadores) <= max_jugadores and len(jugadores) >= 1 and nuevo_partido.fecha != "" and nuevo_partido.franja_horaria is not None:
+            if error == "" and len(jugadores) <= max_jugadores and nuevo_partido.fecha != "" and nuevo_partido.franja_horaria is not None:
                 nuevo_partido.save()
-                nuevo_partido.perfiles = jugadores
-                nuevo_partido.save()
+                if len(jugadores) >= 1:
+                    nuevo_partido.perfiles = jugadores
+                    nuevo_partido.save()
                 error = "OK"
             else:
                 if error == "":
+                    logger.debug("administracion/partidos - Método crear_partido_ajax. ")
                     error = "¡Ups! ha habido un error al crear el partido"
         else:
             error = "Debe seleccionar, fecha, hora y pista."
@@ -208,6 +237,7 @@ def crear_partido_ajax(request):
     else:
         return HttpResponseRedirect("/")
 
+@login_required()
 def editar_partido_ajax(request):
     error = ""
     if request.method == "POST":
@@ -217,13 +247,14 @@ def editar_partido_ajax(request):
         error = ""
         jugadores = []
         max_jugadores = 0
-        if request.POST["partido_id"] and request.POST["fecha"] and request.POST["hora"] and request.POST["pista"] and request.POST["user"]:
+        if request.POST["partido_id"] and request.POST["fecha"] and request.POST["hora"] and request.POST["pista"] and request.POST["user"] and request.POST["visible"]:
 
             try:
                 partido = Partido.objects.get(id=request.POST["partido_id"])
                 fh = FranjaHora.objects.get(id=request.POST["hora"])
                 fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
                 pista_partido = Pista.objects.get(id=request.POST["pista"])
+                visible = bool(request.POST["visible"])
                 if pista_partido.id != partido.pista.id:
                     if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
                         #Actualizar valor max_jugadores
@@ -231,23 +262,28 @@ def editar_partido_ajax(request):
                     else:
                         error = "La pista seleccionada no está disponible"
 
-            except Partido.DoesNotExist:
+            except Partido.DoesNotExist, e:
+                logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
                 error = "¡Ups! Ha habido un error al crear el partido"
-            except FranjaHora.DoesNotExist:
+            except FranjaHora.DoesNotExist, e:
+                logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
                 error = "¡Ups! Ha habido un error al crear el partido"
-            except Pista.DoesNotExist:
+            except Pista.DoesNotExist, e:
+                logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
                 error = "¡Ups! Ha habido un error al crear el partido"
             if max_jugadores != 0 and error == "":
                 partido.franja_horaria = fh
                 partido.pista = pista_partido
                 partido.fecha = fecha_partido
+                partido.visible = visible
                 for i in range(1,max_jugadores+1):
                     id = request.POST["jugador"+str(i)]
                     if id != "":
                         try:
                             jugador = Perfil.objects.get(id=id)
                             jugadores.append(jugador)
-                        except Perfil.DoesNotExist:
+                        except Perfil.DoesNotExist, e:
+                            logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
                             error = "¡Ups! Ha habido un error al crear el partido."
 
             if error == "" and len(jugadores) <= 4 and len(jugadores) >= 1 and partido.fecha != "" and partido.franja_horaria is not None:
@@ -257,6 +293,7 @@ def editar_partido_ajax(request):
                 error = "OK"
             else:
                 if error == "":
+                    logger.debug("administracion/partidos - Método editar_partido_ajax. ")
                     error = "¡Ups! ha habido un error al crear el partido"
         else:
             error = "Debe seleccionar, fecha, hora y pista."
@@ -264,4 +301,3 @@ def editar_partido_ajax(request):
         return HttpResponse(json.dumps(data))
     else:
         return HttpResponseRedirect("/")
-
