@@ -93,3 +93,7 @@ footer{
 .oculto{
     display: none !important;
 }
+
+.strong{
+    font-weight: bold;
+}

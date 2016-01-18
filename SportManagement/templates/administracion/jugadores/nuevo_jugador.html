@@ -154,14 +154,28 @@
         </div>
     </div>
     <div class="row form-group">
-        <div class="col-lg-6 col-md-12">
-            <select multiple="multiple" class="form-control obligatorio" name="nivel" id="niveles">
-                {% for n in niveles %}
-                    <option value="{{n.id}}" class="deporte_{{n.deporte.id}}">{{n.nivel}} - {{n.deporte}}</option>
-                {% endfor %}
-            </select>
+        <div class="col-lg-12">
+            {% for deporte, niveles in niveles.iteritems %}
+                <div class="row form-group">
+                    <div class="col-lg-12">
+                        <h5 class="strong">{{deporte}}: </h5>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-12">
+                        {% for nivel in niveles %}
+                            <label class="radio-inline">
+                                <input type="radio" name="{{nivel.deporte.id}}" id="nivel_{{nivel.id}}" value="{{nivel.id}}"> {{nivel.nivel}}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% empty %}
+                No hay niveles para este club
+            {% endfor %}
         </div>
     </div>
+
     {% if error %}
         <div class="row form-group">
             <div class="col-lg-6 col-md-12">
@@ -172,7 +186,7 @@
     <div class="row form-group">
         <div class="col-lg-1 col-md-1"></div>
         <div class="col-lg-3"></div>
-        <div class="col-lg-7">
+        <div class="col-lg-8">
              <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_mi_cuenta();">
                  <i class="fa fa-save fa-fw"></i> Guardar información
              </button>

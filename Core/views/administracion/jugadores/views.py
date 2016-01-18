@@ -70,7 +70,16 @@ def administrador_nuevo_jugador(request, id_usuario):
     club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=settings.ROL_ADMINISTRADOR))
     provincias = Provincias.objects.all()
     municipios = []
-    niveles = Nivel.objects.filter(club=club)
+    niveles_club = Nivel.objects.filter(club=club).order_by('deporte')
+    niveles = {}
+
+    for nivel in niveles_club:
+        if niveles.has_key(nivel.deporte.deporte):
+            niveles[nivel.deporte.deporte].append(nivel)
+        else:
+            n = [nivel]
+            niveles[nivel.deporte.deporte] = n
+
     perfil_nuevo = ""
     user_nuevo = ""
 
@@ -121,12 +130,16 @@ def administrador_nuevo_jugador(request, id_usuario):
                         error = "Ha habido un error al crear al usuario. Si el problema persiste, póngase en contacto con el administrador."
 
                     #Asignarle los niveles de los deportes
+                    deportes_ids = Deporte.objects.values_list('id', flat=True)
                     niveles = []
-                    for nivel_id in request.POST["nivel"]:
-                        nivel = Nivel.objects.get(id=nivel_id)
-                        niveles.append(nivel)
+                    for deporte_id in deportes_ids:
+                        if(request.POST.get(str(deporte_id))):
+                            nivel = Nivel.objects.get(id = int(request.POST.get(str(deporte_id))))
+                            if nivel:
+                                niveles.append(nivel)
+                    if niveles:
+                        perfil_nuevo.deporteNivel = niveles
 
-                    perfil_nuevo.deporteNivel = niveles
                     perfil_nuevo.save()
 
                     return HttpResponseRedirect("/administrador/"+str(perfil.user.id)+"/jugadores/"+str(perfil_nuevo.id))
