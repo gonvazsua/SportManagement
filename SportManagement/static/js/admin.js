@@ -1004,3 +1004,17 @@ function enviar_email(subject, from_email, message){
         }
     });
 }
+
+/***************************************/
+/* Administradores */
+/***************************************/
+
+function mostrar_ventana_modal_administradores(admin_id){
+    $('#eliminar_administrador_modal').modal('show');
+    $("#id_administrador_seleccionado").val(admin_id);
+}
+
+function mostrar_ventana_modal_asignar_administradores(jugador_id){
+    $('#asignar_administrador_modal').modal('show');
+    $("#id_jugador_asignado").val(jugador_id);
+}

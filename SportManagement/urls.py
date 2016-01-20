@@ -18,6 +18,9 @@ urlpatterns = patterns('',
     url(r'^$', 'Core.views.inicio'),
     url(r'^logout', 'Core.views.logout'),
 
+    #Administradores
+    url(r'^administrador/(?P<id_usuario>\d+)/administradores$', 'Core.views.administradores_club'),
+
     #Administracion de club
     url(r'^administrador/(?P<id_usuario>\d+)/club$', 'Core.views.administracion_club'),
     url(r'^guardar_administracion$', 'Core.views.guardar_administracion'),

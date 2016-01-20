@@ -119,6 +119,9 @@
                             <a href="/administrador/{{perfil.user.id}}/club" id="enlace_configurar_club"><i class="fa fa-edit fa-fw"></i> Configurar club</a>
                         </li>
                         <li>
+                            <a href="/administrador/{{perfil.user.id}}/administradores" id="enlace_administradores"><i class="fa fa-key fa-fw"></i> Administradores</a>
+                        </li>
+                        <li>
                             <a href="/administrador/{{perfil.user.id}}/notificaciones" id="enlace_notificaciones"><i class="fa fa-bell fa-fw"></i> Notificaciones</a>
                         </li>
                     </ul>
@@ -145,6 +148,8 @@
             {% block fila_superior %}{% endblock %}
 
             {% block pagina_central %}{% endblock %}
+
+            <div class="row min_height_50"></div>
 
             <div class="row" style="display:none" id="form_contacto">
                 <div class="col-lg-12">

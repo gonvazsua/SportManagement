@@ -3,6 +3,7 @@
 #Importaciones de otras vistas
 
 from administracion import *
+from administradores import *
 from cuenta import *
 from estadisticas import *
 from inicio import *

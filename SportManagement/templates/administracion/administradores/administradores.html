@@ -1,0 +1,236 @@
+{% extends 'administracion/template_admin.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Gestión de administradores - {{club.nombre}}
+{% endblock %}
+
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Gestión de administradores</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Administradores:</h4>
+            <p>
+                Desde esta página podrá gestionar los usuarios que pueden ser administradores en el club.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block pagina_central %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Administradores actuales:</h3><hr>
+    </div>
+</div>
+
+{% for admin in administradores %}
+
+    {% if forloop.counter0|divisibleby:2 %}
+    <div class="row">
+    {% endif %}
+
+        <div class="col-lg-6 over-fondo-info padding5 border-radius border-left">
+            <div class="row">
+                <div class="col-lg-2">
+                    {% if admin.perfil.imagen == "" %}
+                        <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{admin.perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% else %}
+                        <img src="{{MEDIA_URL}}{{admin.perfil.imagen}}" title="{{admin.perfil.user.first_name}}" alt="{{admin.perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                    {% endif %}
+                </div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-3 strong"> Nombre: </div>
+                        <div class="col-lg-9 cursiva">{{admin.perfil.user.first_name}} {{admin.perfil.user.last_name}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 strong">Usuario:</div>
+                        <div class="col-lg-9 cursiva">{{admin.perfil.user.username}}</div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="row row-centered">
+                        <button type="button" class="btn btn-danger btn-redondo" aria-label="Right Align" title="Eliminar" onclick="javascript:mostrar_ventana_modal_administradores({{admin.id}})">
+                          <i class="fa fa-close fa-fw"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% if not forloop.counter0|divisibleby:2 %}
+    </div>
+    {% endif %}
+
+{% endfor %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Buscador de usuarios</h3><hr>
+    </div>
+</div>
+
+<form id='form_buscador_administradores' class="form-horizontal" method='post' action='/administrador/{{perfil.user.id}}/administradores' role="form">
+    {% csrf_token %}
+    <input type="hidden" id="action" name="action" value="buscar">
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10"><input type="email" class="form-control" id="email_buscador" name="email" placeholder="Email"></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="usuario" class="col-sm-2 control-label">Usuario</label>
+                <div class="col-sm-10"><input type="text" class="form-control" id="usuario_buscador" name="usuario" placeholder="Nombre usuario"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-sm-offset-1">
+            <div class="form-group">
+                <button type="button" id="btn_buscar" class="btn btn-success" aria-label="Right Align" onclick="javascript:$('#form_buscador_administradores').submit();">
+                    <i class="fa fa-search"></i> Buscar
+                </button>
+
+                <a class="btn btn-default" href="/administrador/{{perfil.user.id}}/jugadores/nuevo" role="button"><i class="fa fa-plus"></i> Nuevo usuario</a>
+
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr>
+
+<div class="row">
+    <div class="col-lg-12">
+
+        {% for jugador in jugadores %}
+
+            {% if forloop.counter0|divisibleby:2 %}
+            <div class="row">
+            {% endif %}
+
+                <div class="col-lg-6 over-fondo-info padding5 border-radius border-left">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {% if jugador.imagen == "" %}
+                                <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                            {% else %}
+                                <img src="{{MEDIA_URL}}{{jugador.imagen}}" title="{{jugador.user.first_name}}" alt="{{jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-3 strong"> Nombre: </div>
+                                <div class="col-lg-9 cursiva">{{jugador.user.first_name}} {{jugador.user.last_name}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 strong">Usuario:</div>
+                                <div class="col-lg-9 cursiva">{{jugador.user.username}}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="row row-centered">
+                                <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Asignar como administrador" onclick="javascript:mostrar_ventana_modal_asignar_administradores({{jugador.id}})">
+                                  <i class="fa fa-check fa-fw"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% if not forloop.counter0|divisibleby:2 %}
+            </div>
+            {% endif %}
+
+        {% empty %}
+            <div class="row">
+                <div class="col-lg-12">
+                    No hay resultados para mostrar
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="eliminar_administrador_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                  <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Confirmación necesaria</h4>
+                  </div>
+                  <div class="modal-body">
+                        ¿Está seguro que desea dar de baja a este administrador?
+                  </div>
+                  <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="javascript:$('#eliminar_administrador').submit();">
+                            <span class="glyphicon" id="icono_login" aria-hidden="true"></span> Aceptar
+                        </button>
+                  </div>
+            </div>
+      </div>
+</div>
+
+<div class="modal fade" id="asignar_administrador_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                  <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Confirmación necesaria</h4>
+                  </div>
+                  <div class="modal-body">
+                        ¿Está seguro que desea asignar a este jugador como administrador de este club?
+                  </div>
+                  <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="javascript:$('#asignar_administrador').submit();">
+                            <span class="glyphicon" id="icono_login" aria-hidden="true"></span> Aceptar
+                        </button>
+                  </div>
+            </div>
+      </div>
+</div>
+
+<!-- Formularios -->
+<form id="eliminar_administrador" action="/administrador/{{perfil.user.id}}/administradores" method="POST">
+    {% csrf_token %}
+    <input type="hidden" id="id_administrador_seleccionado" name="id_administrador_seleccionado" value="">
+    <input type="hidden" id="action" name="action" value="eliminar">
+</form>
+
+<form id="asignar_administrador" action="/administrador/{{perfil.user.id}}/administradores" method="POST">
+    {% csrf_token %}
+    <input type="hidden" id="id_jugador_asignado" name="id_jugador_asignado" value="">
+    <input type="hidden" id="action" name="action" value="asignar">
+</form>
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
