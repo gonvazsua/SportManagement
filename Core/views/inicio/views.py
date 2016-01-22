@@ -16,6 +16,7 @@ def inicio(request):
 
     login_form = formulario_login()
     registro_form = formulario_registro()
+    '''
     if request.user.is_authenticated():
         try:
             perfil = Perfil.objects.get(user=request.user)
@@ -29,6 +30,16 @@ def inicio(request):
 
     else:
         datos = {
+            'login_form' : login_form,
+            'registro_form' : registro_form
+        }
+    '''
+
+    #Modificacion para que no se inice sesion automaticamente
+    if request.user.is_authenticated():
+        auth.logout(request)
+
+    datos = {
             'login_form' : login_form,
             'registro_form' : registro_form
         }
