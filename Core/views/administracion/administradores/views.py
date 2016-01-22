@@ -23,9 +23,10 @@ def administradores_club(request, id_usuario):
     club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
     data = {}
     jugadores = []
+    error = ""
 
     data = {
-        'perfil':perfil, 'club':club, 'jugadores':jugadores
+        'perfil':perfil, 'club':club, 'jugadores':jugadores, 'error':error
     }
 
     try:
@@ -34,8 +35,15 @@ def administradores_club(request, id_usuario):
 
             if action == "eliminar":
                 id_administrador = request.POST.get('id_administrador_seleccionado')
-                if id_administrador:
-                    prc = PerfilRolClub.objects.filter(id=id_administrador, club=club).update(rol=settings.ROL_JUGADOR)
+
+                # Comprobar que quede al menos un administrador
+                num_administradores = PerfilRolClub.objects.filter(club=club, rol=settings.ROL_ADMINISTRADOR).count()
+
+                if num_administradores > 1:
+                    if id_administrador:
+                        prc = PerfilRolClub.objects.filter(id=id_administrador, club=club).update(rol=settings.ROL_JUGADOR)
+                else:
+                    error = "Debe haber al menos un administrador en el club"
 
             elif action == "buscar":
                 email = request.POST.get('email')
@@ -65,6 +73,7 @@ def administradores_club(request, id_usuario):
 
         administradores = PerfilRolClub.objects.filter(club=club, rol=settings.ROL_ADMINISTRADOR)
         data['administradores'] = administradores
+        data['error'] = error
 
     except Exception:
         logger.debug("administracion/administradores - Método administradores_club: id_usuario " + str(id_usuario))
