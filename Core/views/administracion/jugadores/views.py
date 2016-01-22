@@ -53,8 +53,25 @@ def baja_jugador_club(request):
     if "club_id" in request.GET and "jugador_id" in request.GET:
         club_id = request.GET["club_id"]
         perfil_id = request.GET["jugador_id"]
-        perfilRolClub = PerfilRolClub.objects.get(perfil__id = perfil_id, club__id=club_id)
-        perfilRolClub.delete()
+
+        perfil = Perfil.objects.get(id=perfil_id)
+        club = Club.objects.get(id=club_id)
+
+        #Borrar notificaciones
+        Notificacion.objects.filter(inscripcionEnPartido__in = InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club)))).delete()
+        Notificacion.objects.filter(inscripcionEnClub__in = InscripcionesEnClub.objects.filter(jugador=perfil, club=club)).delete()
+
+        #Borrar inscripciones
+        InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club))).delete()
+        InscripcionesEnClub.objects.filter(jugador=perfil, club=club).delete()
+
+        #Borrar niveles de juego del jugador en el club
+        for dn in perfil.deporteNivel.all():
+            if dn.club.id == club.id:
+                perfil.deporteNivel.remove(dn)
+
+        PerfilRolClub.objects.filter(perfil=perfil, club=club).delete()
+
         res = "OK"
     else:
         res = "Ha habido un error al dar de baja al jugador"

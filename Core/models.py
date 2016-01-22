@@ -125,14 +125,14 @@ class RutaTiempo(models.Model):
 class InscripcionesEnClub(models.Model):
     club = models.ForeignKey(Club, verbose_name="Club")
     jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
-    estado = models.NullBooleanField(verbose_name="Estado aceptación")
+    estado = models.NullBooleanField(verbose_name="Estado aceptación") #None=Pendiente, 1=Aceptada, 0=Denegada
     def __unicode__(self):
 		return "Club: "+self.club.nombre
 
 class InscripcionesEnPartido(models.Model):
     partido = models.ForeignKey(Partido, verbose_name="Partido")
     jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
-    estado = models.NullBooleanField(verbose_name="Estado aceptación")
+    estado = models.NullBooleanField(verbose_name="Estado aceptación") #None=Pendiente, 1=Aceptada, 0=Denegada
     def __unicode__(self):
 		return "Club: "+self.club.nombre
 

@@ -941,7 +941,7 @@ function inscripcion_clubes(notif_id, estado){
         success: function(data){
             var r = JSON.parse(data);
             if(r.error == ""){
-                if(estado == "True"){
+                if(estado == 1){
                     $("#btn_denegar_inscripcion_"+notif_id).hide("slide", {direction: "up" }, "slow");
                     $("#btn_aceptar_inscripcion_"+notif_id).html("Aceptada");
                     $("#btn_aceptar_inscripcion_"+notif_id).attr("disabled", "disabled");

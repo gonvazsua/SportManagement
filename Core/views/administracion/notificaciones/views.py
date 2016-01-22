@@ -59,6 +59,9 @@ def aceptar_denegar_inscripcion(request):
         jugador_id = request.POST.get("jugador_id")
         if notificacion_id and estado and club_id and jugador_id:
             try:
+                #Convertir a boolean el estado
+                estado = bool(int(estado))
+
                 #Crear PerfilRolClub
                 rol = Rol.objects.get(id=settings.ROL_JUGADOR)
                 jugador = Perfil.objects.get(id=jugador_id)
@@ -77,24 +80,27 @@ def aceptar_denegar_inscripcion(request):
                 if notificacion.inscripcionEnClub:
                     notificacion.inscripcionEnClub.estado = estado
                     notificacion_jugador.inscripcionEnClub = notificacion.inscripcionEnClub
-                    perfilRolClub = PerfilRolClub.objects.create(rol=rol, perfil=jugador, club=club)
                     notificacion.inscripcionEnClub.save()
-                    perfilRolClub.save()
                     notificacion.save()
+
+                    if estado != settings.ESTADO_NO:
+                        perfilRolClub = PerfilRolClub.objects.create(rol=rol, perfil=jugador, club=club)
+                        perfilRolClub.save()
 
                 elif notificacion.inscripcionEnPartido:
                     notificacion.inscripcionEnPartido.estado = estado
-                    partido = Partido.objects.get(id=notificacion.inscripcionEnPartido.partido.id)
-                    if partido.num_perfiles() >= partido.max_perfiles():
-                        error = "El partido ya tiene el máximo de jugadores"
-                    elif partido.bloqueado():
-                        error = "Este partido tiene fecha anterior a hoy"
-                    else:
-                        partido.perfiles.add(jugador)
-                        partido.save()
-                        notificacion.inscripcionEnPartido.save()
-                        notificacion_jugador.inscripcionEnPartido = notificacion.inscripcionEnPartido
-                        notificacion.save()
+                    if estado:
+                        partido = Partido.objects.get(id=notificacion.inscripcionEnPartido.partido.id)
+                        if partido.num_perfiles() >= partido.max_perfiles():
+                            error = "El partido ya tiene el máximo de jugadores"
+                        elif partido.bloqueado():
+                            error = "Este partido tiene fecha anterior a hoy"
+                        else:
+                            partido.perfiles.add(jugador)
+                            partido.save()
+                    notificacion.inscripcionEnPartido.save()
+                    notificacion_jugador.inscripcionEnPartido = notificacion.inscripcionEnPartido
+                    notificacion.save()
 
                 if error == "" and notificacion and notificacion_jugador:
                     notificacion_jugador.save()

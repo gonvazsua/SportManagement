@@ -22,7 +22,7 @@ def usuario_mis_clubes(request, id_usuario):
 
     #Comprobar si existen notificaciones de club para marcar como leídas
     try:
-        inscripciones_club_ids = InscripcionesEnClub.objects.values_list('id', flat=True).filter(club__in = clubes, jugador = perfil)
+        inscripciones_club_ids = InscripcionesEnClub.objects.values_list('id', flat=True).filter(jugador = perfil)
         if inscripciones_club_ids.count() > 0:
             notificaciones = Notificacion.objects.filter(inscripcionEnClub__id__in=inscripciones_club_ids, destino=settings.NOTIF_JUGADOR).update(leido = settings.ESTADO_SI)
 
@@ -39,22 +39,41 @@ def usuario_buscador_clubes(request, id_usuario):
         return HttpResponseRedirect("/")
     try:
         provincias = Provincias.objects.all()
+        municipios = []
+        if perfil.municipio:
+            municipios = Municipios.objects.filter(provincia = perfil.municipio.provincia)
+
     except Exception:
         provincias = ""
 
-    data = {'perfil': perfil, 'provincias':provincias}
+    data = {'perfil': perfil, 'provincias':provincias, 'municipios':municipios}
 
     #Se ha utilizado el buscador
     if request.method == "POST":
         provincia_id = request.POST.get('provincia')
         municipio_id = request.POST.get('municipio')
-        if municipio_id  and int(municipio_id) != 0:
-            clubes = Club.objects.filter(municipio__id = municipio_id)
-        elif provincia_id and int(provincia_id) != 0:
-            clubes = Club.objects.filter(municipio__provincia__id = provincia_id)
-        else:
-            clubes = []
-        data["clubes"] = clubes
+
+        try:
+            #Buscar clubes a los que ya pertenece el jugador o ha enviado peticiones para que no pueda
+            #volverlas a enviar.
+            clubes_ya_pertenece = PerfilRolClub.objects.values_list('club_id',flat=True).filter(perfil=perfil)
+            clubes_ya_peticion_enviada = InscripcionesEnClub.objects.values_list('club_id',flat=True).filter(jugador=perfil, estado=settings.ESTADO_NULL)
+
+            if municipio_id  and int(municipio_id) != 0:
+                clubes = Club.objects.filter(municipio__id = municipio_id)
+            elif provincia_id and int(provincia_id) != 0:
+                clubes = Club.objects.filter(municipio__provincia__id = provincia_id)
+            else:
+                clubes = []
+
+            data["clubes"] = clubes
+            data["clubes_ya_pertenece"] = clubes_ya_pertenece
+            data["clubes_ya_peticion_enviada"] = clubes_ya_peticion_enviada
+
+        except Exception, e:
+            data["clubes"] = []
+            data["clubes_ya_pertenece"] = []
+            data["clubes_ya_peticion_enviada"] = clubes_ya_peticion_enviada
 
     return render_to_response(ruta_usuarios_buscador_clubes, data, context_instance=RequestContext(request))
 
@@ -92,8 +111,22 @@ def usuario_club_baja(request):
             try:
                 perfil = Perfil.objects.get(id=perfil_id)
                 club = Club.objects.get(id=club_id)
-                prc = PerfilRolClub.objects.get(perfil=perfil, club=club)
-                prc.delete()
+
+                #Borrar notificaciones
+                Notificacion.objects.filter(inscripcionEnPartido__in = InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club)))).delete()
+                Notificacion.objects.filter(inscripcionEnClub__in = InscripcionesEnClub.objects.filter(jugador=perfil, club=club)).delete()
+
+                #Borrar inscripciones
+                InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club))).delete()
+                InscripcionesEnClub.objects.filter(jugador=perfil, club=club).delete()
+
+                #Borrar niveles de juego del jugador en el club
+                for dn in perfil.deporteNivel.all():
+                    if dn.club.id == club.id:
+                        perfil.deporteNivel.remove(dn)
+
+                PerfilRolClub.objects.get(perfil=perfil, club=club).delete()
+
             except Exception, e:
                 logger.debug("usuarios/clubes - Método usuario_club_baja." + e)
                 error = "No hemos podido generar su petición, actualice la página e inténtelo de nuevo."
