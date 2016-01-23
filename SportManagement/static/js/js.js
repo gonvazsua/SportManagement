@@ -129,3 +129,11 @@ function enviar_email(subject, from_email, message){
         }
     });
 }
+
+function submit_intro(){
+    $("#id_password").keypress(function(e){
+        if(e.which == 13) {
+            submit_login();
+        }
+    });
+}

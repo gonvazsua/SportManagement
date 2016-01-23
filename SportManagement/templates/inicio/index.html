@@ -28,6 +28,12 @@
     <script type="text/javascript" src="{{STATIC_URL}}jquery-ui/jquery-ui.js"></script>
     <link href="{{STATIC_URL}}jquery-ui/jquery-ui.css" rel="stylesheet"/>
 
+    <script type="text/javascript">
+        $(document).ready(function(){
+            submit_intro();
+        });
+    </script>
+
     <title>Inicio - SportClick</title>
 </head>
 <body>
@@ -364,7 +370,7 @@
                 <div class="modal-content">
                       <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Acceso al panel de administración</h4>
+                            <h4 class="modal-title" id="myModalLabel">Acceso a la aplicación</h4>
                       </div>
                       <div class="modal-body">
                             <form id='form_login' method='post' action='' role="form">{% csrf_token %}
