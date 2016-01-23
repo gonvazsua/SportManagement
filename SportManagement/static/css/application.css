@@ -113,3 +113,7 @@ footer{
 .min_height_50{
     min-height: 50px;
 }
+
+.color-seleccionado{
+    color: #337ab7;
+}

@@ -17,9 +17,7 @@ ruta_administracion_ver_partido = 'administracion/partidos/ver_partido.html'
 @login_required()
 def administrador_crear_partido(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     error = ""
     pistas = Pista.objects.filter(club=club).order_by('deporte__deporte', 'orden')
 
@@ -76,9 +74,7 @@ def administrador_crear_partido(request, id_usuario):
 @login_required()
 def administrador_editar_partido(request, id_usuario, id_partido):
     perfil = comprueba_usuario_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     partido = ""
     error = ""
     try:
@@ -122,9 +118,7 @@ def administrador_editar_partido(request, id_usuario, id_partido):
 @login_required()
 def buscador_partidos(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     franjas_horarias = FranjaHora.objects.filter(club = club)
     data = {
         'perfil':perfil, 'club':club, 'franjas_horarias':franjas_horarias
@@ -167,13 +161,19 @@ def comprueba_pista_disponible(franja_horaria_id, pista_id, fecha):
 
 @login_required()
 def comprueba_disponibilidad_partido_ajax(request):
-    fecha = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
-    id_pista = request.POST["pista"]
-    id_franja_hora = request.POST["franja_horaria"]
-    club_id = request.POST["club"]
-    disponible = True
-    if Partido.objects.filter(pista__id = id_pista, fecha__startswith=fecha, franja_horaria__id = id_franja_hora, pista__club__id=club_id).exists():
-        disponible = False
+
+    disponible = False
+    if request.POST.get(["fecha"]):
+        fecha = datetime.strptime(request.POST.get(["fecha"]), '%d/%m/%Y').date()
+        id_pista = request.POST.get(["pista"])
+        id_franja_hora = request.POST.get(["franja_horaria"])
+        club_id = request.POST.get(["club"])
+        disponible = True
+
+        if id_pista and id_franja_hora and club_id:
+            if Partido.objects.filter(pista__id = id_pista, fecha__startswith=fecha, franja_horaria__id = id_franja_hora, pista__club__id=club_id).exists():
+                disponible = False
+
     data = {'disponible':disponible}
     return HttpResponse(json.dumps(data))
 

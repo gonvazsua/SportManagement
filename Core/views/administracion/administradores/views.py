@@ -20,7 +20,7 @@ ruta_administradores = "administracion/administradores/administradores.html"
 @login_required()
 def administradores_club(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
     jugadores = []
     error = ""
@@ -41,7 +41,13 @@ def administradores_club(request, id_usuario):
 
                 if num_administradores > 1:
                     if id_administrador:
-                        prc = PerfilRolClub.objects.filter(id=id_administrador, club=club).update(rol=settings.ROL_JUGADOR)
+                        prc = PerfilRolClub.objects.get(id=id_administrador, club=club)
+                        rol = Rol.objects.get(id=settings.ROL_JUGADOR)
+                        prc.rol = rol
+                        prc.save()
+                        #Si es el mismo jugador el que se quita a si mismo, se quita el logging
+                        if prc.perfil.id == perfil.id:
+                            return HttpResponseRedirect("/logout")
                 else:
                     error = "Debe haber al menos un administrador en el club"
 

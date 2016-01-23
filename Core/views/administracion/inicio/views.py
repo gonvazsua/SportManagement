@@ -14,13 +14,36 @@ ruta_pagina_principal = 'administracion/inicio/pagina_principal.html'
 
 @login_required()
 def perfil_administrador(request, id_usuario):
-    user = ""
+
     perfil = comprueba_usuario_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil = perfil, rol_id = settings.ROL_ADMINISTRADOR))
+
+    #Esto solo se hace en la pagina principal
+    #Cargamos datos en sesion, si fuera necesario
+
+    #Guardamos en sesion una lista de pares {nombre_club, club_id} en los que el jugador es administrador, nos quedamos con el primero para que sea el inicial en mostrarse:
+    if not "nombre_club_id" in request.session or not "club_id" in request.session:
+        clubes_administrador = Club.objects.filter(
+            id__in = PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil = perfil, rol_id = settings.ROL_ADMINISTRADOR)
+        ).order_by('nombre')
+
+        es_primer_club = True
+        club_id = None
+        nombre_club_id = {}
+        for c in clubes_administrador:
+            if es_primer_club:
+                club_id = c.id
+                es_primer_club = False
+            nombre_club_id[c.nombre] = c.id
+
+        request.session["club_id"] = club_id
+        request.session["nombre_club_id"] = nombre_club_id
+    else:
+        club_id = request.session["club_id"]
+
+    club = Club.objects.get(id = club_id)
+
     try:
-        rutaTiempo = RutaTiempo.objects.get(municipio=club.municipio)
+        rutaTiempo = ""#RutaTiempo.objects.get(municipio=club.municipio)
     except Exception:
         rutaTiempo = ""
     jugadores = PerfilRolClub.objects.filter(club = club).order_by("perfil__user__first_name")
@@ -67,3 +90,13 @@ def perfil_administrador(request, id_usuario):
         'num_partidos_en_juego':num_partidos_en_juego, 'franja_horaria_actual':franja_horaria_actual, 'pistas_partidos':pistas_partidos, 'pistas':pistas,
         'rutaTiempo':rutaTiempo, 'notificaciones':notificaciones}
     return render_to_response(ruta_pagina_principal, data, context_instance=RequestContext(request))
+
+
+
+#Vista que intercambia el club que esta vigente en sesion
+@login_required()
+def cambio_club_administrador(request, id_usuario, club_id):
+
+    request.session["club_id"] = club_id
+
+    return HttpResponseRedirect("/administrador/"+id_usuario)

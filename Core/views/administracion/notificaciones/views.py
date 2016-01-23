@@ -15,9 +15,7 @@ ruta_administracion_notificaciones = 'administracion/notificaciones/notificacion
 @login_required()
 def notificaciones(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
-    if not perfil:
-        return HttpResponseRedirect("/")
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=settings.ROL_ADMINISTRADOR))
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
 
     #Notificaciones
     try:

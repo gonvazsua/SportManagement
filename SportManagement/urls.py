@@ -18,6 +18,14 @@ urlpatterns = patterns('',
     url(r'^$', 'Core.views.inicio'),
     url(r'^logout', 'Core.views.logout'),
 
+    ###########################################################
+    ########## ADMINISTRADOR URLS
+    ###########################################################
+
+    #Inicio administrador
+    url(r'^administrador/(?P<id_usuario>\d+)$', 'Core.views.perfil_administrador'),
+    url(r'^administrador/(?P<id_usuario>\d+)/club/(?P<club_id>\d+)$', 'Core.views.cambio_club_administrador'),
+
     #Administradores
     url(r'^administrador/(?P<id_usuario>\d+)/administradores$', 'Core.views.administradores_club'),
 
@@ -29,7 +37,6 @@ urlpatterns = patterns('',
     url(r'^guardar_pistas$', 'Core.views.guardar_pistas_ajax'),
 
     #Administracion Jugadores
-    url(r'^administrador/(?P<id_usuario>\d+)$', 'Core.views.perfil_administrador'),
     url(r'^administrador/(?P<id_usuario>\d+)/jugadores$', 'Core.views.administrador_jugadores', name="administrador_jugadores"),
     url(r'^administrador/(?P<id_usuario>\d+)/jugadores/(?P<id_jugador>\d+)$', 'Core.views.administrador_perfil_jugador'),
     url(r'^administrador/(?P<id_usuario>\d+)/jugadores/nuevo$', 'Core.views.administrador_nuevo_jugador'),

@@ -18,9 +18,7 @@ ruta_administracion_nuevo_jugador = 'administracion/jugadores/nuevo_jugador.html
 @login_required()
 def administrador_jugadores(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=settings.ROL_ADMINISTRADOR))
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
     jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil=perfil).order_by("perfil__user__first_name")
     data = {'perfil':perfil, 'club':club, 'jugadores':jugadores}
@@ -30,8 +28,7 @@ def administrador_jugadores(request, id_usuario):
 @login_required()
 def administrador_perfil_jugador(request, id_usuario, id_jugador):
     perfil = comprueba_usuario_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     perfil_jugador = ""
     try:
         perfil_jugador = Perfil.objects.get(id=id_jugador)
@@ -43,7 +40,7 @@ def administrador_perfil_jugador(request, id_usuario, id_jugador):
     current_year = date.today().year
     for mes in range(1,13):
         partidos_mes[mes] = Partido.objects.filter(fecha__year = current_year, fecha__month=mes, perfiles=perfil_jugador).count()
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
+
     data = {'perfil':perfil, 'club':club, 'perfil_jugador':perfil_jugador, 'partidos_mes':partidos_mes}
     return render_to_response(ruta_administracion_perfil_jugador, data, context_instance=RequestContext(request))
 
@@ -81,10 +78,8 @@ def baja_jugador_club(request):
 @login_required()
 def administrador_nuevo_jugador(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     error = ""
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=settings.ROL_ADMINISTRADOR))
     provincias = Provincias.objects.all()
     municipios = []
     niveles_club = Nivel.objects.filter(club=club).order_by('deporte')
@@ -167,7 +162,7 @@ def administrador_nuevo_jugador(request, id_usuario):
             logger.debug("administracion/jugadores - Método administrador_nuevo_jugador: id_usuario" + str(id_usuario))
             error = "Lo sentimos, ha habido un error al crear el jugador. Si el problema persiste, póngase en contacto con el administrador"
 
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=settings.ROL_ADMINISTRADOR))
+
     data = {'perfil':perfil, 'club':club, 'error':error, 'provincias':provincias, 'municipios':municipios,
     'niveles':niveles}
     return render_to_response(ruta_administracion_nuevo_jugador, data, context_instance=RequestContext(request))

@@ -14,11 +14,10 @@ ruta_inicio_usuarios = 'usuarios/inicio/pagina_principal.html'
 @login_required()
 def usuario_inicio(request, id_usuario):
     perfil = comprueba_usuario_logado_no_administrador(id_usuario)
-    if perfil == None:
-        return HttpResponseRedirect("/")
+
     try:
         provincias = Provincias.objects.all()
-        clubes = Club.objects.filter(id__in=PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil=perfil))
+        clubes = Club.objects.filter(id__in=PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil=perfil, rol=settings.ROL_JUGADOR))
         clubes_pendientes_aceptar = Club.objects.filter(id__in=InscripcionesEnClub.objects.values_list('club_id', flat=True).filter(jugador=perfil, estado=settings.ESTADO_NULL))
         club_partidos_disponibles = {}
         for c in clubes:

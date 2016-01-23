@@ -80,6 +80,11 @@ def login(request):
     return HttpResponse(json.dumps(data))
 
 def logout(request):
+
+    #Limpiamos la sesion
+    for key in request.session.keys():
+        del request.session[key]
+
 	auth.logout(request)
 	return HttpResponseRedirect("/")
 

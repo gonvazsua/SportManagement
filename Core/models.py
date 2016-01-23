@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import *
+from django.conf import settings
 
 # Create your models here.
 class Comunidades(models.Model):
@@ -79,6 +80,8 @@ class Perfil(models.Model):
         return deportes
     def clubes(self):
         return Club.objects.filter(id__in = PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil=self))
+    def es_administrador(self):
+        return PerfilRolClub.objects.filter(perfil=self, rol=settings.ROL_ADMINISTRADOR).exists()
 
 class PerfilRolClub(models.Model):
     rol = models.ForeignKey(Rol)

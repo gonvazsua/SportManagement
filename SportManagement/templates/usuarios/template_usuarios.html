@@ -78,8 +78,15 @@
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="/administrador/{{perfil.user.id}}/cuenta"><i class="fa fa-gear fa-fw"></i> Configuración</a>
+                        {% if perfil.es_administrador %}
+                        <li><a href="/administrador/{{perfil.user.id}}"><i class="fa fa-key fa-fw"></i> Cambiar a rol administrador</a>
                         </li>
+                        <li class="divider"></li>
+                        {% endif %}
+
+                        <li><a href="/usuario/{{perfil.user.id}}/cuenta"><i class="fa fa-gear fa-fw"></i> Configuración</a>
+                        </li>
+
                         <li class="divider"></li>
                         <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Salir</a>
                         </li>

@@ -13,7 +13,7 @@
     {% if retorno and texto_retorno %}
         <li><a href="{{retorno}}">{{texto_retorno}}</a></li>
     {% endif %}
-    <li class="active">Partidos</li>
+    <li class="active">Partido</li>
 </ol>
 {% endblock %}
 
@@ -28,7 +28,7 @@
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <div class="panel panel-primary fondo-info">
+        <div class="panel panel-primary">
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-6">
@@ -61,11 +61,18 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-lg-12">
 {% for jugador in partido.perfiles.all %}
-    <div class="panel panel-success">
-        <div class="panel-body">
+
+    {% if forloop.counter0|divisibleby:2 %}
+    <div class="row">
+        <div class="col-lg-1"></div>
+    {% endif %}
+
+        <div class="col-lg-5 over-fondo-info padding5 border-radius border-left">
             <div class="row">
-                <div class="col-lg-2">
+                <div class="col-lg-4">
                     {% if jugador.imagen == "" %}
                         <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
                     {% else %}
@@ -94,8 +101,20 @@
                 </div>
             </div>
         </div>
+
+    {% if not forloop.counter0|divisibleby:2 %}
     </div>
+    {%else%}
+    <div class="col-lg-1"></div>
+    {% endif %}
+
 {% endfor %}
+    </div>
+</div>
+
+<div class="row row-margin-top-10">
+    <div class="col-lg-12"></div>
+</div>
 
 <div class="row">
     <div class="col-lg-6">

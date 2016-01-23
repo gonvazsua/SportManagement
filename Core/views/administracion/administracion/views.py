@@ -21,7 +21,7 @@ def administracion_club(request, id_usuario):
     provincia = ""
     form_admin_club = FormAdministracionClub()
     perfil = comprueba_usuario_administrador(id_usuario)
-    club = Club.objects.get(id = PerfilRolClub.objects.values_list('club_id', flat=True).get(perfil=perfil, rol_id=1))
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     provincias = Provincias.objects.all()
     try:
         if perfil.municipio != "" and perfil.municipio != None:
