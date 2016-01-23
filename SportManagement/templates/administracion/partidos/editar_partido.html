@@ -14,6 +14,9 @@
 {% block barra_navegacion %}
 <ol class="breadcrumb">
   <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  {% if partido.bloqueado %}
+    <li><a href="/administrador/{{perfil.user.id}}/buscador">Partidos</a></li>
+  {% endif %}
   <li class="active">Editar partido</li>
 </ol>
 {% endblock %}
@@ -99,6 +102,7 @@
                         </div>
                     </div>
                 </div>
+                {%if not partido.bloqueado%}
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
                         <div class="form-group col-lg-12">
@@ -110,6 +114,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </form>
         </div>
         <div class="row">
@@ -125,6 +130,7 @@
                 <h3>3. Seleccione jugadores</h3> <hr>
             </div>
         </div>
+        {% if not partido.bloqueado %}
         <div class="row">
             <div class="col-lg-12 col-md-12">
                 <div class="well well-sm">
@@ -134,7 +140,10 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="row">
+
+            {% if not partido.bloqueado %}
             <div class="col-lg-6 col-md-6">
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
@@ -200,13 +209,18 @@
                 </div>
                 <!-- /.table-responsive -->
             </div>
+            {% endif %}
 
             <div class="col-lg-6 col-md-6">
+
+                {% if not partido.bloqueado %}
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
                         <h4>Jugadores seleccionados</h4> <hr>
                     </div>
                 </div>
+                {% endif %}
+
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
                         <div class="table-responsive">
@@ -265,6 +279,8 @@
                         </div>
                     </div>
                 </div>
+
+                {% if not partido.bloqueado %}
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
                         <div class="checkbox" title="Los jugadores podrán ver e inscribirse en este partido desde su cuenta.">
@@ -274,6 +290,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row" id="botonera_form_nuevo_partido">
                     <div class="col-lg-12 col-md-12">
                         <div class="row">
@@ -290,6 +307,8 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
+
                 <div class="row row-margin-top-10" id="advertencia_nuevo_partido" style="display: none">
                     <div class="col-lg-12 col-md-12">
                         <div class="row">

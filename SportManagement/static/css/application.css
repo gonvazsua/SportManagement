@@ -110,10 +110,22 @@ footer{
     border-left: solid 3px #AAAAAA;
 }
 
+.border-right{
+    border-right: solid 1px #AAAAAA;
+}
+
 .min_height_50{
     min-height: 50px;
 }
 
 .color-seleccionado{
     color: #337ab7;
+}
+
+.oscuro{
+    color: #333 !important;
+}
+
+.link_limpio{
+    text-decoration: none !important;
 }

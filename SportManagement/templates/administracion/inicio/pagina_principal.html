@@ -149,7 +149,9 @@
 
         <div class="panel {%if notificaciones|length > 0 %}panel-info{% else %}panel-default{%endif%}">
             <div class="panel-heading">
-                <i class="fa fa-bell fa-fw"></i> Notificaciones <a href="/administrador/{{perfil.user.id}}/notificaciones" title="Ir a notificaciones"><span class="badge">{{notificaciones|length}}</span></a>
+                <a href="/administrador/{{perfil.user.id}}/notificaciones" title="Ir a notificaciones" class="link_limpio {%if notificaciones|length == 0%}oscuro{%endif%}">
+                    <i class="fa fa-bell fa-fw"></i> Notificaciones <span class="badge">{{notificaciones|length}}</span>
+                </a>
             </div>
             <div class="panel-body">
                 {% for n in notificaciones|slice:":5" %}
