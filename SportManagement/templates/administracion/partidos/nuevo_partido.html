@@ -172,12 +172,11 @@
                                         <th>Usuario</th>
                                         <th>Teléfono</th>
                                         <th>Nivel</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 {% for jugador in jugadores %}
-                                    <tr id="fila_{{jugador.perfil.id}}" title="{{jugador.perfil.user.first_name}} {{jugador.perfil.user.last_name}}">
+                                    <tr id="fila_{{jugador.perfil.id}}" title="Añadir a {{jugador.perfil.user.first_name}}" onclick="javascript:incluir_jugador('{{jugador.perfil.id}}','{{jugador.perfil.user.first_name}}', '{{jugador.perfil.user.username}}', '{{jugador.perfil.telefono}}');" class="principal_partido">
                                         <td>{{forloop.counter}}</td>
                                         <td class="campo_busqueda">{{jugador.perfil.user.first_name}}</td>
                                         <td class="campo_busqueda">{{jugador.perfil.user.username}}</td>
@@ -193,9 +192,6 @@
                                             {% empty %}
                                                 <input type="hidden" id="nivel_jugador_{{jugador.perfil.id}}" class="nivel" value="">
                                             {% endfor %}
-                                        </td>
-                                        <td align="center">
-                                            <a href="javascript:incluir_jugador('{{jugador.perfil.id}}','{{jugador.perfil.user.first_name}}', '{{jugador.perfil.user.username}}', '{{jugador.perfil.telefono}}');"><i title="Incluir jugador" class="fa fa-chevron-circle-right"></i></a>
                                         </td>
                                     </tr>
                                 {% endfor %}
