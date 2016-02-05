@@ -95,6 +95,7 @@ def registro(request):
     error = ""
     perfil = ""
     id = ""
+    titulo = "Registro en SportClick"
     if request.method == "POST":
         nombre = request.POST.get('nombre')
         apellidos = request.POST.get('apellidos')
@@ -106,6 +107,11 @@ def registro(request):
             if password1 != password2:
                 error = "Las contraseñas no coinciden"
             else:
+
+                #Cambiar a minusculas algunos datos
+                username = username.lower()
+                email = email.lower()
+
                 try:
                     if(User.objects.filter(username=username).count() == 0):
                         if(User.objects.filter(email=email).count() == 0):
@@ -120,6 +126,14 @@ def registro(request):
                                 acceso = authenticate(username=user.username, password=user.password)
                                 if acceso is not None:
                                     auth.login(request, acceso)
+
+                                #Notificar con email
+                                texto = plantilla_email_registro(user.first_name, user.username, password1)
+                                if enviar_email(titulo, settings.EMAIL_HOST_USER, user.email, texto):
+                                    error = ""
+                                else:
+                                    error = "Te has registrado correctamente, pero no hemos podido enviarte el email"
+
                         else:
                             error = "El email seleccionado ya está en uso"
                     else:
