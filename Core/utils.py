@@ -2,6 +2,8 @@
 from Core.models import *
 from django.shortcuts import *
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.core.mail import BadHeaderError
 
 import logging
 
@@ -58,3 +60,24 @@ def obtener_club_de_sesion_administrador(club_id, perfil_id):
             club = clubes.first()
 
     return club
+
+def enviar_email(titulo, de, para, texto):
+
+    enviado = False
+
+    try:
+
+        msg = EmailMultiAlternatives(titulo,'' , de, [para])
+        msg.attach_alternative(texto, "text/html")
+        msg.send()
+        enviado = True
+
+    except BadHeaderError, e:
+        logger.debug("util/views - Método send_email." + e)
+        enviado = False
+
+    except Exception, e:
+        logger.debug("util/views - Método send_email." + e)
+        enviado = False
+
+    return enviado

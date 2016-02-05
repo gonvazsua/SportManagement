@@ -7,6 +7,9 @@ from Core.views import *
 import json
 from django.conf import settings
 import logging
+from random import choice
+from Core.utils import *
+from Core.plantillas_mail import *
 
 #Instancia del log
 logger = logging.getLogger(__name__)
@@ -127,3 +130,54 @@ def registro(request):
     data = {'id':id, 'error':error}
     return HttpResponse(json.dumps(data))
 
+def recuperar_pass(request):
+    error = ""
+    id = ""
+    cambio_contras = "Cambio de contraseña"
+
+    if request.method == "POST":
+        usernameEmail = request.POST.get('email_pass')
+        if usernameEmail:
+            try:
+                #Comprobamos si el usuario existe
+
+                #Comprobamos si tiene arroba, si no, es username
+                if '@' in usernameEmail:
+                    user = User.objects.get(email=usernameEmail)
+                else:
+                    user = User.objects.get(username=usernameEmail)
+
+                if user:
+                    clave_nueva = generar_clave_aleatoria()
+                    clave_antigua = user.password
+                    if clave_nueva:
+                        user.set_password(clave_nueva)
+                        user.save()
+                        texto = plantilla_email_pass(user.first_name, clave_nueva)
+                        if enviar_email(cambio_contras, settings.EMAIL_HOST_USER, user.email, texto):
+                            error = ""
+
+            except User.DoesNotExist, e:
+                error = "El usuario no existe"
+
+            except Exception, e:
+                error = "Disculpe las molestias, inténtelo de nuevo más tarde"
+                logger.debug("inicio/views - Método recuperar_pass: " + e.message)
+        else:
+            error = "Rellene correctamente todos los campos"
+
+    data = {'error' : error}
+    return HttpResponse(json.dumps(data))
+
+
+######################################################
+#Metodo que genera claves aleatorias para los usuarios
+######################################################
+def generar_clave_aleatoria():
+
+    longitud = 10
+    valores = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    clave = ""
+    clave = clave.join([choice(valores) for i in range(longitud)])
+
+    return clave

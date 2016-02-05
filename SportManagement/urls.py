@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     #Pagina principal
     url(r'^$', 'Core.views.inicio'),
     url(r'^logout', 'Core.views.logout'),
+    url(r'^recuperar_pass', 'Core.views.recuperar_pass'),
 
     ###########################################################
     ########## ADMINISTRADOR URLS

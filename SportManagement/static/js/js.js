@@ -137,3 +137,41 @@ function submit_intro(){
         }
     });
 }
+
+function pass_olvidada(){
+    $("#login_modal").modal("hide");
+    $('#login_modal_pass').modal('show')
+}
+
+function submit_olvida_pass(){
+
+    $("#btn-pass").attr("disabled", true);
+
+    if($("#email_pass").val() != ""){
+        $("#email_pass").parent().removeClass("has-error");
+        $("#alert_pass").html("Estamos cambiando tu contraseña...");
+        form = $("#form_password").serialize();
+        $.ajax({
+            url: '/recuperar_pass',
+            data: form,
+            type: 'POST',
+            success: function(request){
+                var r = JSON.parse(request);
+                if(r.error == ""){
+                    $("#alert_pass").removeClass("alert-info").addClass("alert-success");
+                    $("#alert_pass").html("Se ha enviado al email tu nueva contraseña");
+                    $("#alert_pass").delay(10000).html("Te enviaremos un email con tu nueva contraseña");
+                }
+                else{
+                    $("#alert_pass").removeClass("alert-success").addClass("alert-danger");
+                    $("#alert_pass").html(r.error);
+                }
+            }
+        });
+    }
+    else{
+        $("#email_pass").parent().addClass("has-error");
+    }
+
+    $("#btn-pass").attr("disabled", false);
+}
