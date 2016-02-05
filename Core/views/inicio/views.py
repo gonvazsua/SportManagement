@@ -107,21 +107,23 @@ def registro(request):
                 error = "Las contraseñas no coinciden"
             else:
                 try:
-                    if(User.objects.filter(username=username).count() == 0 or User.objects.filter(email=email).count() == 0):
-                        user = User.objects.create_user(username, email, password1)
-                        user.first_name = nombre
-                        user.last_name = apellidos
-                        perfil = Perfil.objects.create(user = user)
-                        if perfil and user:
-                            user.save()
-                            perfil.save()
-                            id = user.id
-                            acceso = authenticate(username=user.username, password=user.password)
-                            if acceso is not None:
-                                auth.login(request, acceso)
-
+                    if(User.objects.filter(username=username).count() == 0):
+                        if(User.objects.filter(email=email).count() == 0):
+                            user = User.objects.create_user(username, email, password1)
+                            user.first_name = nombre
+                            user.last_name = apellidos
+                            perfil = Perfil.objects.create(user = user)
+                            if perfil and user:
+                                user.save()
+                                perfil.save()
+                                id = user.id
+                                acceso = authenticate(username=user.username, password=user.password)
+                                if acceso is not None:
+                                    auth.login(request, acceso)
+                        else:
+                            error = "El email seleccionado ya está en uso"
                     else:
-                        error = "El email o el nombre de usuario seleccionado no está disponible"
+                        error = "El nombre de usuario seleccionado ya está en uso"
                 except Exception:
                     error = "Disculpe las molestias, inténtelo de nuevo más tarde"
                     logger.debug("inicio/views - Método registro")
