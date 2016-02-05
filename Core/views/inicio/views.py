@@ -153,7 +153,7 @@ def recuperar_pass(request):
                     if clave_nueva:
                         user.set_password(clave_nueva)
                         user.save()
-                        texto = plantilla_email_pass(user.first_name, clave_nueva)
+                        texto = plantilla_email_pass(user.username, clave_nueva)
                         if enviar_email(cambio_contras, settings.EMAIL_HOST_USER, user.email, texto):
                             error = ""
 
