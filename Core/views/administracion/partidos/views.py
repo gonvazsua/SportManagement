@@ -235,11 +235,14 @@ def crear_partido_ajax(request):
                     error = "¡Ups! ha habido un error al crear el partido"
 
             #Si es necesario, se envian notificaciones
-            if notificar and len(jugadores) > 0 and error == "OK":
-                for jugador in jugadores:
-                    texto = plantilla_email_partido(jugador.user.first_name, nuevo_partido)
-                    if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
-                        error = "No se han podido enviar las notificaciones"
+            try:
+                if notificar and len(jugadores) > 0 and error == "OK":
+                    for jugador in jugadores:
+                        texto = plantilla_email_partido(jugador.user.first_name, nuevo_partido)
+                        if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
+                            error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+            except Exception, e:
+                error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
 
         else:
             error = "Debe seleccionar, fecha, hora y pista."

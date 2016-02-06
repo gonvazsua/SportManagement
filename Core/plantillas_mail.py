@@ -168,9 +168,12 @@ def plantilla_email_registro(nombre_int, usuario_int, password_int):
 ######################################################
 def plantilla_email_partido(nombre_int, partido):
 
-    nombre = str(nombre_int)
-    hora = str(partido.franja_horaria.inicio)
-    fecha = str(partido.fecha)
+    nombre = nombre_int
+    hora = partido.franja_horaria.inicio.strftime('%H:%M')
+    fecha = partido.fecha.strftime('%d, %b %Y')
+    club_nombre = partido.pista.club.nombre
+    deporte = partido.pista.deporte.deporte
+    pista_nombre = partido.pista.nombre
 
     texto = ""
     texto += '<table width="100%" border="0" cellspacing="0" cellpadding="0">'
@@ -191,16 +194,19 @@ def plantilla_email_partido(nombre_int, partido):
     texto += '						<tr>'
     texto += '							<td width="360" align="left" valign="middle" style="font-family:Arial, Helvetica, sans-serif; color:#4e4e4e; font-size:13px; padding-right:10px;">'
     texto += '								<div style="font-size:24px;">Hola ' + nombre + '!<br><br></div>'
-    texto += '								El club <strong>"' + partido.pista.club.nombre + '"</strong> ha indicado que vas a jugar un partido de ' + str(partido.pista.deporte.deporte).lower() + '<br>'
+    texto += '								El club <strong>"' + club_nombre + '"</strong> ha indicado que vas a jugar un partido de ' + deporte + '.<br>'
     texto += '								Estos son los datos del partido:'
     texto += '								<br><br>'
-    texto += '								Fecha: <strong>' + fecha + '</strong><br>'
-    texto += '								Hora: <strong>' + hora + '</strong><br>'
-    texto += '								Pista: <strong>' + partido.pista.nombre + '</strong><br><br>'
+    texto += '								<strong>Fecha: </strong>' + fecha + '<br>'
+    texto += '								<strong>Hora: </strong>' + hora + 'h<br>'
+    texto += '								<strong>Pista: </strong>' + pista_nombre + '<br><br>'
     if len(partido.perfiles.all()) > 0:
         texto += 'Jugadores: <br>'
         for jugador in partido.perfiles.all():
-            texto += '- ' + jugador.user.first_name + " " + jugador.user.last_name + '<br>'
+            nombre_jugador = jugador.user.first_name
+            apellidos = jugador.user.last_name
+            #apellidos = apellidos.decode('iso-8859-1').encode('utf8')
+            texto += '- ' + nombre_jugador + " " + apellidos + '<br>'
     else:
         texto += 'Todavía no hay jugadores confirmados'
     texto += '							</td>'
@@ -234,7 +240,7 @@ def plantilla_email_partido(nombre_int, partido):
     texto += '						<tr>'
     texto += '							<td width="330" align="left" valign="middle" style="padding:10px;"></td>'
     texto += '							<td align="left" valign="middle" style="color:#595959; font-size:11px; font-family:Arial, Helvetica, sans-serif; padding:10px;"> '
-    texto += unicode('<b>Dirección</b><br>', 'utf-8')
+    texto += '                              <b>Sitio web</b><br>'
     texto += '								<a href="http://www.sportclick.club" target="_blank"  style="color:#595959; text-decoration:none;">http://www.sportclick.club</a><br>'
     texto += '								<br>'
     texto += '								<b>Contacto:</b> <br>'
