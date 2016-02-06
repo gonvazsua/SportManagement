@@ -5,6 +5,7 @@ from datetime import date,datetime
 import json
 import logging
 from django.contrib.auth.decorators import login_required
+from Core.plantillas_mail import *
 
 #Instancia del log
 logger = logging.getLogger(__name__)
@@ -163,11 +164,11 @@ def comprueba_pista_disponible(franja_horaria_id, pista_id, fecha):
 def comprueba_disponibilidad_partido_ajax(request):
 
     disponible = False
-    if request.POST.get(["fecha"]):
-        fecha = datetime.strptime(request.POST.get(["fecha"]), '%d/%m/%Y').date()
-        id_pista = request.POST.get(["pista"])
-        id_franja_hora = request.POST.get(["franja_horaria"])
-        club_id = request.POST.get(["club"])
+    if request.POST.get("fecha"):
+        fecha = datetime.strptime(request.POST.get("fecha"), '%d/%m/%Y').date()
+        id_pista = request.POST.get("pista")
+        id_franja_hora = request.POST.get("franja_horaria")
+        club_id = request.POST.get("club")
         disponible = True
 
         if id_pista and id_franja_hora and club_id:
@@ -180,6 +181,7 @@ def comprueba_disponibilidad_partido_ajax(request):
 @login_required()
 def crear_partido_ajax(request):
     error = ""
+    titulo = "Nuevo partido en SportClick"
     if request.method == "POST":
         nuevo_partido = None
         fh = None
@@ -187,7 +189,7 @@ def crear_partido_ajax(request):
         error = ""
         jugadores = []
         max_jugadores = 0
-        if request.POST.get("fecha") and request.POST.get("hora") and request.POST.get("pista") and request.POST.get("user") and request.POST.get("visible"):
+        if request.POST.get("fecha") and request.POST.get("hora") and request.POST.get("pista") and request.POST.get("user") and request.POST.get("visible") and request.POST.get("notificar"):
 
             try:
                 creado_por = Perfil.objects.get(user__id = request.POST["user"])
@@ -195,6 +197,7 @@ def crear_partido_ajax(request):
                 fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
                 pista_partido = Pista.objects.get(id=request.POST["pista"])
                 visible = bool(request.POST.get("visible"))
+                notificar = bool(request.POST.get("notificar"))
                 nuevo_partido = Partido(creado_por = creado_por, franja_horaria = fh, fecha = fecha_partido, pista = pista_partido, visible=visible)
 
                 if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
@@ -230,6 +233,14 @@ def crear_partido_ajax(request):
                 if error == "":
                     logger.debug("administracion/partidos - Método crear_partido_ajax. ")
                     error = "¡Ups! ha habido un error al crear el partido"
+
+            #Si es necesario, se envian notificaciones
+            if notificar and len(jugadores) > 0 and error == "OK":
+                for jugador in jugadores:
+                    texto = plantilla_email_partido(jugador.user.first_name, nuevo_partido)
+                    if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
+                        error = "No se han podido enviar las notificaciones"
+
         else:
             error = "Debe seleccionar, fecha, hora y pista."
         data = {'error':error}

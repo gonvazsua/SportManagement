@@ -346,12 +346,12 @@ function activa_enlace_menu(id){
     $("#"+id).addClass("active");
 }
 
-function actualiza_estado_visible(elem){
+function actualiza_estado_visible(elem, id){
     if($(elem).is(":checked")){
-        $("#visible").val(1);
+        $("#"+id).val(1);
     }
     else{
-        $("#visible").val(0);
+        $("#"+id).val(0);
     }
 }
 

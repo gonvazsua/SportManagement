@@ -65,7 +65,7 @@ def perfil_administrador(request, id_usuario):
         pista__in = Pista.objects.filter(club=club), franja_horaria=franja_horaria_actual,
         num_perfiles = 4
     )
-    pistas = Pista.objects.filter(club = club)
+    pistas = Pista.objects.filter(club = club).order_by("orden")
     #Pistas y partidos de la franja horaria
     pistas_partidos = {}
     for p in pistas:
@@ -83,12 +83,17 @@ def perfil_administrador(request, id_usuario):
             Q(inscripcionEnClub__id__in=inscripciones_club_id) | Q(inscripcionEnPartido__id__in=inscripciones_partido_id),
             destino=settings.NOTIF_CLUB, leido = settings.ESTADO_NO
         ).order_by("-fecha")
+
     except Exception:
         notificaciones = []
 
-    data = {'perfil':perfil, 'club':club, 'jugadores':jugadores, 'num_partidos_hoy':num_partidos_hoy, 'num_partidos_abiertos_hoy':num_partidos_abiertos_hoy,
-        'num_partidos_en_juego':num_partidos_en_juego, 'franja_horaria_actual':franja_horaria_actual, 'pistas_partidos':pistas_partidos, 'pistas':pistas,
-        'rutaTiempo':rutaTiempo, 'notificaciones':notificaciones}
+    data = {'perfil':perfil, 'club':club, 'jugadores':jugadores, 'num_partidos_hoy':num_partidos_hoy,
+            'num_partidos_abiertos_hoy':num_partidos_abiertos_hoy,
+            'num_partidos_en_juego':num_partidos_en_juego, 'franja_horaria_actual':franja_horaria_actual,
+            'pistas_partidos':pistas_partidos, 'pistas':pistas,
+            'rutaTiempo':rutaTiempo, 'notificaciones':notificaciones
+    }
+
     return render_to_response(ruta_pagina_principal, data, context_instance=RequestContext(request))
 
 
