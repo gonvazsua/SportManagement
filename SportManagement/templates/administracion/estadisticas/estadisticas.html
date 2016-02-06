@@ -89,7 +89,7 @@
             <label for="mes">Mes: </label>
         </div>
         <div class="col-lg-2 col-md-2 form-group">
-            <select id="id_mes" name="mes" class="form-control">
+            <select id="id_mes" name="mes_buscar" class="form-control">
                 <option value="0"></option>
                 {% for m in lista_meses %}
                     <option value="{{forloop.counter}}"{% if forloop.counter == mes_buscar %}selected = "selected"{% endif %}>{{m}}</option>
@@ -101,7 +101,7 @@
             <label for="ano">Año: </label>
         </div>
         <div class="col-lg-2 col-md-2 form-group">
-            <select id="id_ano" name="ano" class="form-control">
+            <select id="id_ano" name="ano_buscar" class="form-control">
                 <option value="0"></option>
                 {% for a in lista_anos %}
                     <option value="{{a}}"{% if a == ano_buscar %}selected = "selected"{% endif %}>{{a}}</option>

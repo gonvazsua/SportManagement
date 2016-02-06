@@ -21,7 +21,7 @@ def administrador_estadisticas(request, id_usuario):
     mes_buscar = date.today().month
     ano_buscar = date.today().year
     lista_meses = cargar_meses()
-    lista_anos = range(ano_buscar, ano_buscar+6)
+    lista_anos = range(ano_buscar, ano_buscar-2, -1)
     mes_comparar = 0
     ano_comparar = 0
     fecha_comparar = ""
@@ -40,10 +40,10 @@ def administrador_estadisticas(request, id_usuario):
         mes_buscar = date.today().month
         ano_buscar = date.today().year
 
-    data['ano_comparar'] = ano_comparar
-    data['mes_comparar'] = mes_comparar
-    data['ano_buscar'] = ano_buscar
-    data['mes_buscar'] = mes_buscar
+    data['ano_comparar'] = int(ano_comparar)
+    data['mes_comparar'] = int(mes_comparar)
+    data['ano_buscar'] = int(ano_buscar)
+    data['mes_buscar'] = int(mes_buscar)
 
     #Partidos en el mes actual
     partidos_mes_actual_comparar = None
