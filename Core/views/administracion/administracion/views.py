@@ -36,7 +36,7 @@ def administracion_club(request, id_usuario):
         municipio = None
         logger.debug("administracion/administracion - Método administracion_club: id_usuario " + str(id_usuario))
 
-    franjas_horarias = FranjaHora.objects.filter(club = club)
+    franjas_horarias = FranjaHora.objects.filter(club = club).order_by("inicio")
     niveles_juego = Nivel.objects.filter(club=club).order_by('deporte__deporte')
     pistas = Pista.objects.filter(club=club).order_by('deporte__deporte', 'orden')
     deportes = Deporte.objects.all()

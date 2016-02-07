@@ -74,7 +74,7 @@ def perfil_administrador(request, id_usuario):
             fecha=date.today()).count()
     else:
         num_partidos_en_juego = 0
-        franja_horaria_actual = FranjaHora.objects.filter(club = club).first()
+        franja_horaria_actual = FranjaHora.objects.filter(club = club).order_by('inicio').first()
     #Partidos de la franja horaria
     partidos_ahora = Partido.objects.annotate(num_perfiles=Count('perfiles')).filter(
         pista__in = Pista.objects.filter(club=club), franja_horaria=franja_horaria_actual,
