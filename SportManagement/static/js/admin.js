@@ -37,7 +37,36 @@ $(document).ready(function() {
     inicia_pagina_nuevo_partido();
     //inicia_pagina_estadisticas();
 
+    //Peticiones ajax notificaciones
+    setInterval(examinaNotificaciones, 100000);
+
 });
+
+//Peticiones ajax notificaciones
+function examinaNotificaciones() {
+  $.ajax({
+    url: '/comprobar_notificaciones',
+    success: function(data) {
+        var r = JSON.parse(data);
+        if(r.num_notificaciones > 0){
+            $("#num_notificaciones_menu").show();
+            $("#num_notificaciones_menu").html(r.num_notificaciones);
+        }
+        else{
+            $("#num_notificaciones_menu").hide();
+            $("#num_notificaciones_menu").html("");
+        }
+    }
+  });
+  setTimeout(examinaNotificaciones, 5000); // you could choose not to continue on failure...
+}
+
+/*Desplazamiento animado, del origen ELEM al DESTINO*/
+function desplaza(destino){
+	$('html,body').animate({
+    	scrollTop: $('#'+destino).offset().top
+	}, 2000);
+}
 
 function mostrar(id){
     $(id).show();

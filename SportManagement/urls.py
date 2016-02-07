@@ -57,6 +57,7 @@ urlpatterns = patterns('',
     url(r'^administrador/(?P<id_usuario>\d+)/notificaciones$', 'Core.views.notificaciones'),
     url(r'^marcar_leida$', 'Core.views.marcar_como_leida'),
     url(r'^aceptar_denegar_inscripcion$', 'Core.views.aceptar_denegar_inscripcion'),
+    url(r'^comprobar_notificaciones', 'Core.views.comprobar_notificaciones'),
 
     #AJAX
     url(r'^login', 'Core.views.login'),

@@ -116,3 +116,21 @@ def aceptar_denegar_inscripcion(request):
         error = "Ha sucedido un error, actualice la página e inténtelo de nuevo"
     data = {'error':error}
     return HttpResponse(json.dumps(data))
+
+
+@login_required()
+def comprobar_notificaciones(request):
+    num_nofiticaciones = 0
+    club_id = None
+    try:
+        club_id = request.session["club_id"]
+        if club_id:
+            inscripciones_club_id = InscripcionesEnClub.objects.values_list('id', flat=True).filter(club__id=club_id)
+            inscripciones_partido_id = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido__pista__club__id=club_id)
+            num_notificaciones = Notificacion.objects.filter(Q(inscripcionEnClub__id__in=inscripciones_club_id) | Q(inscripcionEnPartido__id__in=inscripciones_partido_id), destino=settings.NOTIF_CLUB,leido = settings.ESTADO_NO).count()
+
+    except Exception, e:
+        num_notificaciones = 0
+
+    data = {'num_notificaciones':num_notificaciones}
+    return HttpResponse(json.dumps(data))

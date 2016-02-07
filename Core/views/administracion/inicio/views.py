@@ -102,12 +102,14 @@ def perfil_administrador(request, id_usuario):
     except Exception:
         notificaciones = []
 
+    municipio_guiones = separa_guiones(club.municipio.municipio)
+
     data = {'perfil':perfil, 'club':club, 'jugadores':jugadores, 'num_partidos_hoy':num_partidos_hoy,
             'num_partidos_abiertos_hoy':num_partidos_abiertos_hoy,
             'num_partidos_en_juego':num_partidos_en_juego, 'franja_horaria_actual':franja_horaria_actual,
             'pistas_partidos':pistas_partidos, 'pistas':pistas,
             'rutaTiempo':rutaTiempo, 'notificaciones':notificaciones,
-            'franjas_horarias':franjas_horarias
+            'franjas_horarias':franjas_horarias, 'municipio_guiones':municipio_guiones
     }
 
     return render_to_response(ruta_pagina_principal, data, context_instance=RequestContext(request))
@@ -121,3 +123,14 @@ def cambio_club_administrador(request, id_usuario, club_id):
     request.session["club_id"] = club_id
 
     return HttpResponseRedirect("/administrador/"+id_usuario)
+
+
+def separa_guiones(cadena):
+    res = ""
+    split_cadena = cadena.split(" ")
+    for index, s in enumerate(split_cadena):
+        res += s
+        if index != len(split_cadena)-1:
+            res += "-"
+
+    return res

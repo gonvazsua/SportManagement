@@ -254,6 +254,7 @@ def crear_partido_ajax(request):
 @login_required()
 def editar_partido_ajax(request):
     error = ""
+    titulo = "Modificación de partido en SportClick"
     if request.method == "POST":
         partido = None
         fh = None
@@ -261,7 +262,9 @@ def editar_partido_ajax(request):
         error = ""
         jugadores = []
         max_jugadores = 0
-        if request.POST["partido_id"] and request.POST["fecha"] and request.POST["hora"] and request.POST["pista"] and request.POST["user"] and request.POST["visible"]:
+        notificar = None
+
+        if request.POST["partido_id"] and request.POST["fecha"] and request.POST["hora"] and request.POST["pista"] and request.POST["user"] and request.POST["visible"] and request.POST.get("notificar"):
 
             try:
                 partido = Partido.objects.get(id=request.POST["partido_id"])
@@ -269,12 +272,15 @@ def editar_partido_ajax(request):
                 fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
                 pista_partido = Pista.objects.get(id=request.POST["pista"])
                 visible = bool(request.POST["visible"])
+                notificar = bool(request.POST.get("notificar"))
                 if pista_partido.id != partido.pista.id:
                     if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
                         #Actualizar valor max_jugadores
                         max_jugadores = pista_partido.deporte.num_jugadores
                     else:
                         error = "La pista seleccionada no está disponible"
+                else:
+                    max_jugadores = pista_partido.deporte.num_jugadores
 
             except Partido.DoesNotExist, e:
                 logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
@@ -311,6 +317,17 @@ def editar_partido_ajax(request):
                     error = "¡Ups! ha habido un error al crear el partido"
         else:
             error = "Debe seleccionar, fecha, hora y pista."
+
+        #Si es necesario, se envian notificaciones
+        try:
+            if notificar and len(jugadores) > 0 and error == "OK":
+                for jugador in jugadores:
+                    texto = plantilla_email_editar_partido(jugador.user.first_name, partido)
+                    if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
+                        error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+        except Exception, e:
+            error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+
         data = {'error':error}
         return HttpResponse(json.dumps(data))
     else:

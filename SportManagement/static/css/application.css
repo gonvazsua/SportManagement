@@ -27,6 +27,19 @@ footer{
     background-repeat:no-repeat;
     background-position: center top;
 }
+
+.color-pista-roja{
+    color: rgb(190,100,99) !important;
+}
+
+.color-pista-amarilla{
+    color: rgb(217,216,112) !important;
+}
+
+.color-pista-verde{
+    color: rgb(131,179,112) !important;
+}
+
 .row-centered {
     text-align:center;
 }

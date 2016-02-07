@@ -118,6 +118,7 @@
                                 href="/administrador/{{perfil.user.id}}/nuevo?pista_id={{pista.id}}&fh_id={{franja_horaria_actual.id}}"
                                 title="Crear partido"
                            {% endif %}
+                           class="enlace_negro"
                         >
                             <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10 {%if partido.perfiles.count == 4%} pista_verde {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla {%else%}pista_roja{%endif%}">
                                 <div class="row">
@@ -126,9 +127,11 @@
                                         <h4 class="color_blanco">- {{pista.deporte.deporte}} -</h4>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row row-centered">
                                     <div class="col-lg-12 col-md-12">
-
+                                        {% if partido.perfiles.count > 0 %}
+                                            <i class="fa fa-user fa-fw"></i>{{partido.perfiles.count}}
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -160,6 +163,7 @@
     <!-- /.col-lg-8 -->
     <div class="col-lg-4">
 
+        {% if notificaciones|length > 0 %}
         <div class="panel {%if notificaciones|length > 0 %}panel-info{% else %}panel-default{%endif%}">
             <div class="panel-heading">
                 <a href="/administrador/{{perfil.user.id}}/notificaciones" title="Ir a notificaciones" class="link_limpio {%if notificaciones|length == 0%}oscuro{%endif%}">
@@ -215,54 +219,63 @@
                 {% endfor %}
             </div>
         </div>
+        {% endif %}
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-user fa-fw"></i> Jugadores
+                <i class="fa fa-graduation-cap fa-fw"></i> Leyenda de pistas
             </div>
             <div class="panel-body">
-                <div class="dataTable_wrapper">
-                    <table class="table table-striped table-bordered table-hover" id="dataTables-jugadores">
-                        <thead>
-                            <tr>
-                                <th class="center">Nombre</th>
-                                <th class="center">Usuario</th>
-                                <th class="center">Teléfono</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for j in jugadores|slice:":10" %}
-                            {% cycle 'odd' 'even' as rowclass silent %}
-                            <tr class="{{rowclass}} gradeX">
-                                <td>{{j.perfil.user.first_name}}</td>
-                                <td>{{j.perfil.user.username}}</td>
-                                <td>{{j.perfil.telefono}}</td>
-                            </tr>
-
-                        {% empty %}
-                            <tr class="{{rowclass}}">
-                                <td colspan="3">No hay jugadores disponibles</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-roja"></i> No hay partido
                     </div>
-                    <!-- /.table-responsive -->
                 </div>
-                <a href="/administrador/{{perfil.user.id}}/jugadores" class="btn btn-info btn-block">Ver todos <span class="badge">{{jugadores.count}}</span></a>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-amarilla"></i> Partido no completo
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-verde"></i> Partido completo
+                    </div>
+                </div>
             </div>
-            <!-- /.panel-body -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-sun-o fa-fw"></i> El tiempo en {{perfil.municipio.municipio}}
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-bars fa-fw"></i> Menú de accceso rápido
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="/administrador/{{perfil.user.id}}/nuevo"><i class="fa fa-plus-square-o fa-fw"></i> Nuevo partido</a>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    <div class="row-centered">
-                        {% if rutaTiempo %}
-                            {{rutaTiempo.ruta|safe}}
-                        {% else %}
-                            En estos momentos no podemos mostrarle el tiempo en su ciudad.
-                        {% endif %}
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="/administrador/{{perfil.user.id}}/jugadores/nuevo"><i class="fa fa-user fa-fw"></i> Nuevo jugador</a>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="http://www.eltiempo.es/{{municipio_guiones}}.html" target="_blank"><i class="fa fa-sun-o fa-fw"></i> El tiempo en {{club.municipio.municipio}}</a>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="javascript:mostrar_contacto();desplaza('form_contacto');"><i class="fa fa-life-ring fa-fw"></i> Soporte técnico</a>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Desconectar</a>
                     </div>
                 </div>
             </div>

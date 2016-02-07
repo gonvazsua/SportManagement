@@ -22,7 +22,10 @@ def usuario_inicio(request, id_usuario):
         club_partidos_disponibles = {}
         for c in clubes:
             try:
-                partidos = Partido.objects.filter(pista__club=c, fecha__gte=datetime.today())[:6]
+                partidos = Partido.objects.filter(
+                    Q(fecha=datetime.today(), franja_horaria__inicio__gt=datetime.now()) | Q(fecha__gt=datetime.today()),
+                    pista__club=c
+                ).order_by('fecha', 'franja_horaria__inicio')[:6]
                 club_partidos_disponibles[c] = partidos
             except Exception:
                 club_partidos_disponibles[c] = None
