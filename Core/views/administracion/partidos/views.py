@@ -51,7 +51,7 @@ def administrador_crear_partido(request, id_usuario):
                         for p in partidos:
                             for perfil in p.perfiles.all():
                                 jug_no_disponibles.append(perfil.id)
-                        jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil__in = list(jug_no_disponibles))
+                        jugadores = PerfilRolClub.objects.filter(club = club, perfil__user__is_active=True).exclude(perfil__in = list(jug_no_disponibles))
                         data["jugadores"] = jugadores
                         map_jugadores = {}
                         deporte_id = Pista.objects.values_list('deporte_id', flat=True).get(id=request.POST["pista"])

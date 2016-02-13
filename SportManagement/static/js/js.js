@@ -48,6 +48,7 @@ function submit_login(){
 }
 
 function submit_registro(){
+    $("#form_registro_error").parent().parent().hide()
     var form = $("#form_registro").serialize();
     var error = false;
     var error_texto = "";
@@ -76,9 +77,10 @@ function submit_registro(){
                 var r = JSON.parse(request);
                 if(r.error == ""){
                     if(r.id != ""){
-                        action = '/usuario/'+r.id;
-                        $("#form_redirige").attr("action", action);
-                        $("#form_redirige").submit();
+                        $("#form_registro_error").removeClass("bg-danger");
+                        $("#form_registro_error").addClass("bg-success");
+                        $("#form_registro_error").html("Se ha registrado con éxito, ya puedes acceder a tu cuenta");
+                        $("#form_registro_error").parent().parent().show();
                     }
                 }
                 else{

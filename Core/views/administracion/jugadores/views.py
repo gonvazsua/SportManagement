@@ -20,7 +20,7 @@ def administrador_jugadores(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
-    jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil=perfil).order_by("perfil__user__first_name")
+    jugadores = PerfilRolClub.objects.filter(club = club, perfil__user__is_active = True).exclude(perfil=perfil).order_by("perfil__user__first_name")
     data = {'perfil':perfil, 'club':club, 'jugadores':jugadores}
 
     return render_to_response(ruta_administracion_jugadores, data, context_instance=RequestContext(request))

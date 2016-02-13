@@ -24,10 +24,10 @@ def administracion_club(request, id_usuario):
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     provincias = Provincias.objects.all()
     try:
-        if perfil.municipio != "" and perfil.municipio != None:
-            municipio = Municipios.objects.get(id=perfil.municipio.id)
+        if club.municipio != "" and club.municipio != None:
+            municipio = Municipios.objects.get(id=club.municipio.id)
             provincia = Provincias.objects.get(id = municipio.provincia.id)
-            municipios = Municipios.objects.filter(provincia = perfil.municipio.provincia)
+            municipios = Municipios.objects.filter(provincia = club.municipio.provincia)
         else:
             municipios = Municipios.objects.all()
     except Exception:

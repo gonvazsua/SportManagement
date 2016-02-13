@@ -10,6 +10,7 @@ import logging
 from random import choice
 from Core.utils import *
 from Core.plantillas_mail import *
+from django.db.models import Q
 
 #Instancia del log
 logger = logging.getLogger(__name__)
@@ -113,31 +114,44 @@ def registro(request):
                 email = email.lower()
 
                 try:
-                    if(User.objects.filter(username=username).count() == 0):
-                        if(User.objects.filter(email=email).count() == 0):
-                            user = User.objects.create_user(username, email, password1)
-                            user.first_name = nombre
-                            user.last_name = apellidos
-                            perfil = Perfil.objects.create(user = user)
-                            if perfil and user:
-                                user.save()
-                                perfil.save()
-                                id = user.id
-                                acceso = authenticate(username=user.username, password=user.password)
-                                if acceso is not None:
-                                    auth.login(request, acceso)
-
-                                #Notificar con email
-                                texto = plantilla_email_registro(user.first_name, user.username, password1)
-                                if enviar_email(titulo, settings.EMAIL_HOST_USER, user.email, texto):
-                                    error = ""
-                                else:
-                                    error = "Te has registrado correctamente, pero no hemos podido enviarte el email"
-
-                        else:
-                            error = "El email seleccionado ya está en uso"
+                    userOld = User.objects.get(Q(username=username) | Q(email=email))
+                    if userOld.is_active:
+                        if userOld.username == username:
+                            error = "El nombre de usuario ya está en uso"
+                        elif userOld.email == email:
+                            error = "El nombre de usuario ya está en uso"
                     else:
-                        error = "El nombre de usuario seleccionado ya está en uso"
+                        if userOld.username == username and userOld.email == email:
+                            userOld.is_active = True
+                            userOld.save()
+                            id = userOld.id
+                        else:
+                            if userOld.username == username:
+                                error = "El nombre de usuario ya está en uso"
+                            elif userOld.email == email:
+                                error = "El nombre de usuario ya está en uso"
+
+                except User.DoesNotExist:
+
+                    user = User.objects.create_user(username, email, password1)
+                    user.first_name = nombre
+                    user.last_name = apellidos
+                    perfil = Perfil.objects.create(user = user)
+                    if perfil and user:
+                        user.save()
+                        perfil.save()
+                        id = user.id
+                        acceso = authenticate(username=user.username, password=user.password)
+                        if acceso is not None:
+                            auth.login(request, acceso)
+
+                        #Notificar con email
+                        texto = plantilla_email_registro(user.first_name, user.username, password1)
+                        if enviar_email(titulo, settings.EMAIL_HOST_USER, user.email, texto):
+                            error = ""
+                        else:
+                            error = "Te has registrado correctamente, pero no hemos podido enviarte el email"
+
                 except Exception:
                     error = "Disculpe las molestias, inténtelo de nuevo más tarde"
                     logger.debug("inicio/views - Método registro")

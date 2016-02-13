@@ -142,3 +142,25 @@ def eliminar_niveles_club_cuenta(request):
                 error = "Ha habido un error al eliminar el nivel. Actualice la página e inténtelo de nuevo."
     data = {"error":error}
     return HttpResponse(json.dumps(data))
+
+@login_required()
+def eliminar_cuenta_usuario(request, id_usuario):
+    error = ""
+    try:
+        perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+
+        #Desactivamos al jugador y hacemos logout
+        if not PerfilRolClub.objects.filter(perfil = perfil, rol = settings.ROL_ADMINISTRADOR).exists():
+            perfil.user.is_active = False
+            perfil.user.save()
+        else:
+            error = "No puede eliminar su cuenta siendo administrador del club"
+            provincias = Provincias.objects.all()
+            if perfil.municipio:
+                municipios = Municipios.objects.filter(provincia = perfil.municipio.provincia)
+            return render_to_response(ruta_cuenta_usuarios, {'error':error,'perfil': perfil, 'provincias':provincias, 'municipios':municipios}, context_instance=RequestContext(request))
+
+    except Exception, e:
+        logger.debug("usuarios/cuenta - Método eliminar_cuenta_usuario." + e)
+
+    return HttpResponseRedirect("/logout")

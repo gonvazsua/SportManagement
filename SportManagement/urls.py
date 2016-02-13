@@ -87,6 +87,7 @@ urlpatterns = patterns('',
     url(r'^clubes_niveles_cuenta', 'Core.views.clubes_niveles_cuenta'),
     url(r'^clubes_deportes_cuenta', 'Core.views.clubes_deportes_cuenta'),
     url(r'^eliminar_niveles_club_cuenta', 'Core.views.eliminar_niveles_club_cuenta'),
+    url(r'^usuario/(?P<id_usuario>\d+)/eliminar$', 'Core.views.eliminar_cuenta_usuario'),
 
     #Partidos
     url(r'^usuario/(?P<id_usuario>\d+)/partidos/(?P<id_partido>\d+)$', 'Core.views.usuario_partido'),

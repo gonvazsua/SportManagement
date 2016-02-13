@@ -286,6 +286,47 @@
         </div>
     </div>
 {% endif %}
+
+<div class="row form-group">
+    <div class="col-lg-12 col-md-12">
+        <h3>Otras acciones</h3><hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#eliminar_cuenta">
+            Eliminar cuenta
+        </button>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="eliminar_cuenta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                  <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Eliminar mi cuenta</h4>
+                  </div>
+                  <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                Si aceptas, se eliminarán todos tus datos de SportClick<br><br>
+                                ¿Estás seguro que quieres continuar?
+                            </div>
+                        </div>
+                  </div>
+                  <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <a class="btn btn-danger" href="/usuario/{{perfil.user.id}}/eliminar" role="button">Continuar</a>
+                  </div>
+            </div>
+      </div>
+</div>
+
 <div class="row row-margin-top-10">
     <div class="col-lg-12"></div>
 </div>

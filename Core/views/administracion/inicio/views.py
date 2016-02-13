@@ -47,7 +47,7 @@ def perfil_administrador(request, id_usuario):
     except Exception:
         rutaTiempo = ""
 
-    jugadores = PerfilRolClub.objects.filter(club = club).order_by("perfil__user__first_name")
+    num_jugadores = PerfilRolClub.objects.filter(club = club, perfil__user__is_active = True).count()
 
     num_partidos_hoy = Partido.objects.annotate(num_perfiles=Count('perfiles')).filter(pista__club=club, fecha__startswith=date.today(), num_perfiles=4).count()
 
@@ -104,7 +104,7 @@ def perfil_administrador(request, id_usuario):
 
     municipio_guiones = separa_guiones(club.municipio.municipio)
 
-    data = {'perfil':perfil, 'club':club, 'jugadores':jugadores, 'num_partidos_hoy':num_partidos_hoy,
+    data = {'perfil':perfil, 'club':club, 'num_jugadores':num_jugadores, 'num_partidos_hoy':num_partidos_hoy,
             'num_partidos_abiertos_hoy':num_partidos_abiertos_hoy,
             'num_partidos_en_juego':num_partidos_en_juego, 'franja_horaria_actual':franja_horaria_actual,
             'pistas_partidos':pistas_partidos, 'pistas':pistas,
