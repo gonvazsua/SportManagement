@@ -1,0 +1,51 @@
+{% extends 'administracion/template_admin.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Eventos - {{club.nombre}}
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Eventos</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Gestión de eventos</h4>
+            <p>
+                En esta pantalla podrás gestionar todos los eventos que se han creado en el club.<br>
+                También podrás darle difusión entre todos los jugadores inscritos en tu club.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<form class="form-inline">
+    <div class="form-group">
+        <label for="fecha_evento">Filtrar eventos: </label>
+        <input type="text" id="id_fecha" name="fecha" placeholder="dd/mm/aaaa" class="form-control" value='{{fecha|date:"d/m/Y"}}' />
+    </div>
+    <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Filtrar</button>
+    <hr>
+</form>
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    $("#enlace_eventos").addClass("active")
+{% endblock %}

@@ -59,6 +59,10 @@ urlpatterns = patterns('',
     url(r'^aceptar_denegar_inscripcion$', 'Core.views.aceptar_denegar_inscripcion'),
     url(r'^comprobar_notificaciones', 'Core.views.comprobar_notificaciones'),
 
+    #Eventos
+    url(r'^administrador/(?P<id_usuario>\d+)/eventos/nuevo', 'Core.views.nuevo_evento'),
+    url(r'^administrador/(?P<id_usuario>\d+)/eventos', 'Core.views.eventos'),
+
     #AJAX
     url(r'^login', 'Core.views.login'),
     url(r'^registro', 'Core.views.registro'),

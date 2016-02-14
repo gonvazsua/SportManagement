@@ -147,3 +147,16 @@ class Notificacion(models.Model):
     destino = models.IntegerField(max_length=1, verbose_name="Destino")
     def __unicode__(self):
 		return "Club: "+self.fecha
+
+class Evento(models.Model):
+    pistas = models.ManyToManyField(Pista, null=True, blank=True)
+    club = models.ForeignKey(Club, null=True, blank=True)
+    fecha = models.DateField(auto_now=False, verbose_name="Fecha")
+    descripcion = models.TextField(max_length=400, verbose_name="Descripción")
+    nombre = models.CharField(max_length=50, verbose_name="Nombre")
+    hora = models.TimeField(auto_now = False, verbose_name='Hora del evento', null=True, blank=True)
+    imagen = models.ImageField(upload_to='Imagenes', verbose_name='Imagen', blank=True)
+    creado_por = models.ForeignKey(Perfil, null=True, blank=True)
+    creado_el = models.DateField(auto_now=True, verbose_name="Fecha")
+    def __unicode__(self):
+		return "Evento: "+self.nombre+". Club: " + self.club.nombre

@@ -58,26 +58,29 @@ def login(request):
         password = request.POST.get('password')
         if usernameEmail and password:
             #Comprobamos si tiene arroba, si no, es username
-            if '@' in usernameEmail:
-                username = User.objects.values_list('username', flat=True).get(email=usernameEmail)
-            else:
-                username = usernameEmail
-            user = authenticate(username=username, password=password)
-            if user is not None and user.is_active:
-                id = user.id
-                auth.login(request, user)
-                try:
-                    perfil = Perfil.objects.get(user = user)
-                    num = PerfilRolClub.objects.filter(perfil_id = perfil.id, rol_id = settings.ROL_ADMINISTRADOR).count()
-                    rol_id = settings.ROL_JUGADOR #Rol de usuario
-                    if num > 0:
-                        rol_id = settings.ROL_ADMINISTRADOR #Rol administrador
-                except Perfil.DoesNotExist:
+            try:
+                if '@' in usernameEmail:
+                    username = User.objects.values_list('username', flat=True).get(email=usernameEmail)
+                else:
+                    username = usernameEmail
+                user = authenticate(username=username, password=password)
+                if user is not None and user.is_active:
+                    id = user.id
+                    auth.login(request, user)
+                    try:
+                        perfil = Perfil.objects.get(user = user)
+                        num = PerfilRolClub.objects.filter(perfil_id = perfil.id, rol_id = settings.ROL_ADMINISTRADOR).count()
+                        rol_id = settings.ROL_JUGADOR #Rol de usuario
+                        if num > 0:
+                            rol_id = settings.ROL_ADMINISTRADOR #Rol administrador
+                    except Perfil.DoesNotExist:
+                        error = "Usuario o contraseña incorrecto."
+                    except Exception:
+                        logger.debug("inicio/views - Método login")
+                else:
                     error = "Usuario o contraseña incorrecto."
-                except Exception:
-                    logger.debug("inicio/views - Método login")
-            else:
-                error = "Usuario o contraseña incorrecto."
+            except User.DoesNotExist:
+                error = "El usuario no está dado de alta"
         else:
             error = "Rellene correctamente todos los campos"
     data = {'error' : error, 'id' : id, 'rol_id' : rol_id}
@@ -119,7 +122,7 @@ def registro(request):
                         if userOld.username == username:
                             error = "El nombre de usuario ya está en uso"
                         elif userOld.email == email:
-                            error = "El nombre de usuario ya está en uso"
+                            error = "El email ya está en uso"
                     else:
                         if userOld.username == username and userOld.email == email:
                             userOld.is_active = True
@@ -129,7 +132,7 @@ def registro(request):
                             if userOld.username == username:
                                 error = "El nombre de usuario ya está en uso"
                             elif userOld.email == email:
-                                error = "El nombre de usuario ya está en uso"
+                                error = "El email ya está en uso"
 
                 except User.DoesNotExist:
 

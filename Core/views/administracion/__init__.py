@@ -10,3 +10,4 @@ from inicio import *
 from jugadores import *
 from partidos import *
 from notificaciones import *
+from eventos import *

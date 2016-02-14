@@ -1047,3 +1047,27 @@ function mostrar_ventana_modal_asignar_administradores(jugador_id){
     $('#asignar_administrador_modal').modal('show');
     $("#id_jugador_asignado").val(jugador_id);
 }
+
+/***************************************/
+/* Eventos */
+/***************************************/
+
+function submit_nuevo_evento(){
+
+    var guardar = true;
+
+    //Limpiamos errores
+    $(".obligatorio").parent().parent().removeClass("has-error");
+
+    //Recorrer campos obligatorios
+    $(".obligatorio").each(function(){
+        if($(this).val() == ""){
+            $(this).parent().parent().addClass("has-error");
+            guardar = false;
+        }
+    });
+
+    if(guardar){
+        $("#nuevo_evento").submit();
+    }
+}

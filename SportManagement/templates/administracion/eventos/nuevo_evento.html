@@ -1,0 +1,157 @@
+{% extends 'administracion/template_admin.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Nuevo evento - {{club.nombre}}
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  <li><a href="/administrador/{{perfil.user.id}}/eventos">Eventos</a></li>
+  <li class="active">Nuevo evento</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Crear un evento</h4>
+            <p>
+                En esta pantalla podrás crear un evento en tu club, como por ejemplo campeonatos y quedadas entre jugadores<br>
+                Podrás asociarle tantas pistas como desees, y reservarlas durante todo el día.
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+
+{% if error %}
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="alert alert-danger" role="alert">{{error}}</div>
+        </div>
+    </div>
+{% endif %}
+
+{% if success %}
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="alert alert-success" role="alert">{{success}}</div>
+        </div>
+    </div>
+{% endif %}
+
+<form id="nuevo_evento" method="post" action="/administrador/{{perfil.user.id}}/eventos/nuevo" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row form-group">
+        <div class="col-lg-2 col-md-2">
+            <label for="nombre">Nombre del evento:</label>
+        </div>
+        <div class="col-lg-8 col-md-8">
+            <input type="text" class="form-control obligatorio" maxlength="50" name="nombre" id="nombre" placeholder="Nombre del evento" value="{{evento.nombre}}">
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2 col-md-2">
+            <label for="id_fecha">Fecha:</label>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <input type="text" class="form-control obligatorio" name="fecha" id="id_fecha" placeholder="dd/mm/yyyy" value='{{evento.fecha|date:"d/m/Y"}}'>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2 col-md-2">
+            <label for="id_hora">Hora:</label>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <select name="hora" class="form-control obligatorio" id="id_hora">
+                {% for hora in horas%}
+                    <option val="{{hora}}" {%if hora_evento == hora%}selected="selected"{%endif%}>{{hora}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-2 col-md-offset-2">
+            <label for="id_hora">Minutos:</label>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <select name="minutos" class="form-control obligatorio" id="id_minutos">
+                {% for min in minutos %}
+                    <option val="{{min}}"{%if minuto_evento == min%}selected="selected"{%endif%}>{{min}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2 col-md-2">
+            <label for="imagen_perfil">Imagen:</label>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <input type="file" class="" id="imagen_perfil" name="imagen" value="">
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2 col-md-2">
+            <label for="descripcion">Descripción:</label>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <textarea class="form-control obligatorio" rows="4" cols="8" name="descripcion" id="descripcion" maxlength="350">
+                {% if evento %}
+                    {{evento.descripcion}}
+                {% endif %}
+            </textarea>
+        </div>
+    </div>
+
+    <!-- Pistas reservadas para el evento -->
+    <div class="row">
+        <div class="col-lg-10">
+            <h5 class="strong">Pistas reservadas para el evento</h5><hr>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-12">
+            {% for pista in pistas %}
+
+                {% if forloop.counter0|divisibleby:"2" %}
+                    <div class="row">
+                {% endif %}
+
+                        <div class="col-lg-4">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" {%if pista.id in pistas_eventos_id %}checked="true"{%endif%} onchange="javascript:actualiza_estado_visible(this, 'pista_{{pista.id}}')" title="Reservar pista">
+                                    {{pista.nombre}}
+                                </label>
+                                <input type="hidden" id="pista_{{pista.id}}" name="pista_{{pista.id}}" value="0">
+                            </div>
+                        </div>
+
+                {% if not forloop.counter0|divisibleby:"2"  or forloop.last %}
+                    </div>
+                {% endif %}
+
+            {% empty %}
+                No hay pistas reservadas
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-lg-2 col-md-2">
+            <button type="button" class="btn btn-primary" onclick="javascript:submit_nuevo_evento()"><i class="fa fa-save"></i> Guardar</button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block js %}
+    $("#enlace_eventos").addClass("active")
+{% endblock %}
