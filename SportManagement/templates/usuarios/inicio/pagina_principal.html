@@ -95,7 +95,11 @@
                         {% endif %}
                             <div class="col-lg-1"></div>
                             <a href="/usuario/{{perfil.user.id}}/partidos/{{partido.id}}" title="Ver partido">
-                                <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10 {%if partido.perfiles.count == 4%} pista_verde {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla {%else%}pista_roja{%endif%}">
+                                <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10
+                                {%if partido.perfiles.count == 4%} pista_verde
+                                {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla
+                                {%elif partido.es_partido_evento %} pista_evento
+                                {%else%}pista_roja{%endif%}">
                                     <div class="row">
                                         <div class="col-lg-12 col-md-12 row-centered">
                                             <h4 class="color_blanco">{{partido.pista.nombre}}</h4>
@@ -193,6 +197,35 @@
             </div>
         </div>
 
+        <!-- Leyenda de pistas -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-graduation-cap fa-fw"></i> Leyenda de pistas
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-roja"></i> Partido sin jugadores
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-amarilla"></i> Partido no completo
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-verde"></i> Partido completo
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-evento"></i> Partido de evento
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-trophy fa-fw"></i> Mis clubes
@@ -265,20 +298,6 @@
             </div>
         </div>
         <!-- /.panel-body -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-sun-o fa-fw"></i> El tiempo en {{perfil.municipio.municipio}}
-            </div>
-            <div class="panel-body">
-                <div class="row-centered">
-                    {% if rutaTiempo %}
-                        {{rutaTiempo.ruta|safe}}
-                    {% else %}
-                        En estos momentos no podemos mostrarte el tiempo en tu ciudad.
-                    {% endif %}
-                </div>
-            </div>
-        </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">

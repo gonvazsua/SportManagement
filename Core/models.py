@@ -119,7 +119,19 @@ class Partido(models.Model):
             return True
         else:
             return False
-
+    def es_partido_evento(self):
+        es_evento = False
+        partidos = Evento.objects.filter(club=self.club(), fecha=self.fecha).values_list('partidos__pk', flat=True)
+        if self.id in partidos:
+            es_evento = True
+        return es_evento
+    def evento_nombre(self):
+        nombre = ""
+        eventos = Evento.objects.filter(club=self.club(), fecha=self.fecha)
+        for evento in eventos:
+            if self in evento.partidos.all():
+                nombre = evento.nombre
+        return nombre
 
 class RutaTiempo(models.Model):
     municipio = models.ForeignKey(Municipios)
@@ -149,7 +161,7 @@ class Notificacion(models.Model):
 		return "Club: "+self.fecha
 
 class Evento(models.Model):
-    pistas = models.ManyToManyField(Pista, null=True, blank=True)
+    partidos = models.ManyToManyField(Partido, null=True, blank=True)
     club = models.ForeignKey(Club, null=True, blank=True)
     fecha = models.DateField(auto_now=False, verbose_name="Fecha")
     descripcion = models.TextField(max_length=400, verbose_name="Descripción")
@@ -160,3 +172,8 @@ class Evento(models.Model):
     creado_el = models.DateField(auto_now=True, verbose_name="Fecha")
     def __unicode__(self):
 		return "Evento: "+self.nombre+". Club: " + self.club.nombre
+    def bloqueado(self):
+        if self.fecha < datetime.now().date():
+            return True
+        else:
+            return False

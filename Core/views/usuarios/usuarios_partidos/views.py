@@ -21,23 +21,33 @@ def usuario_partido(request, id_usuario, id_partido):
         return HttpResponseRedirect("/")
 
     bloqueo_usuario = False
+    bloqueo_notificaciones = False
     try:
         partido = Partido.objects.get(id=id_partido)
+        inscripciones_partidos_ids = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido=partido, jugador=perfil, estado=settings.ESTADO_NO)
+        notificaciones = Notificacion.objects.filter(inscripcionEnPartido__id__in = inscripciones_partidos_ids).count()
+
         nivel_medio = calcular_nivel_medio(partido)
         if perfil in partido.perfiles.all():
             bloqueo_usuario = True
+
+        if notificaciones > 0:
+            bloqueo_notificaciones = True
+
     except Exception:
         partido = None
         nivel_medio = ""
 
     #comprobar si tiene notificaciones de partidos asociadas y marcarlas como leidas
     try:
-        inscripciones_partidos_ids = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido=partido, jugador=perfil)
-        notificaciones = Notificacion.objects.filter(inscripcionEnPartido__id__in = inscripciones_partidos_ids).update(leido = settings.ESTADO_SI, destino=settings.NOTIF_JUGADOR)
+        notificaciones = []
+        if not bloqueo_notificaciones:
+            inscripciones_partidos_ids = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(jugador=perfil)
+            notificaciones = Notificacion.objects.filter(inscripcionEnPartido__id__in = inscripciones_partidos_ids).update(leido = settings.ESTADO_SI)
     except Exception:
         notificaciones = []
 
-    data = {'perfil': perfil, 'partido':partido, 'nivel_medio':nivel_medio, 'bloqueo_usuario':bloqueo_usuario}
+    data = {'perfil': perfil, 'partido':partido, 'nivel_medio':nivel_medio, 'bloqueo_usuario':bloqueo_usuario, 'bloqueo_notificaciones':bloqueo_notificaciones}
 
     #Establecer direccion de retorno
     if request.method == "GET":

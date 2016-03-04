@@ -61,6 +61,9 @@ urlpatterns = patterns('',
 
     #Eventos
     url(r'^administrador/(?P<id_usuario>\d+)/eventos/nuevo', 'Core.views.nuevo_evento'),
+    url(r'^administrador/(?P<id_usuario>\d+)/eventos/(?P<id_evento>\d+)/editar', 'Core.views.editar_evento'),
+    url(r'^administrador/(?P<id_usuario>\d+)/eventos/difusion', 'Core.views.difundir_evento'),
+    url(r'^administrador/(?P<id_usuario>\d+)/eventos/eliminar', 'Core.views.eliminar_evento'),
     url(r'^administrador/(?P<id_usuario>\d+)/eventos', 'Core.views.eventos'),
 
     #AJAX

@@ -27,17 +27,22 @@ footer{
     background-repeat:no-repeat;
     background-position: center top;
 }
-
+.pista_evento{
+    background-image: url("../img/evento.png");
+    background-repeat:no-repeat;
+    background-position: center top;
+}
 .color-pista-roja{
     color: rgb(190,100,99) !important;
 }
-
 .color-pista-amarilla{
     color: rgb(217,216,112) !important;
 }
-
 .color-pista-verde{
     color: rgb(131,179,112) !important;
+}
+.color-pista-evento{
+    color: rgb(153,217,234) !important;
 }
 
 .row-centered {
@@ -99,6 +104,14 @@ footer{
     background-color: #d9edf7 !important;
 }
 
+.hover-success:hover{
+    background-color: #dff0d8 !important;
+}
+
+.hover-danger:hover{
+    background-color: #f2dede !important;
+}
+
 .padding5{
     padding: 5px;
 }
@@ -123,9 +136,14 @@ footer{
     border-left: solid 3px #AAAAAA;
 }
 
+.border-left-1{
+    border-left: solid 1px #AAAAAA;
+}
+
 .border-right{
     border-right: solid 1px #AAAAAA;
 }
+
 
 .min_height_50{
     min-height: 50px;
@@ -141,4 +159,8 @@ footer{
 
 .link_limpio{
     text-decoration: none !important;
+}
+
+.hover-panel-border-info:hover{
+    border-color: #337ab7 !important;
 }

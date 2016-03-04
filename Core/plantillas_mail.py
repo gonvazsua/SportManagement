@@ -355,3 +355,91 @@ def plantilla_email_editar_partido(nombre_int, partido):
     texto += '</table>'
 
     return texto
+
+
+######################################################
+#Plantilla email para difusiones de eventos
+######################################################
+def plantilla_email_difundir_evento(nombre_int, evento):
+
+    nombre = nombre_int
+    hora = evento.hora.strftime('%H:%M')
+    fecha = evento.fecha.strftime('%d, %b %Y')
+    club_nombre = evento.club.nombre
+    nombre_evento = evento.nombre
+    descripcion = evento.descripcion
+
+    texto = ""
+    texto += '<table width="100%" border="0" cellspacing="0" cellpadding="0">'
+    texto += '  <tr>'
+    texto += '    <td align="center" valign="top"><br>'
+    texto += '		<br>'
+    texto += '		<table width="600" border="0" cellspacing="0" cellpadding="0">'
+    texto += '			<tr>'
+    texto += '				<td align="left" valign="top" bgcolor="#ffffff" style="background-color:#ffffff;">'
+    texto += '					<table width="570" border="0" align="center" cellpadding="0" cellspacing="0" style="margin-bottom:15px;">'
+    texto += '						<tr>'
+    texto += '							<td align="left" valign="middle" style="padding:10px;">'
+    texto += '								<h1 style=" color:#4e4e4e;">SportClick.club</h1>'
+    texto += '							</td>'
+    texto += '						</tr>'
+    texto += '					</table>'
+    texto += '					<table width="570" border="0" align="center" cellpadding="0" cellspacing="0" style="margin-bottom:15px;">'
+    texto += '						<tr>'
+    texto += '							<td width="360" align="left" valign="middle" style="font-family:Arial, Helvetica, sans-serif; color:#4e4e4e; font-size:13px; padding-right:10px;">'
+    texto += '								<div style="font-size:24px;">Hola ' + nombre + '!<br><br></div>'
+    texto += '								El club <strong>"' + club_nombre + '"</strong> te ha invitado a participar en el evento '+nombre_evento+'<br>'
+    texto += '								Estos son los datos del evento:'
+    texto += '								<br><br>'
+    texto += '								<strong>Fecha: </strong>' + fecha + '<br>'
+    texto += '								<strong>Hora: </strong>' + hora + 'h<br>'
+    texto += '								<strong>Descripcion: </strong>' + descripcion + '<br><br>'
+    texto += '							</td>'
+    texto += '							<td align="right" valign="middle">'
+    texto += '								<table width="210" border="0" cellspacing="0" cellpadding="0">'
+    texto += '									<tr>'
+    texto += '										<td align="center" valign="top" bgcolor="#1ba5db" style="background-color:#1ba5db; padding-top: 20px; padding-bottom: 20px; border-top-left-radius: 15px; border-bottom-right-radius: 15px;">'
+    texto += '											<table width="184" border="0" cellspacing="0" cellpadding="4">'
+    texto += '												<tr>'
+    texto += '												  <td align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:20px; color:#ffffff;"><b>Links</b></td>'
+    texto += '												</tr>'
+    texto += '												<tr>'
+    texto += '													<td align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#ffffff;">'
+    texto += '														<a href="http://www.sportclick.club" style="color:#ffffff; text-decoration:underline; text-decoration:none;">Accede</a>'
+    texto += '														<hr style="color:#FFFFFF;height:1px;">'
+    texto += '														<a href="http://www.sportclick.club#services" style="color:#ffffff; text-decoration:underline; text-decoration:none;">Servicios</a>'
+    texto += '														<hr style="color:#FFFFFF;height:1px;">'
+    texto += '														<a href="http://www.sportclick.club#contact" style="color:#ffffff; text-decoration:underline; text-decoration:none;">Contacto</a>'
+    texto += '														<hr style="color:#FFFFFF;height:1px;">'
+    texto += '														<a href="http://www.sportclick.club#apartado_registro" style="color:#ffffff; text-decoration:underline; text-decoration:none;">Registro</a>'
+    texto += '													</td>'
+    texto += '												</tr>'
+    texto += '											</table>'
+    texto += '										</td>'
+    texto += '									</tr>'
+    texto += '								</table>'
+    texto += '							</td>'
+    texto += '						</tr>'
+    texto += '					</table>'
+    texto += '					<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">'
+    texto += '						<tr>'
+    texto += '							<td width="330" align="left" valign="middle" style="padding:10px;"></td>'
+    texto += '							<td align="left" valign="middle" style="color:#595959; font-size:11px; font-family:Arial, Helvetica, sans-serif; padding:10px;"> '
+    texto += '                              <b>Sitio web</b><br>'
+    texto += '								<a href="http://www.sportclick.club" target="_blank"  style="color:#595959; text-decoration:none;">http://www.sportclick.club</a><br>'
+    texto += '								<br>'
+    texto += '								<b>Contacto:</b> <br>'
+    texto += '								<a href="mailto:info@sportclick.club" style="color:#595959; text-decoration:none;">info@sportclick.club</a>'
+    texto += '							</td>'
+    texto += '						</tr>'
+    texto += '					</table>'
+    texto += '				</td>'
+    texto += '			</tr>'
+    texto += '		</table>'
+    texto += '		<br>'
+    texto += '		<br>'
+    texto += '	</td>'
+    texto += '  </tr>'
+    texto += '</table>'
+
+    return texto

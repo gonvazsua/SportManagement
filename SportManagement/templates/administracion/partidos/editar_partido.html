@@ -49,6 +49,17 @@
     </div>
 {% endif %}
 
+<!-- Evento del partido -->
+{% if partido.es_partido_evento %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="alert alert-info" role="alert">
+                Este partido pertenece al evento <strong>{{partido.evento_nombre}}</strong>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <div class="row">

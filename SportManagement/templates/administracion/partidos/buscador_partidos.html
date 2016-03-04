@@ -71,7 +71,11 @@
             {% endif %}
                 <div class="col-lg-1"></div>
                 <a href="/administrador/{{perfil.user.id}}/partido/{{p.id}}/editar" title="Ver/Editar este partido">
-                    <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10 {%if p.perfiles.count == 4%} pista_verde {%elif p.perfiles.count > 0 and p.perfiles.count < 4 %} pista_amarilla {%else%}pista_roja{%endif%}">
+                    <div id="pista_{{pista.id}}"  class="principal_partido col-lg-4  row-altura row-margin-top-10
+                                {%if p.perfiles.count == 4%} pista_verde
+                                {%elif p.perfiles.count > 0 and p.perfiles.count < 4 %} pista_amarilla
+                                {%elif p.es_partido_evento %} pista_evento
+                                {%else%}pista_roja{%endif%}">
                         <div class="row">
                             <div class="col-lg-12 col-md-12 row-centered">
                                 <h4 class="color_blanco">{{p.pista.nombre}}</h4>

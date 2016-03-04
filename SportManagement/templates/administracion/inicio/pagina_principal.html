@@ -121,7 +121,11 @@
                            {% endif %}
                            class="enlace_negro"
                         >
-                            <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10 {%if partido.perfiles.count == 4%} pista_verde {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla {%else%}pista_roja{%endif%}">
+                            <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10
+                                {%if partido.perfiles.count == 4%} pista_verde
+                                {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla
+                                {%elif partido.es_partido_evento %} pista_evento
+                                {%else%}pista_roja{%endif%}">
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 row-centered">
                                         <h4 class="color_blanco">{{pista.nombre}}</h4>
@@ -192,7 +196,7 @@
                         </div>
                         <div class="col-lg-8">
                             <div class="row">
-
+                                <div class="col-lg-12">
                                     {% if n.inscripcionEnClub %}
                                         <a href="/administrador/{{perfil.user.id}}/jugadores/{{n.inscripcionEnClub.jugador.id}}">
                                             <strong>{{n.inscripcionEnClub.jugador.user.first_name}} {{n.jugador.user.last_name}}</strong>
@@ -205,19 +209,43 @@
                                         <span class="gris cursiva">{{n.inscripcionEnPartido.partido.fecha}}</span><br>
                                         <span class="gris cursiva">{{n.inscripcionEnPartido.partido.pista.nombre}} - {{n.inscripcionEnPartido.partido.franja_horaria.inicio|time:'G:i'}}</span>
                                     {% endif %}
+                                </div>
+                            </div>
+                            <div class="row row-centered margen_superior">
+                                <div class="col-lg-12">
+                                    <button type="button" id="btn_aceptar_notif_pag_principal_{{n.id}}" class="btn btn-default btn-sm btn-redondo hover-success" title="Aceptar invitación" onclick="javascript:aceptar_denegar_inscripcion_pag_principal({{n.id}}, 1);">
+                                        <i class="fa fa-check"></i>
+                                    </button>
+                                    <button type="button" id="btn_denegar_notif_pag_principal_{{n.id}}" class="btn btn-default btn-sm btn-redondo hover-danger" title="Denegar invitación" onclick="javascript:aceptar_denegar_inscripcion_pag_principal({{n.id}}, 0);">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-                            </div><!--
-                            <div class="row">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-success btn-sm btn-redondo"><i class="fa fa-check"></i></button>
-                                        <button type="button" class="btn btn-danger btn-sm btn-redondo"><i class="fa fa-check"></i></button>
-                                    </div>
-                            </div>-->
+                            <!-- Formulario -->
+                            <form id="form_inscripcion_{{n.id}}" action="">
+                                {% csrf_token %}
+                                <input type="hidden" id="inscripcion_id_{{n.id}}" name="inscripcion_id" value="{{n.id}}">
+                                <input type="hidden" id="estado_id_{{n.id}}" name="estado" value="">
+                                <input type="hidden" id="club_id" name="club_id" value="{{club.id}}">
+                                {% if n.inscripcionEnClub %}
+                                    <input type="hidden" id="jugador_id_{{n.id}}" name="jugador_id" value="{{n.inscripcionEnClub.jugador.id}}">
+                                {% endif %}
+                                {% if n.inscripcionEnPartido %}
+                                    <input type="hidden" id="jugador_id_{{n.id}}" name="jugador_id" value="{{n.inscripcionEnPartido.jugador.id}}">
+                                {% endif %}
+                            </form>
+
                         </div>
                     </div>
                 {% empty %}
                     No tienes notificaciones nuevas
                 {% endfor %}
+            </div>
+            <div class="panel-footer fondo-info row-centered">
+                <a href="/administrador/{{perfil.user.id}}/notificaciones" title="Ir a notificaciones" class="link_limpio {%if notificaciones|length == 0%}oscuro{%endif%}">
+                    Ver todas ({{notificaciones|length}})
+                </a>
             </div>
         </div>
         {% endif %}
@@ -240,6 +268,11 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <i class="fa fa-circle fa-fw color-pista-verde"></i> Partido completo
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <i class="fa fa-circle fa-fw color-pista-evento"></i> Partido de evento
                     </div>
                 </div>
             </div>

@@ -30,7 +30,24 @@
 {% endblock %}
 
 {% block pagina_central %}
-<form class="form-inline">
+
+{% if error %}
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="alert alert-danger" role="alert">{{error}}</div>
+        </div>
+    </div>
+{% endif %}
+{% if success %}
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="alert alert-success" role="alert">{{success}}</div>
+        </div>
+    </div>
+{% endif %}
+
+<form class="form-inline" action="/administrador/{{perfil.user.id}}/eventos" method="POST">
+    {% csrf_token %}
     <div class="form-group">
         <label for="fecha_evento">Filtrar eventos: </label>
         <input type="text" id="id_fecha" name="fecha" placeholder="dd/mm/aaaa" class="form-control" value='{{fecha|date:"d/m/Y"}}' />
@@ -38,10 +55,142 @@
     <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Filtrar</button>
     <hr>
 </form>
-<div class="row">
-    <div class="col-lg-12 col-md-12">
 
+
+{% for evento in eventos %}
+
+    {% if forloop.counter0|divisibleby:2 %}
+    <div class="row">
+    {% endif %}
+
+        <div class="col-lg-6">
+            <div class="panel panel-default hover-panel-border-info">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="row row-centered">
+                                <strong>{{evento.fecha|date:"d"}}</strong>
+                            </div>
+                            <div class="row row-centered">
+                                <strong class="color-pista-roja">{{evento.fecha|date:"M"}}</strong>
+                            </div>
+                        </div>
+                        <div class="col-lg-10">
+                            {{evento.nombre}}
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-4 border-right">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    {% if evento.imagen == "" or evento.imagen == None %}
+                                        <img src="{{STATIC_URL}}img/club-no-image.png" title="Imagen no disponible" alt="{{evento.nombre}}" class="img-rounded" style="max-width: 100%">
+                                    {% else %}
+                                        <img src="{{MEDIA_URL}}{{evento.imagen}}" title="{{evento.nombre}}" alt="{{evento.nombre}}" class="img-rounded" style="max-width: 100%">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row row-centered margen_superior">
+                                <div class="col-lg-12">
+                                    <a class="btn btn-default btn-sm btn-redondo" href="/administrador/{{perfil.user.id}}/eventos/{{evento.id}}/editar" title="Editar evento" role="button"><i class="fa fa-pencil"></i></a>
+                                    <button type="button" class="btn btn-default btn-sm btn-redondo hover-success" title="Difundir evento" onclick="javascript:difundir_evento({{evento.id}});">
+                                        <i class="fa fa-bullhorn"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm btn-redondo hover-danger" title="Eliminar evento" onclick="javascript:eliminar_evento({{evento.id}});">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 padding5 cursiva gris">
+                                    {{evento.fecha|date:"D"}} a las {{evento.hora|time:'G:i'}} h.
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 oscuro">
+                                    {% if evento.descripcion %}
+                                        {{evento.descripcion}}
+                                    {% else %}
+                                        No hay descripción para este evento
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% if not forloop.counter0|divisibleby:2 %}
     </div>
+    {% endif %}
+
+{% empty %}
+    No se han encontrado eventos
+{% endfor %}
+
+<!-- Formularios -->
+<form action="/administrador/{{perfil.user.id}}/eventos/difusion" id="difundir_evento_form" method="POST">
+    {% csrf_token %}
+    <input type="hidden" id="club_id", name="club" value="{{club.id}}">
+    <input type="hidden" id="evento_id" name="evento" value="">
+</form>
+
+<form action="/administrador/{{perfil.user.id}}/eventos/eliminar" id="eliminar_evento_form" method="POST">
+    {% csrf_token %}
+    <input type="hidden" id="club_id", name="club" value="{{club.id}}">
+    <input type="hidden" id="evento_id" name="evento" value="">
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="difundir_evento_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                  <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Difundir evento</h4>
+                  </div>
+                  <div class="modal-body">
+                        Con esta difusión se enviará un email a todos los jugadores del club con los datos del evento.<br><br>
+                        ¿Estás seguro que quieres continuar?
+                  </div>
+                  <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="javascript:$('#difundir_evento_form').submit();">
+                            <span class="glyphicon" id="" aria-hidden="true"></span> Enviar
+                        </button>
+                  </div>
+            </div>
+      </div>
+</div>
+
+<div class="modal fade" id="eliminar_evento_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                  <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Eliminar evento</h4>
+                  </div>
+                  <div class="modal-body">
+                        Esta acción eliminará el evento de forma permanente.<br><br>
+                        ¿Estás seguro que quieres continuar?
+                  </div>
+                  <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="javascript:$('#eliminar_evento_form').submit();">
+                            <span class="glyphicon" aria-hidden="true"></span> Eliminar
+                        </button>
+                  </div>
+            </div>
+      </div>
 </div>
 
 {% endblock %}

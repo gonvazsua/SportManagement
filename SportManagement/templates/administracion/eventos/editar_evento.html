@@ -4,31 +4,18 @@
 {% endblock %}
 
 {% block nombre_principal %}
-    Nuevo evento - {{club.nombre}}
+    Editar evento - {{club.nombre}}
 {% endblock %}
 
 {% block barra_navegacion %}
 <ol class="breadcrumb">
   <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
   <li><a href="/administrador/{{perfil.user.id}}/eventos">Eventos</a></li>
-  <li class="active">Nuevo evento</li>
+  <li class="active">Editar evento</li>
 </ol>
 {% endblock %}
 
 {% block fila_superior %}
-<div class="row">
-    <div class="col-lg-12 col-md-12">
-        <div class="well well-sm">
-            <h4>Crear un evento</h4>
-            <p>
-                En esta pantalla podrás crear un evento en tu club, como por ejemplo campeonatos y quedadas entre jugadores<br>
-                Podrás asociarle tantas pistas como desees, y reservarlas durante todo el día.
-                Se crearán partidos en las pistas y en las franjas horarias que selecciones, para que puedas gestionar también los
-                jugadores durante el evento.
-            </p>
-        </div>
-    </div>
-</div>
 <!-- /.row -->
 {% endblock %}
 
@@ -54,14 +41,14 @@
     </div>
 {% endif %}
 
-<form id="nuevo_evento" method="post" action="/administrador/{{perfil.user.id}}/eventos/nuevo" enctype="multipart/form-data">
+<form id="editar_evento" method="post" action="/administrador/{{perfil.user.id}}/eventos/{{evento_editar.id}}/editar" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row form-group">
         <div class="col-lg-2 col-md-2">
             <label for="nombre">Nombre del evento:</label>
         </div>
         <div class="col-lg-8 col-md-8">
-            <input type="text" class="form-control obligatorio" maxlength="50" name="nombre" id="nombre" placeholder="Nombre del evento" value="{{nombre}}">
+            <input type="text" class="form-control obligatorio" maxlength="50" name="nombre" id="nombre" placeholder="Nombre del evento" value="{{nombre}}" {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
         </div>
     </div>
     <div class="row form-group">
@@ -69,7 +56,7 @@
             <label for="id_fecha">Fecha:</label>
         </div>
         <div class="col-lg-2 col-md-2">
-            <input type="text" class="form-control obligatorio" name="fecha" id="id_fecha" placeholder="dd/mm/yyyy" value='{{fecha|date:"d/m/Y"}}'>
+            <input type="text" class="form-control obligatorio" name="fecha" id="id_fecha" placeholder="dd/mm/yyyy" value='{{fecha|date:"d/m/Y"}}' {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
         </div>
     </div>
     <div class="row form-group">
@@ -77,7 +64,7 @@
             <label for="id_hora">Hora:</label>
         </div>
         <div class="col-lg-2 col-md-2">
-            <select name="hora" class="form-control obligatorio" id="id_hora">
+            <select name="hora" class="form-control obligatorio" id="id_hora" {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
                 {% for hora in horas%}
                     <option val="{{hora}}" {%if hora_evento == hora%}selected="selected"{%endif%}>{{hora}}</option>
                 {% endfor %}
@@ -87,7 +74,7 @@
             <label for="id_hora">Minutos:</label>
         </div>
         <div class="col-lg-2 col-md-2">
-            <select name="minutos" class="form-control obligatorio" id="id_minutos">
+            <select name="minutos" class="form-control obligatorio" id="id_minutos" {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
                 {% for min in minutos %}
                     <option val="{{min}}"{%if minuto_evento == min%}selected="selected"{%endif%}>{{min}}</option>
                 {% endfor %}
@@ -99,7 +86,7 @@
             <label for="imagen_perfil">Imagen:</label>
         </div>
         <div class="col-lg-6 col-md-6">
-            <input type="file" class="" id="imagen_perfil" name="imagen" value="">
+            <input type="file" class="" id="imagen_perfil" name="imagen" value="" {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
         </div>
     </div>
     <div class="row form-group">
@@ -107,7 +94,7 @@
             <label for="descripcion">Descripción:</label>
         </div>
         <div class="col-lg-6 col-md-6">
-            <textarea class="form-control obligatorio" rows="4" cols="8" name="descripcion" id="descripcion" maxlength="350">{{descripcion}}</textarea>
+            <textarea class="form-control obligatorio" rows="4" cols="8" name="descripcion" id="descripcion" maxlength="350" {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>{{descripcion}}</textarea>
         </div>
     </div>
 
@@ -128,7 +115,9 @@
                         <div class="col-lg-4">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" {%if fh.id in fh_eventos_id %}checked="true"{%endif%} onchange="javascript:actualiza_estado_visible(this, 'fh_{{fh.id}}')" title="Reservar franja horaria">
+                                    <input type="checkbox" {%if fh.id in fh_eventos_id %}checked="true"{%endif%}
+                                           onchange="javascript:actualiza_estado_visible(this, 'fh_{{fh.id}}')" title="Reservar franja horaria"
+                                             {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
                                     {{fh.inicio|time:'G:i'}} - {{fh.fin|time:'G:i'}}
                                 </label>
                                 <input type="hidden" id="fh_{{fh.id}}" name="fh_{{fh.id}}" {%if fh.id in fh_eventos_id%}value="1"{%else%}value="0"{%endif%}>
@@ -140,7 +129,7 @@
                 {% endif %}
 
             {% empty %}
-                No hay franjas horarias reservadas en tu club
+                No hay franjas reservadas
             {% endfor %}
         </div>
     </div>
@@ -162,7 +151,10 @@
                         <div class="col-lg-4">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" {%if pista.id in pistas_eventos_id %}checked="true"{%endif%} onchange="javascript:actualiza_estado_visible(this, 'pista_{{pista.id}}')" title="Reservar pista">
+                                    <input type="checkbox" {%if pista.id in pistas_eventos_id %}checked="true"{%endif%}
+                                           onchange="javascript:actualiza_estado_visible(this, 'pista_{{pista.id}}')"
+                                           title="Reservar pista"
+                                           {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
                                     {{pista.nombre}}
                                 </label>
                                 <input type="hidden" id="pista_{{pista.id}}" name="pista_{{pista.id}}" {%if pista.id in pistas_eventos_id%}value="1"{%else%}value="0"{%endif%}>
@@ -174,15 +166,15 @@
                 {% endif %}
 
             {% empty %}
-                No se han encontrado pistas en tu club
+                No hay pistas reservadas
             {% endfor %}
         </div>
     </div>
 
-    {% if not success %}
+    {% if not evento_editar.bloqueado %}
     <div class="row form-group">
         <div class="col-lg-2 col-md-2">
-            <button type="button" class="btn btn-primary" onclick="javascript:submit_nuevo_evento()"><i class="fa fa-save"></i> Guardar</button>
+            <button type="button" class="btn btn-primary" onclick="javascript:submit_editar_evento()"><i class="fa fa-save"></i> Guardar</button>
         </div>
     </div>
     {% endif %}

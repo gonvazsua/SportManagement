@@ -26,6 +26,16 @@
         <h4>Datos del partido:</h4><hr>
     </div>
 </div>
+<!-- Evento del partido -->
+{% if partido.es_partido_evento %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="alert alert-info" role="alert">
+                Este partido pertenece al evento <strong>{{partido.evento_nombre}}</strong>
+            </div>
+        </div>
+    </div>
+{% endif %}
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-primary">
@@ -124,7 +134,7 @@
         {% endif %}
     </div>
     <div class="col-lg-6">
-        {% if not partido.bloqueado and not bloqueo_usuario %}
+        {% if not partido.bloqueado and not bloqueo_usuario and not bloqueo_notificaciones %}
             <button type="button" id="btn_inscripcion" class="btn btn-info pull-right" aria-label="Right Align" onclick="javascript:inscripcion_partido();">
                 <i class="fa fa-check"></i> Inscribirme en este partido
             </button>
@@ -134,7 +144,16 @@
                 <input type="hidden" name="perfil" value="{{perfil.id}}">
             </form>
         {% else %}
-
+            {% if bloqueo_notificaciones %}
+                <button type="button" disabled = "disabled" class="btn btn-success pull-right" aria-label="Right Align">
+                    <i class="fa fa-check"></i> Petición enviada
+                </button>
+            {% endif %}
+            {% if bloqueo_usuario %}
+                <button type="button" disabled = "disabled" class="btn btn-success pull-right" aria-label="Right Align">
+                    <i class="fa fa-check"></i> Inscrito en este partido
+                </button>
+            {% endif %}
         {% endif %}
     </div>
 </div>

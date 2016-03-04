@@ -705,7 +705,7 @@ function actualizar_pista(accion, pista_id){
         form = $("#form_pista_nuevo");
         guardar = true;
         $(".validar_pista").each(function(e){
-            if($(this).val() == "" || ($(this).is("select") && $(this).find('option:selected').val() != "")){
+            if($(this).val() == "" || ($(this).is("select") && $(this).find('option:selected').val() == "")){
                 $(this).parent().removeClass("has-success").addClass("has-error");
                 guardar = false;
                 return;
@@ -843,6 +843,34 @@ function mostrar_contacto(){
     else{
         $("#form_contacto").show();
     }
+}
+
+function aceptar_denegar_inscripcion_pag_principal(notif_id, estado){
+    $("#estado_id_"+notif_id).val(estado);
+    $.ajax({
+        data: $("#form_inscripcion_"+notif_id).serialize(),
+        url: '/aceptar_denegar_inscripcion',
+        type: 'POST',
+        success: function(data){
+            var r = JSON.parse(data);
+            if(r.error == ""){
+                if(estado == 1){
+                    $("#btn_denegar_notif_pag_principal_"+notif_id).hide("slide", {direction: "up" }, "slow");
+                    $("#btn_aceptar_notif_pag_principal_"+notif_id).attr("disabled", "disabled");
+                    $("#btn_aceptar_notif_pag_principal_"+notif_id).html("Aceptada");
+                    $("#btn_aceptar_notif_pag_principal_"+notif_id).removeClass("btn-default");
+                    $("#btn_aceptar_notif_pag_principal_"+notif_id).addClass("btn-success");
+                }
+                else{
+                    $("#btn_aceptar_notif_pag_principal_"+notif_id).hide("slide", {direction: "up" }, "slow");
+                    $("#btn_denegar_notif_pag_principal_"+notif_id).html("Denegada");
+                    $("#btn_denegar_notif_pag_principal_"+notif_id).attr("disabled", "disabled");
+                    $("#btn_denegar_notif_pag_principal_"+notif_id).removeClass("btn-info");
+                    $("#btn_denegar_notif_pag_principal_"+notif_id).addClass("btn-danger");
+                }
+            }
+        }
+    });
 }
 
 /******************************************************************************/
@@ -1070,4 +1098,34 @@ function submit_nuevo_evento(){
     if(guardar){
         $("#nuevo_evento").submit();
     }
+}
+
+function submit_editar_evento(){
+
+    var guardar = true;
+
+    //Limpiamos errores
+    $(".obligatorio").parent().parent().removeClass("has-error");
+
+    //Recorrer campos obligatorios
+    $(".obligatorio").each(function(){
+        if($(this).val() == ""){
+            $(this).parent().parent().addClass("has-error");
+            guardar = false;
+        }
+    });
+
+    if(guardar){
+        $("#editar_evento").submit();
+    }
+}
+
+function  difundir_evento(id_evento){
+    $("#difundir_evento_form #evento_id").val(id_evento);
+    $("#difundir_evento_modal").modal("show");
+}
+
+function  eliminar_evento(id_evento){
+    $("#eliminar_evento_form #evento_id").val(id_evento);
+    $("#eliminar_evento_modal").modal("show");
 }
