@@ -238,6 +238,11 @@
 
                         </div>
                     </div>
+
+                    {% if notificaciones|length > 0 and not forloop.last %}
+                        <hr>
+                    {% endif %}
+
                 {% empty %}
                     No tienes notificaciones nuevas
                 {% endfor %}

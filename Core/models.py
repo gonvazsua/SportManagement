@@ -3,6 +3,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import *
 from django.conf import settings
+import uuid
+import os
+
+#Evitar que imagenes se dupliquen con el mismo nombre
+def get_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return os.path.join('Imagenes', filename)
 
 # Create your models here.
 class Comunidades(models.Model):
@@ -45,7 +53,7 @@ class Club(models.Model):
     nombre = models.CharField(max_length=50, verbose_name="Nombre")
     municipio = models.ForeignKey(Municipios, related_name='municipio_club', blank=True, null=True, on_delete=models.SET_NULL)
     descripcion = models.TextField(max_length=400, verbose_name="Descripción")
-    imagen = models.ImageField(upload_to='Imagenes', verbose_name='Imagen', blank=True)
+    imagen = models.ImageField(upload_to=get_file_path, verbose_name='Imagen', blank=True)
     direccion = models.CharField(max_length=50, verbose_name="Dirección")
     def __unicode__(self):
 		return self.nombre
@@ -67,7 +75,7 @@ class Nivel(models.Model):
 
 class Perfil(models.Model):
     user = models.ForeignKey(User, unique=True, related_name='perfil_user')
-    imagen = models.ImageField(upload_to='Imagenes', verbose_name='Imagen', blank=True)
+    imagen = models.ImageField(upload_to=get_file_path, verbose_name='Imagen', blank=True)
     municipio = models.ForeignKey(Municipios, related_name='perfil_municipio', blank=True, null=True, on_delete=models.SET_NULL)
     telefono = models.CharField(max_length=12, verbose_name="Teléfono", blank=True)
     deporteNivel = models.ManyToManyField(Nivel)
@@ -167,7 +175,7 @@ class Evento(models.Model):
     descripcion = models.TextField(max_length=400, verbose_name="Descripción")
     nombre = models.CharField(max_length=50, verbose_name="Nombre")
     hora = models.TimeField(auto_now = False, verbose_name='Hora del evento', null=True, blank=True)
-    imagen = models.ImageField(upload_to='Imagenes', verbose_name='Imagen', blank=True)
+    imagen = models.ImageField(upload_to=get_file_path, verbose_name='Imagen', blank=True)
     creado_por = models.ForeignKey(Perfil, null=True, blank=True)
     creado_el = models.DateField(auto_now=True, verbose_name="Fecha")
     def __unicode__(self):

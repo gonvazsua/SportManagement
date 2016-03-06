@@ -74,7 +74,7 @@
     </div>
     <div class="row form-group">
         <div class="col-lg-2 col-md-2">
-            <label for="id_hora">Hora:</label>
+            <label for="id_hora">Hora comienzo:</label>
         </div>
         <div class="col-lg-2 col-md-2">
             <select name="hora" class="form-control obligatorio" id="id_hora">
@@ -84,7 +84,7 @@
             </select>
         </div>
         <div class="col-lg-2 col-md-2 col-md-offset-2">
-            <label for="id_hora">Minutos:</label>
+            <label for="id_hora">Minutos comienzo:</label>
         </div>
         <div class="col-lg-2 col-md-2">
             <select name="minutos" class="form-control obligatorio" id="id_minutos">
@@ -99,7 +99,7 @@
             <label for="imagen_perfil">Imagen:</label>
         </div>
         <div class="col-lg-6 col-md-6">
-            <input type="file" class="" id="imagen_perfil" name="imagen" value="">
+            <input type="file" class="" id="imagen_perfil" name="imagen" value="{{imagen}}">
         </div>
     </div>
     <div class="row form-group">
@@ -108,6 +108,17 @@
         </div>
         <div class="col-lg-6 col-md-6">
             <textarea class="form-control obligatorio" rows="4" cols="8" name="descripcion" id="descripcion" maxlength="350">{{descripcion}}</textarea>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 col-md-10">
+            <div class="well well-sm">
+                <p>
+                    A continuación, seleccione las pistas que se van a reservar para el evento, y las franjas horarias en las que se han a reservar.<br>
+                    Se crearán partidos asociados a este evento en las franjas horarias y pistas seleccionadas.
+                </p>
+            </div>
         </div>
     </div>
 

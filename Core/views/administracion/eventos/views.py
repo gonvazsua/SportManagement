@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from Core.plantillas_mail import *
+import os
 
 #Instancia del log
 logger = logging.getLogger(__name__)
@@ -88,10 +89,10 @@ def nuevo_evento(request, id_usuario):
             try:
                 hora_ajustada = time(int(hora), int(minuto))
                 fecha_ajustada = datetime.strptime(fecha, '%d/%m/%Y').date()
+
                 imagen_ajustada = None
-                if request.FILES.get("imagen") != None:
-                    formImagen = FormImagen(request.POST, request.FILES)
-                    imagen_ajustada = formImagen.cleaned_data["imagen"]
+                if request.FILES.get("imagen"):
+                    imagen_ajustada = request.FILES.get("imagen")
 
                 #Partidos del evento
                 partidos_evento = []
@@ -163,15 +164,15 @@ def nuevo_evento(request, id_usuario):
                     success = "Se ha creado el evento correctamente"
 
                 data["nombre"] = nombre
-                data["fecha"] = fecha
+                data["fecha"] = fecha_ajustada
                 data["hora"] = int(hora)
                 data["minuto"] = int(minuto)
                 data["imagen"] = imagen
                 data["descripcion"] = descripcion
                 data["pistas_eventos_id"] = pistas_eventos_id
                 data["fh_eventos_id"] = fh_eventos_id
-                data["hora_evento"] = hora
-                data["minuto_evento"] = minuto
+                data["hora_evento"] = int(hora)
+                data["minuto_evento"] = int(minuto)
 
             except Exception, e:
                 logger.debug("administracion/eventos - Metodo nuevo_evento (method:post): id_usuario " + str(id_usuario) + e.message)
@@ -195,6 +196,8 @@ def editar_evento(request, id_usuario, id_evento):
     errores  = []
     horas = cargar_horas()
     minutos = cargar_minutos()
+    error = ""
+    success = ""
 
     data = {
         'perfil':perfil, 'club':club, 'errores':errores, 'horas': horas, 'minutos':minutos
@@ -244,10 +247,12 @@ def editar_evento(request, id_usuario, id_evento):
                 try:
                     hora_ajustada = time(int(hora), int(minuto))
                     fecha_ajustada = datetime.strptime(fecha, '%d/%m/%Y').date()
+
                     imagen_ajustada = None
-                    if request.FILES.get("imagen") != None:
-                        formImagen = FormImagen(request.POST, request.FILES)
-                        imagen_ajustada = formImagen.cleaned_data["imagen"]
+                    if request.FILES.get("imagen"):
+                        imagen_ajustada = request.FILES.get("imagen")
+                        if imagen_ajustada and evento_editar.imagen:
+                            borrar_imagen_anterior(evento_editar.imagen.path)
 
                     #Partidos del evento
                     partidos_evento = []
@@ -493,3 +498,12 @@ def comprueba_pista_disponible(franja_horaria_id, pista_id, fecha):
         logger.debug("administracion/eventos - Método comprueba_pista_disponible : Franja " + str(franja_horaria_id) + ". Pista" + str(pista_id) + e.message)
         disponible = False
     return disponible
+
+
+def borrar_imagen_anterior(url_imagen):
+    try:
+        if os.path.isfile(url_imagen):
+            os.remove(url_imagen)
+    except Exception:
+        print "Imagen no encontrada:" +url_imagen
+        logger.debug("administracion/eventos - Método borrar_imagen_anterior url: " + url_imagen)
