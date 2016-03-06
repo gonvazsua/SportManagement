@@ -69,7 +69,7 @@ def nuevo_evento(request, id_usuario):
         eventos = Evento.objects.filter(club = club).order_by("-fecha")
         data["eventos"] = eventos
 
-        pistas = Pista.objects.filter(club = club).values("id", "nombre").order_by("orden")
+        pistas = Pista.objects.filter(club = club).order_by("orden")
         data["pistas"] = pistas
 
         franjas_horarias = FranjaHora.objects.filter(club = club).order_by("inicio")
@@ -205,7 +205,7 @@ def editar_evento(request, id_usuario, id_evento):
 
     try:
 
-        pistas = Pista.objects.filter(club = club).values("id", "nombre").order_by("orden")
+        pistas = Pista.objects.filter(club = club).order_by("orden")
         data["pistas"] = pistas
 
         franjas_horarias = FranjaHora.objects.filter(club = club).order_by("inicio")

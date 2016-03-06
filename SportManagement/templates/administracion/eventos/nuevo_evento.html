@@ -174,7 +174,7 @@
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox" {%if pista.id in pistas_eventos_id %}checked="true"{%endif%} onchange="javascript:actualiza_estado_visible(this, 'pista_{{pista.id}}')" title="Reservar pista">
-                                    {{pista.nombre}}
+                                    {{pista.nombre}} - {{pista.deporte.deporte}}
                                 </label>
                                 <input type="hidden" id="pista_{{pista.id}}" name="pista_{{pista.id}}" {%if pista.id in pistas_eventos_id%}value="1"{%else%}value="0"{%endif%}>
                             </div>

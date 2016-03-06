@@ -176,7 +176,7 @@
                                            onchange="javascript:actualiza_estado_visible(this, 'pista_{{pista.id}}')"
                                            title="Reservar pista"
                                            {% if evento_editar.bloqueado %}disabled="disabled"{%endif%}>
-                                    {{pista.nombre}}
+                                    {{pista.nombre}} - {{pista.deporte.deporte}}
                                 </label>
                                 <input type="hidden" id="pista_{{pista.id}}" name="pista_{{pista.id}}" {%if pista.id in pistas_eventos_id%}value="1"{%else%}value="0"{%endif%}>
                             </div>
