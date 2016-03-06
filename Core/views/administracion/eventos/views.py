@@ -110,11 +110,11 @@ def nuevo_evento(request, id_usuario):
                 mapa_franja_horaria_pista = {}
                 pistas_eventos_id = []
                 for p in pistas.all():
-                    pista_valor = bool(int(request.POST.get("pista_"+str(p["id"]))))
+                    pista_valor = bool(int(request.POST.get("pista_"+str(p.id))))
                     pistas_seleccionadas = []
                     if pista_valor:
                         try:
-                            pista = Pista.objects.get(id = p["id"])
+                            pista = Pista.objects.get(id = p.id)
                             pistas_eventos_id.append(pista.id)
                             #Comprobar pista disponible en cada franja horaria
                             for franja in fh_eventos:
@@ -130,7 +130,7 @@ def nuevo_evento(request, id_usuario):
                                     errores.append(error)
 
                         except Exception, e:
-                            logger.debug("administracion/eventos - Método nuevo_evento (method:post buscando pista "+p["id"]+"): id_usuario " + str(id_usuario) + e.message)
+                            logger.debug("administracion/eventos - Método nuevo_evento (method:post buscando pista "+str(p.id)+"): id_usuario " + str(id_usuario) + e.message)
                             break
 
                 #Si no hay errores, se guardan los datos
@@ -167,7 +167,7 @@ def nuevo_evento(request, id_usuario):
                 data["fecha"] = fecha_ajustada
                 data["hora"] = int(hora)
                 data["minuto"] = int(minuto)
-                data["imagen"] = imagen
+                data["imagen"] = evento_nuevo.imagen
                 data["descripcion"] = descripcion
                 data["pistas_eventos_id"] = pistas_eventos_id
                 data["fh_eventos_id"] = fh_eventos_id
@@ -284,11 +284,11 @@ def editar_evento(request, id_usuario, id_evento):
 
                     pistas_eventos_id = []
                     for p in pistas.all():
-                        pista_valor = bool(int(request.POST.get("pista_"+str(p["id"]))))
+                        pista_valor = bool(int(request.POST.get("pista_"+str(p.id))))
                         pistas_seleccionadas = []
                         if pista_valor:
                             try:
-                                pista = Pista.objects.get(id = p["id"])
+                                pista = Pista.objects.get(id = p.id)
                                 pistas_eventos_id.append(pista.id)
                                 #Comprobar pista disponible en cada franja horaria
                                 for franja in fh_eventos:
@@ -305,7 +305,7 @@ def editar_evento(request, id_usuario, id_evento):
                                         errores.append(error)
 
                             except Exception, e:
-                                logger.debug("administracion/eventos - Método editar_evento (method:post buscando pista "+p["id"]+"): id_usuario " + str(id_usuario) + e.message)
+                                logger.debug("administracion/eventos - Método editar_evento (method:post buscando pista "+str(p.id)+"): id_usuario " + str(id_usuario) + e.message)
                                 break
 
                     #Si no hay errores, se guardan los datos
@@ -356,7 +356,7 @@ def editar_evento(request, id_usuario, id_evento):
                     data["fecha"] = fecha_ajustada
                     data["hora"] = hora
                     data["minuto"] = minuto
-                    data["imagen"] = imagen
+                    data["imagen"] = evento_editar.imagen
                     data["descripcion"] = descripcion
                     data["pistas_eventos_id"] = pistas_eventos_id
                     data["fh_eventos_id"] = fh_eventos_id

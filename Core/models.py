@@ -16,13 +16,13 @@ def get_file_path(instance, filename):
 class Comunidades(models.Model):
 	comunidad = models.CharField(max_length=255, verbose_name="Comunidad")
 	def __unicode__(self):
-		return self.comunidad
+		return unicode(self.comunidad)
 
 class Provincias(models.Model):
 	provincia = models.CharField(max_length=255, verbose_name="Provincia")
 	comunidad = models.ForeignKey(Comunidades, related_name='comunidad_provincia')
 	def __unicode__(self):
-		return self.provincia
+		return unicode(self.provincia)
 
 class Municipios(models.Model):
 	provincia = models.ForeignKey(Provincias, related_name='provincia_municipio')
@@ -30,24 +30,24 @@ class Municipios(models.Model):
 	latitud = models.FloatField(verbose_name="Latitud")
 	longitud = models.FloatField(verbose_name="Longitud")
 	def __unicode__(self):
-		return self.municipio
+		return unicode(self.municipio)
 
 class Rol(models.Model):
     rol = models.CharField(max_length=50, verbose_name="Rol")
     def __unicode__(self):
-		return self.rol
+		return unicode(self.rol)
 
 class Deporte(models.Model):
     deporte = models.CharField(max_length=50, verbose_name="Deporte")
     num_jugadores = models.IntegerField(max_length=3, blank=True, null=True)
     def __unicode__(self):
-		return self.deporte
+		return unicode(self.deporte)
 
 class Sociedad(models.Model):
     nombre = models.CharField(max_length=50, verbose_name="Nombre")
     cif = models.CharField(max_length=50, verbose_name="CIF")
     def __unicode__(self):
-		return self.nombre
+		return unicode(self.nombre)
 
 class Club(models.Model):
     nombre = models.CharField(max_length=50, verbose_name="Nombre")
@@ -56,7 +56,7 @@ class Club(models.Model):
     imagen = models.ImageField(upload_to=get_file_path, verbose_name='Imagen', blank=True)
     direccion = models.CharField(max_length=50, verbose_name="Dirección")
     def __unicode__(self):
-		return self.nombre
+		return unicode(self.nombre)
 
 class Pista(models.Model):
     nombre = models.CharField(max_length=50, verbose_name="Nombre")
@@ -64,14 +64,14 @@ class Pista(models.Model):
     deporte = models.ForeignKey(Deporte, related_name="pista_deporte")
     orden = models.IntegerField(verbose_name="Orden", null=True, blank=True)
     def __unicode__(self):
-		return self.nombre + " (" +self.club.nombre + ")"
+		return unicode(self.nombre + " (" +self.club.nombre + ")")
 
 class Nivel(models.Model):
     nivel = models.CharField(verbose_name="Nivel", max_length=50)
     deporte = models.ForeignKey(Deporte)
     club = models.ForeignKey(Club)
     def __unicode__(self):
-		return self.club.nombre + ": " + self.nivel + " - " + self.deporte.deporte
+		return unicode(self.club.nombre + ": " + self.nivel + " - " + self.deporte.deporte)
 
 class Perfil(models.Model):
     user = models.ForeignKey(User, unique=True, related_name='perfil_user')
@@ -80,7 +80,7 @@ class Perfil(models.Model):
     telefono = models.CharField(max_length=12, verbose_name="Teléfono", blank=True)
     deporteNivel = models.ManyToManyField(Nivel)
     def __unicode__(self):
-		return self.user.first_name + ", " + self.user.last_name
+		return unicode(self.user.first_name + ", " + self.user.last_name)
     def deportes(self):
         deportes = []
         for n in self.deporteNivel.all():
@@ -96,7 +96,7 @@ class PerfilRolClub(models.Model):
     club = models.ForeignKey(Club)
     perfil = models.ForeignKey(Perfil)
     def __unicode__(self):
-		return self.perfil.user.first_name + " " + self.club.nombre + " - " + self.rol.rol
+		return unicode(self.perfil.user.first_name + " " + self.club.nombre + " - " + self.rol.rol)
 
 class FranjaHora(models.Model):
     club = models.ForeignKey(Club, related_name="franja_horaria_club", verbose_name="Club")
@@ -104,7 +104,7 @@ class FranjaHora(models.Model):
     fin = models.TimeField(auto_now=False, verbose_name="Hora fin")
     #estado = models.NullBooleanField()
     def __unicode__(self):
-		return self.club.nombre + ": " + self.inicio.strftime('%H:%M:%S') + " - " + self.fin.strftime('%H:%M:%S')
+		return unicode(self.club.nombre + ": " + self.inicio.strftime('%H:%M:%S') + " - " + self.fin.strftime('%H:%M:%S'))
 
 class Partido(models.Model):
     franja_horaria = models.ForeignKey(FranjaHora, related_name="partido_franja_horaria", verbose_name="Franja horaria")
@@ -114,7 +114,7 @@ class Partido(models.Model):
     creado_por = models.ForeignKey(Perfil)
     visible = models.BooleanField(verbose_name="Es visible")
     def __unicode__(self):
-		return "Fecha: " + self.fecha.strftime('%d-%m-%Y') + ", Hora:" + self.franja_horaria.inicio.strftime('%H:%M:%S')
+		return unicode("Fecha: " + self.fecha.strftime('%d-%m-%Y') + ", Hora:" + self.franja_horaria.inicio.strftime('%H:%M:%S'))
     def club(self):
         return self.pista.club
     def num_perfiles(self):
@@ -150,14 +150,14 @@ class InscripcionesEnClub(models.Model):
     jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
     estado = models.NullBooleanField(verbose_name="Estado aceptación") #None=Pendiente, 1=Aceptada, 0=Denegada
     def __unicode__(self):
-		return "Club: "+self.club.nombre
+		return unicode("Club: "+self.club.nombre)
 
 class InscripcionesEnPartido(models.Model):
     partido = models.ForeignKey(Partido, verbose_name="Partido")
     jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
     estado = models.NullBooleanField(verbose_name="Estado aceptación") #None=Pendiente, 1=Aceptada, 0=Denegada
     def __unicode__(self):
-		return "Club: "+self.club.nombre
+		return unicode("Club: "+self.club.nombre)
 
 class Notificacion(models.Model):
     leido = models.BooleanField(verbose_name="Estado lectura")
@@ -166,7 +166,7 @@ class Notificacion(models.Model):
     inscripcionEnPartido = models.ForeignKey(InscripcionesEnPartido, null=True, blank=True)
     destino = models.IntegerField(max_length=1, verbose_name="Destino")
     def __unicode__(self):
-		return "Club: "+self.fecha
+		return unicode("Club: "+self.fecha)
 
 class Evento(models.Model):
     partidos = models.ManyToManyField(Partido, null=True, blank=True)
@@ -179,7 +179,7 @@ class Evento(models.Model):
     creado_por = models.ForeignKey(Perfil, null=True, blank=True)
     creado_el = models.DateField(auto_now=True, verbose_name="Fecha")
     def __unicode__(self):
-		return "Evento: "+self.nombre+". Club: " + self.club.nombre
+		return unicode("Evento: "+self.nombre+". Club: " + self.club.nombre)
     def bloqueado(self):
         if self.fecha < datetime.now().date():
             return True
