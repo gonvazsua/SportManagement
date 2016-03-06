@@ -253,6 +253,8 @@ def editar_evento(request, id_usuario, id_evento):
                         imagen_ajustada = request.FILES.get("imagen")
                         if imagen_ajustada and evento_editar.imagen:
                             borrar_imagen_anterior(evento_editar.imagen.path)
+                    else:
+                        imagen_ajustada = evento_editar.imagen
 
                     #Partidos del evento
                     partidos_evento = []
