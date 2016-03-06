@@ -180,12 +180,23 @@
                             {% endif %}
                         </div>
                         <div class="col-lg-8">
-                            {% if n.inscripcionEnClub %}
-                                <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.inscripcionEnClub.club.nombre}}</strong></a>, ha <strong>{%if n.inscripcionEnClub.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte al club.
-                            {% endif %}
-                            {% if n.inscripcionEnPartido %}
-                                <strong>{{n.inscripcionEnPartido.partido.pista.club.nombre}}</strong>, ha <strong>{%if n.inscripcionEnPartido.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte a <a href="/usuario/{{perfil.user.id}}/partidos/{{n.inscripcionEnPartido.partido.id}}">este partido</a> .
-                            {% endif %}
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    {% if n.inscripcionEnClub %}
+                                        <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.inscripcionEnClub.club.nombre}}</strong></a>, ha <strong>{%if n.inscripcionEnClub.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte al club.
+                                    {% endif %}
+                                    {% if n.inscripcionEnPartido %}
+                                        <strong>{{n.inscripcionEnPartido.partido.pista.club.nombre}}</strong>, ha <strong>{%if n.inscripcionEnPartido.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte a <a href="/usuario/{{perfil.user.id}}/partidos/{{n.inscripcionEnPartido.partido.id}}">este partido</a> .
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row-centered">
+                                <div class="col-lg-12">
+                                    <button type="button" id="btn_aceptar_notif_pag_principal_{{n.id}}" class="btn btn-default btn-sm btn-redondo hover-success" title="Marcar como leída" onclick="javascript:marcar_como_leida({{n.id}});">
+                                        <i id="icono_notificacion_{{n.id}}" class="fa fa-check"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {% if notificaciones|length != 1 and not forloop.last  %}

@@ -50,3 +50,22 @@ function cerrar_dialogo_informacion(){
 function mostrar_capa_abajo(id){
     $("#"+id).show("slide", {direction: "up" }, "slow");
 }
+
+function marcar_como_leida(notif_id){
+    $.ajax({
+        data: {'notificacion_id':notif_id},
+        url: '/marcar_leida',
+        type: 'GET',
+        success: function(data){
+            var r = JSON.parse(data);
+            if(r.error == ""){
+                $("#btn_aceptar_notif_pag_principal_"+notif_id).attr("disabled", true);
+                $("#btn_aceptar_notif_pag_principal_"+notif_id).removeClass("hover-success");
+                $("#btn_aceptar_notif_pag_principal_"+notif_id).removeClass("btn-default");
+                $("#btn_aceptar_notif_pag_principal_"+notif_id).addClass("btn-success");
+                $("#icono_notificacion_"+notif_id).removeClass("fa-check");
+                $("#icono_notificacion_"+notif_id).addClass("fa-thumbs-o-up");
+            }
+        }
+    });
+}
