@@ -85,7 +85,8 @@ def nuevo_evento(request, id_usuario):
         minuto = request.POST.get("minutos")
         imagen = request.POST.get("imagen")
         descripcion = request.POST.get("descripcion")
-        if nombre and fecha and hora and minutos and descripcion:
+        partido_publico = request.POST.get("partido_publico")
+        if nombre and fecha and hora and minutos and descripcion and partido_publico:
             try:
                 hora_ajustada = time(int(hora), int(minuto))
                 fecha_ajustada = datetime.strptime(fecha, '%d/%m/%Y').date()
@@ -93,6 +94,8 @@ def nuevo_evento(request, id_usuario):
                 imagen_ajustada = None
                 if request.FILES.get("imagen"):
                     imagen_ajustada = request.FILES.get("imagen")
+
+                partido_publico_ajustado = bool(int(partido_publico))
 
                 #Partidos del evento
                 partidos_evento = []
@@ -121,9 +124,14 @@ def nuevo_evento(request, id_usuario):
                                 disponible = comprueba_pista_disponible(franja.id, pista.id, fecha_ajustada)
                                 if disponible:
                                     if franja in mapa_franja_horaria_pista:
-                                        mapa_franja_horaria_pista[franja].append(pista)
+                                        lista_aux = mapa_franja_horaria_pista[franja]
+                                        if not pista in lista_aux:
+                                            lista_aux.append(pista)
+                                            mapa_franja_horaria_pista[franja] = lista_aux
+                                        lista_aux = []
                                     else:
-                                        pistas_seleccionadas.append(pista)
+                                        if not pista in pistas_seleccionadas:
+                                            pistas_seleccionadas.append(pista)
                                         mapa_franja_horaria_pista[franja] = pistas_seleccionadas
                                 else:
                                     error = "Pista " + str(pista.nombre) + " ya estaba reservada en la franja horaria " + str(franja.inicio) + "\n"
@@ -144,7 +152,7 @@ def nuevo_evento(request, id_usuario):
                                 franja_horaria = franja_horaria,
                                 pista = pista,
                                 creado_por = perfil,
-                                visible = settings.ESTADO_NO,
+                                visible = partido_publico_ajustado,
                                 fecha = fecha_ajustada
                             )
                             partidos_evento.append(partido_evento)

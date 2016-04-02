@@ -190,6 +190,22 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-lg-10">
+            <h5 class="strong">Partidos públicos</h5><hr>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-12">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" onchange="javascript:actualiza_estado_visible(this, 'partido_publico')"> Permitir que los jugadores puedan inscribirse a los partidos
+                    <input type="hidden" id="partido_publico" name="partido_publico" value="0">
+                </label>
+            </div>
+        </div>
+    </div>
+
     {% if not success %}
     <div class="row form-group">
         <div class="col-lg-2 col-md-2">
