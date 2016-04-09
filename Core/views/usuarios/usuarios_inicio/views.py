@@ -24,7 +24,7 @@ def usuario_inicio(request, id_usuario):
             try:
                 partidos = Partido.objects.filter(
                     Q(fecha=datetime.today(), franja_horaria__inicio__gt=datetime.now()) | Q(fecha__gt=datetime.today()),
-                    pista__club=c
+                    pista__club=c, visible = settings.ESTADO_SI
                 ).order_by('fecha', 'franja_horaria__inicio')[:6]
                 club_partidos_disponibles[c] = partidos
             except Exception:

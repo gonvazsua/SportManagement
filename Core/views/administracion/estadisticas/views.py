@@ -91,9 +91,15 @@ def administrador_estadisticas(request, id_usuario):
     jugador_mes_comparar = None
     try:
         #Sacamos todos los Ids de los perfiles de los partidos del club, y despues sacamos el id del perfil que mas se repite en esta lista con most_common(0)
-        c = collections.Counter(Partido.objects.values_list('perfiles', flat=True).filter(pista__club = club, fecha__month=mes_buscar, fecha__year=ano_buscar)).most_common(1)
-        partidos_jugados_jugador_mes = c[0][1]
-        jugador_mes_id = c[0][0]
+        perfiles_id = Partido.objects.values_list('perfiles', flat=True).filter(pista__club = club, fecha__month=mes_buscar, fecha__year=ano_buscar)
+        perfiles_id = quitar_nulos_de_lista(perfiles_id)
+        c = collections.Counter().most_common(1)
+        if len(c) != 0:
+            partidos_jugados_jugador_mes = c[0][1]
+            jugador_mes_id = c[0][0]
+        else:
+            partidos_jugados_jugador_mes = None
+            jugador_mes_id = perfiles_id[0]
         jugador_mes = Perfil.objects.get(id=int(jugador_mes_id))
         if mes_comparar != 0 and ano_comparar != 0:
             c = collections.Counter(Partido.objects.values_list('perfiles', flat=True).filter(pista__club = club, fecha__month=mes_comparar, fecha__year=ano_comparar)).most_common(1)
@@ -151,3 +157,14 @@ def cargar_meses():
     meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
              "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
     return meses
+
+#######################################
+# Metodo que elimina nulos de la lista que se pasa por parametros
+######################################
+def quitar_nulos_de_lista(perfiles_id):
+    lista = []
+    for id in perfiles_id:
+        if id != None:
+            lista.append(id)
+
+    return lista

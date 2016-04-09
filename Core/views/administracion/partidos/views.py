@@ -29,7 +29,7 @@ def administrador_crear_partido(request, id_usuario):
         pista = int(request.GET["pista_id"])
         franja_horaria = int(request.GET["fh_id"])
 
-    franjas_horarias = FranjaHora.objects.filter(club = club)
+    franjas_horarias = FranjaHora.objects.filter(club = club).order_by('inicio')
     data = {
         'perfil':perfil, 'club':club, 'pistas':pistas, 'franjas_horarias':franjas_horarias, 'pista':pista, 'franja_horaria':franja_horaria
     }
@@ -96,6 +96,11 @@ def administrador_editar_partido(request, id_usuario, id_partido):
     for p in partidos:
         for p2 in p.perfiles.all():
             jug_no_disponibles.append(p2.id)
+
+    #Anadir jugadores del partido que se va a editar
+    for perfil_actual in partido.perfiles.all():
+        jug_no_disponibles.append(perfil_actual.id)
+
     jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil__in = list(jug_no_disponibles)).order_by("perfil__user__last_name")
 
     #Se forma el mapa de jugadores del partido
@@ -120,7 +125,7 @@ def administrador_editar_partido(request, id_usuario, id_partido):
 def buscador_partidos(request, id_usuario):
     perfil = comprueba_usuario_administrador(id_usuario)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
-    franjas_horarias = FranjaHora.objects.filter(club = club)
+    franjas_horarias = FranjaHora.objects.filter(club = club).order_by('inicio')
     data = {
         'perfil':perfil, 'club':club, 'franjas_horarias':franjas_horarias
     }
@@ -198,7 +203,7 @@ def crear_partido_ajax(request):
                     fh = FranjaHora.objects.get(id=request.POST["hora"])
                     fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
                     pista_partido = Pista.objects.get(id=request.POST["pista"])
-                    visible = bool(request.POST.get("visible"))
+                    visible = bool(int(request.POST.get("visible")))
                     notificar = bool(int(request.POST.get("notificar")))
                     nuevo_partido = Partido(creado_por = creado_por, franja_horaria = fh, fecha = fecha_partido, pista = pista_partido, visible=visible)
 
@@ -322,11 +327,11 @@ def editar_partido_ajax(request):
                         if id != "":
                             try:
                                 jugador = Perfil.objects.get(id=id)
-                                partido_perfil = Partido_perfiles(
-                                    partido = partido,
-                                    perfil = jugador
-                                )
-                                if not partido_perfil in partido.perfiles.all():
+                                if not jugador in partido.perfiles.all():
+                                    partido_perfil = Partido_perfiles(
+                                        partido = partido,
+                                        perfil = jugador
+                                    )
                                     partido_perfil.save()
                                 jugadores.append(jugador)
 

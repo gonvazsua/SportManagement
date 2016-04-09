@@ -94,8 +94,12 @@ def aceptar_denegar_inscripcion(request):
                         elif partido.bloqueado():
                             error = "Este partido tiene fecha anterior a hoy"
                         else:
-                            partido.perfiles.add(jugador)
-                            partido.save()
+                            partido_perfil = Partido_perfiles.objects.create(
+                                partido = partido,
+                                perfil = jugador,
+                                pago = None,
+                                fecha_pago = None
+                            )
                     notificacion.inscripcionEnPartido.save()
                     notificacion_jugador.inscripcionEnPartido = notificacion.inscripcionEnPartido
                     notificacion.save()
@@ -105,8 +109,8 @@ def aceptar_denegar_inscripcion(request):
                 else:
                     notificacion.save()
 
-            except Exception:
-                logger.debug("administracion/notificaciones - Método aceptar_denegar_inscripcion")
+            except Exception, e:
+                logger.debug("administracion/notificaciones - Método aceptar_denegar_inscripcion:" + e.message)
                 error = "Ha sucedido un error, actualice la página e inténtelo de nuevo"
         else:
             logger.debug("administracion/notificaciones - Método aceptar_denegar_inscripcion")

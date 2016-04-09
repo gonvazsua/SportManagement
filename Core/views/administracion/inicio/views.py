@@ -80,7 +80,7 @@ def perfil_administrador(request, id_usuario):
         pista__in = Pista.objects.filter(club=club), franja_horaria=franja_horaria_actual,
         num_perfiles = 4
     )
-    pistas = Pista.objects.filter(club = club).order_by("orden")
+    pistas = Pista.objects.filter(club = club).order_by("deporte", "orden", "nombre")
     #Pistas y partidos de la franja horaria
     pistas_partidos = {}
     for p in pistas:
