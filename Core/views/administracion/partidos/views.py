@@ -183,69 +183,83 @@ def crear_partido_ajax(request):
     error = ""
     titulo = "Nuevo partido en SportClick"
     if request.method == "POST":
-        nuevo_partido = None
-        fh = None
-        fecha_partido = None
-        error = ""
-        jugadores = []
-        max_jugadores = 0
-        if request.POST.get("fecha") and request.POST.get("hora") and request.POST.get("pista") and request.POST.get("user") and request.POST.get("visible") and request.POST.get("notificar"):
+        try:
+            nuevo_partido = None
+            fh = None
+            fecha_partido = None
+            error = ""
+            jugadores = []
+            max_jugadores = 0
+            partidos_perfiles = []
+            if request.POST.get("fecha") and request.POST.get("hora") and request.POST.get("pista") and request.POST.get("user") and request.POST.get("visible") and request.POST.get("notificar"):
 
-            try:
-                creado_por = Perfil.objects.get(user__id = request.POST["user"])
-                fh = FranjaHora.objects.get(id=request.POST["hora"])
-                fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
-                pista_partido = Pista.objects.get(id=request.POST["pista"])
-                visible = bool(request.POST.get("visible"))
-                notificar = bool(request.POST.get("notificar"))
-                nuevo_partido = Partido(creado_por = creado_por, franja_horaria = fh, fecha = fecha_partido, pista = pista_partido, visible=visible)
+                try:
+                    creado_por = Perfil.objects.get(user__id = request.POST["user"])
+                    fh = FranjaHora.objects.get(id=request.POST["hora"])
+                    fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
+                    pista_partido = Pista.objects.get(id=request.POST["pista"])
+                    visible = bool(request.POST.get("visible"))
+                    notificar = bool(int(request.POST.get("notificar")))
+                    nuevo_partido = Partido(creado_por = creado_por, franja_horaria = fh, fecha = fecha_partido, pista = pista_partido, visible=visible)
 
-                if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
-                    #Actualizar valor max_jugadores
-                    max_jugadores = pista_partido.deporte.num_jugadores
-                else:
-                    error = "La pista seleccionada no está disponible"
+                    if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
+                        #Actualizar valor max_jugadores
+                        max_jugadores = pista_partido.deporte.num_jugadores
+                    else:
+                        error = "La pista seleccionada no está disponible"
 
-            except FranjaHora.DoesNotExist, e:
-                logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
-                error = "¡Ups! Ha habido un error al crear el partido"
-            except Pista.DoesNotExist, e:
-                logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
-                error = "¡Ups! Ha habido un error al crear el partido"
-            if max_jugadores != 0 and error == "":
-                for i in range(1,max_jugadores+1):
-                    id = request.POST["jugador"+str(i)]
-                    if id != "":
-                        try:
-                            jugador = Perfil.objects.get(id=id)
-                            jugadores.append(jugador)
-                        except Perfil.DoesNotExist, e:
-                            logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
-                            error = "¡Ups! Ha habido un error al crear el partido."
+                except FranjaHora.DoesNotExist, e:
+                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
+                    error = "¡Ups! Ha habido un error al crear el partido"
+                except Pista.DoesNotExist, e:
+                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
+                    error = "¡Ups! Ha habido un error al crear el partido"
 
-            if error == "" and len(jugadores) <= max_jugadores and nuevo_partido.fecha != "" and nuevo_partido.franja_horaria is not None:
-                nuevo_partido.save()
-                if len(jugadores) >= 1:
-                    nuevo_partido.perfiles = jugadores
+                if error == "" and len(jugadores) <= max_jugadores and nuevo_partido.fecha != "" and nuevo_partido.franja_horaria is not None:
                     nuevo_partido.save()
-                error = "OK"
+
+                    #Una vez guardado el partido, se guardan los jugadores
+                    if max_jugadores != 0 and error == "":
+                        for i in range(1,max_jugadores+1):
+                            id = request.POST["jugador"+str(i)]
+                            if id != "":
+                                try:
+                                    jugador = Perfil.objects.get(id=id)
+                                    partido_perfil = Partido_perfiles.objects.create(
+                                        partido = nuevo_partido,
+                                        perfil = jugador
+                                    )
+                                    partido_perfil.save()
+                                    jugadores.append(jugador)
+                                except Perfil.DoesNotExist, e:
+                                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
+                                    error = "¡Ups! Ha habido un error al crear el partido."
+                                except Exception, e:
+                                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
+                                    error = "¡Ups! Ha habido un error al crear el partido."
+
+                    error = "OK"
+                else:
+                    if error == "":
+                        logger.debug("administracion/partidos - Método crear_partido_ajax. ")
+                        error = "¡Ups! ha habido un error al crear el partido"
+
+                #Si es necesario, se envian notificaciones
+                try:
+                    if notificar and len(jugadores) > 0 and error == "OK":
+                        for jugador in jugadores:
+                            texto = plantilla_email_partido(jugador.user.first_name, nuevo_partido)
+                            if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
+                                error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+                except Exception, e:
+                    error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+
             else:
-                if error == "":
-                    logger.debug("administracion/partidos - Método crear_partido_ajax. ")
-                    error = "¡Ups! ha habido un error al crear el partido"
+                error = "Debe seleccionar, fecha, hora y pista."
 
-            #Si es necesario, se envian notificaciones
-            try:
-                if notificar and len(jugadores) > 0 and error == "OK":
-                    for jugador in jugadores:
-                        texto = plantilla_email_partido(jugador.user.first_name, nuevo_partido)
-                        if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
-                            error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
-            except Exception, e:
-                error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+        except Exception:
+            error = "¡Ups! Ha habido un error al crear el partido"
 
-        else:
-            error = "Debe seleccionar, fecha, hora y pista."
         data = {'error':error}
         return HttpResponse(json.dumps(data))
     else:
@@ -255,78 +269,93 @@ def crear_partido_ajax(request):
 def editar_partido_ajax(request):
     error = ""
     titulo = "Modificación de partido en SportClick"
+
     if request.method == "POST":
-        partido = None
-        fh = None
-        fecha_partido = None
-        error = ""
-        jugadores = []
-        max_jugadores = 0
-        notificar = None
 
-        if request.POST["partido_id"] and request.POST["fecha"] and request.POST["hora"] and request.POST["pista"] and request.POST["user"] and request.POST["visible"] and request.POST.get("notificar"):
-
-            try:
-                partido = Partido.objects.get(id=request.POST["partido_id"])
-                fh = FranjaHora.objects.get(id=request.POST["hora"])
-                fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
-                pista_partido = Pista.objects.get(id=request.POST["pista"])
-                visible = bool(request.POST["visible"])
-                notificar = bool(request.POST.get("notificar"))
-                if pista_partido.id != partido.pista.id:
-                    if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
-                        #Actualizar valor max_jugadores
-                        max_jugadores = pista_partido.deporte.num_jugadores
-                    else:
-                        error = "La pista seleccionada no está disponible"
-                else:
-                    max_jugadores = pista_partido.deporte.num_jugadores
-
-            except Partido.DoesNotExist, e:
-                logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
-                error = "¡Ups! Ha habido un error al crear el partido"
-            except FranjaHora.DoesNotExist, e:
-                logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
-                error = "¡Ups! Ha habido un error al crear el partido"
-            except Pista.DoesNotExist, e:
-                logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
-                error = "¡Ups! Ha habido un error al crear el partido"
-            if max_jugadores != 0 and error == "":
-                partido.franja_horaria = fh
-                partido.pista = pista_partido
-                partido.fecha = fecha_partido
-                partido.visible = visible
-                for i in range(1,max_jugadores+1):
-                    id = request.POST["jugador"+str(i)]
-                    if id != "":
-                        try:
-                            jugador = Perfil.objects.get(id=id)
-                            jugadores.append(jugador)
-                        except Perfil.DoesNotExist, e:
-                            logger.debug("administracion/partidos - Método editar_partido_ajax. " + e)
-                            error = "¡Ups! Ha habido un error al crear el partido."
-
-            if error == "" and len(jugadores) <= 4 and len(jugadores) >= 1 and partido.fecha != "" and partido.franja_horaria is not None:
-                partido.save()
-                partido.perfiles = jugadores
-                partido.save()
-                error = "OK"
-            else:
-                if error == "":
-                    logger.debug("administracion/partidos - Método editar_partido_ajax. ")
-                    error = "¡Ups! ha habido un error al crear el partido"
-        else:
-            error = "Debe seleccionar, fecha, hora y pista."
-
-        #Si es necesario, se envian notificaciones
         try:
-            if notificar and len(jugadores) > 0 and error == "OK":
-                for jugador in jugadores:
-                    texto = plantilla_email_editar_partido(jugador.user.first_name, partido)
-                    if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
-                        error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+            partido = None
+            fh = None
+            fecha_partido = None
+            error = ""
+            jugadores = []
+            max_jugadores = 0
+            notificar = None
+
+            if request.POST["partido_id"] and request.POST["fecha"] and request.POST["hora"] and request.POST["pista"] and request.POST["user"] and request.POST["visible"] and request.POST.get("notificar"):
+
+                try:
+                    partido = Partido.objects.get(id=request.POST["partido_id"])
+                    fh = FranjaHora.objects.get(id=request.POST["hora"])
+                    fecha_partido = datetime.strptime(request.POST["fecha"], '%d/%m/%Y').date()
+                    pista_partido = Pista.objects.get(id=request.POST["pista"])
+                    visible = bool(request.POST["visible"])
+                    notificar = bool(int(request.POST.get("notificar")))
+                    if pista_partido.id != partido.pista.id:
+                        if comprueba_pista_disponible(fh.id, pista_partido.id, fecha_partido):
+                            #Actualizar valor max_jugadores
+                            max_jugadores = pista_partido.deporte.num_jugadores
+                        else:
+                            error = "La pista seleccionada no está disponible"
+                    else:
+                        max_jugadores = pista_partido.deporte.num_jugadores
+
+                except Partido.DoesNotExist, e:
+                    logger.debug("administracion/partidos - Método editar_partido_ajax. " + e.message)
+                    error = "¡Ups! Ha habido un error al crear el partido"
+                except FranjaHora.DoesNotExist, e:
+                    logger.debug("administracion/partidos - Método editar_partido_ajax. " + e.message)
+                    error = "¡Ups! Ha habido un error al crear el partido"
+                except Pista.DoesNotExist, e:
+                    logger.debug("administracion/partidos - Método editar_partido_ajax. " + e.message)
+                    error = "¡Ups! Ha habido un error al crear el partido"
+                if max_jugadores != 0 and error == "":
+                    partido.franja_horaria = fh
+                    partido.pista = pista_partido
+                    partido.fecha = fecha_partido
+                    partido.visible = visible
+
+                    #Borrar jugadores anteriores:
+                    #partido.perfiles.all().delete()
+
+                    for i in range(1,max_jugadores+1):
+                        id = request.POST["jugador"+str(i)]
+                        if id != "":
+                            try:
+                                jugador = Perfil.objects.get(id=id)
+                                partido_perfil = Partido_perfiles(
+                                    partido = partido,
+                                    perfil = jugador
+                                )
+                                if not partido_perfil in partido.perfiles.all():
+                                    partido_perfil.save()
+                                jugadores.append(jugador)
+
+                            except Perfil.DoesNotExist, e:
+                                logger.debug("administracion/partidos - Método editar_partido_ajax. " + e.message)
+                                error = "¡Ups! Ha habido un error al crear el partido."
+
+                if error == "" and len(jugadores) <= max_jugadores and partido.fecha != "" and partido.franja_horaria is not None:
+                    partido.save()
+                    error = "OK"
+                else:
+                    if error == "":
+                        logger.debug("administracion/partidos - Método editar_partido_ajax. ")
+                        error = "¡Ups! ha habido un error al crear el partido"
+            else:
+                error = "Debe seleccionar, fecha, hora y pista."
+
+            #Si es necesario, se envian notificaciones
+            try:
+                if notificar and len(jugadores) > 0 and error == "OK":
+                    for jugador in jugadores:
+                        texto = plantilla_email_editar_partido(jugador.user.first_name, partido)
+                        if not enviar_email(titulo, settings.EMAIL_HOST_USER, jugador.user.email, texto):
+                            error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+            except Exception, e:
+                error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
         except Exception, e:
-            error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+            logger.debug("administracion/partidos - Método editar_partido_ajax. " + e.message)
+            error = "¡Ups! ha habido un error al guardar el partido"
 
         data = {'error':error}
         return HttpResponse(json.dumps(data))
