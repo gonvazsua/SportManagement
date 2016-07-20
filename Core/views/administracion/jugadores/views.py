@@ -109,6 +109,11 @@ def administrador_nuevo_jugador(request, id_usuario):
                 un = User.objects.get(username = username)
                 error = "Ya existe un usuario con ese nombre de usuario"
             except User.DoesNotExist:
+
+                #Email y nombre usuario en minusculas
+                username = username.lower()
+                email = email.lower()
+
                 user_nuevo = User.objects.create_user(username, email, password)
                 user_nuevo.first_name = nombre
                 user_nuevo.last_name = apellidos

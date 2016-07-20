@@ -300,7 +300,7 @@
                     <div class="col-lg-12 col-md-12">
                         <div class="checkbox" title="Los jugadores recibirán un email con los datos del partido">
                             <label>
-                                <input type="checkbox" {%if partido.bloqueado %}disabled="disabled"{%endif%} checked="checked" onchange="javascript:actualiza_estado_visible(this, 'notificar');"> Enviar notificaciones
+                                <input type="checkbox" {%if partido.bloqueado %}disabled="disabled"{%endif%} onchange="javascript:actualiza_estado_visible(this, 'notificar');"> Enviar notificaciones
                             </label>
                         </div>
                     </div>
