@@ -75,6 +75,9 @@ urlpatterns = patterns('',
     url(r'^editar_partido', 'Core.views.editar_partido_ajax'),
     url(r'^baja_jugador_club', 'Core.views.baja_jugador_club'),
 
+    #Imprimir planificacion diaria
+    url(r'^imprimir/(?P<club_id>\d+)', 'Core.views.imprimir_planificacion'),
+
     ###########################################################
     ########## USUARIOS URLS
     ###########################################################

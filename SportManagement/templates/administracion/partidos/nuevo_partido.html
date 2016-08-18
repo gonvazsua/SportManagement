@@ -231,7 +231,7 @@
                                     <input type="hidden" id="id_usuario_form" name="user" value="{{perfil.user.id}}"/>
                                     <input type="hidden" id="max_jugadores" value="{{map_jugadores|length}}">
                                     <input type="hidden" id="visible" name="visible" value="1">
-                                    <input type="hidden" id="notificar" name="notificar" value="1">
+                                    <input type="hidden" id="notificar" name="notificar" value="0">
                                     {% for num, jug in map_jugadores.iteritems %}
                                         {% if jug == "" %}
                                         <tr class="warning vacio">

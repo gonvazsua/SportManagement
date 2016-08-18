@@ -157,7 +157,9 @@
             </div>
             <!-- /.panel-body -->
             <div class="panel-footer">
-                <a href="/administrador/{{perfil.user.id}}/nuevo" title="Nuevo partido">Crear partido</a>
+                <a href="/imprimir/{{club.id}}" target="_blank" title="Imprimir planificación diaria">
+                    <i class="fa fa-print fa-fw"></i> Imprimir
+                </a>
                 <div class="pull-right">
                     <p class="text-info" title="Franja horaria">{{franja_horaria_actual.inicio|time:'G:i'}} - {{franja_horaria_actual.fin|time:'G:i'}}</p>
                 </div>

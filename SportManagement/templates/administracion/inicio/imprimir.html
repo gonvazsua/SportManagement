@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{STATIC_URL}}img/favicon.png">
+
+    <title>Imprimir - Sport Click</title>
+
+    <!-- Css propio -->
+    <link href="{{STATIC_URL}}css/application.css" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{{STATIC_URL}}admin/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{{STATIC_URL}}admin/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- jQuery UI -->
+    <link href="{{STATIC_URL}}jquery-ui/jquery-ui.css" rel="stylesheet"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-73448401-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+</head>
+
+<body>
+
+    <button type="button" title="Imprimir" class="btn btn-success btn-imprimir" aria-label="Right Align" onclick="javascript:window.print();">
+      <i class="fa fa-print fa-fw"></i> Imprimir
+    </button>
+
+    <h2>Partidos para hoy {% now "j F Y " %}</h2>
+
+    {% for franja, mapa_pista_partido in mapa_franjas_pistas.iteritems %}
+
+        <h3>{{franja.inicio|time:'G:i'}} - {{franja.fin|time:'G:i'}}</h3>
+
+        {% for pista, jugadores in mapa_pista_partido.iteritems %}
+            <p>
+                <strong>{{pista.nombre}}: </strong>
+                {{jugadores}}
+            </p>
+        {% endfor %}
+    {% endfor %}
+
+
+
+    <!-- jQuery -->
+    <script src="{{STATIC_URL}}admin/bower_components/jquery/dist/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{STATIC_URL}}admin/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- DataTables JavaScript
+    <script src="{{STATIC_URL}}admin/bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
+    <script src="{{STATIC_URL}}admin/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+    -->
+
+    <!-- jQuery UI -->
+    <script type="text/javascript" src="{{STATIC_URL}}jquery-ui/jquery-ui.js"></script>
+
+    <!-- Admin JS -->
+    <script type="text/javascript" src="{{STATIC_URL}}js/admin.js?version=1"></script>
+
+</body>
+
+</html>

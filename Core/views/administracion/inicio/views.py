@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 logger = logging.getLogger(__name__)
 
 ruta_pagina_principal = 'administracion/inicio/pagina_principal.html'
+ruta_imprimir_planificacion = 'administracion/inicio/imprimir.html'
 
 @login_required()
 def perfil_administrador(request, id_usuario):
@@ -134,3 +135,59 @@ def separa_guiones(cadena):
             res += "-"
 
     return res
+
+def separa_comas(lista_perfiles):
+    res = ""
+    if len(lista_perfiles) > 0:
+        cont = 0
+        for user in lista_perfiles:
+            if cont != 0:
+                res = res + ", "
+            res = res + str(user)
+            cont = cont + 1
+
+    return res
+
+
+#Imprimir planificacion diaria
+@login_required()
+def imprimir_planificacion(request, club_id):
+
+    mapa_franjas_pista = {}
+    mapa_pista_partido = {}
+    data = {}
+
+    try:
+        hoy = date.today()
+        pistas = Pista.objects.filter(club__id = club_id).order_by("orden")
+        franjas = FranjaHora.objects.filter(club__id = club_id).order_by("inicio")
+
+        for fh in franjas.all():
+            mapa_pista_partido = {}
+            for pista in pistas.all():
+
+                try:
+                    #Se busca partido de esa pista y esa FH
+                    partido = Partido.objects.filter(fecha = hoy, franja_horaria__id = fh.id, pista__id = pista.id)[:1].get()
+                    perfiles = []
+                    for perfil in partido.perfiles.all():
+                        perfiles.append(perfil.user.username)
+                except Partido.DoesNotExist:
+                    partido = None
+                    perfiles = []
+
+                #Se actualiza el mapa de pista y partido
+                mapa_pista_partido[pista] = separa_comas(perfiles)
+
+            #Para cada franja horaria, se actualizan las pistas
+            mapa_franjas_pista[fh] = mapa_pista_partido
+
+            data["mapa_franjas_pistas"] = mapa_franjas_pista
+
+    except Exception, e:
+        error = "Ha habido un error al imprimir la planificación"
+        data["error"] = error
+
+    data["hoy"] = hoy
+
+    return render_to_response(ruta_imprimir_planificacion, data, context_instance=RequestContext(request))

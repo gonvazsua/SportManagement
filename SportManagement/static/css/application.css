@@ -164,3 +164,9 @@ footer{
 .hover-panel-border-info:hover{
     border-color: #337ab7 !important;
 }
+
+.btn-imprimir{
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important;
+}
