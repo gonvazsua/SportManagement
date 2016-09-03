@@ -110,7 +110,7 @@ class Partido(models.Model):
     franja_horaria = models.ForeignKey(FranjaHora, related_name="partido_franja_horaria", verbose_name="Franja horaria")
     fecha = models.DateField(auto_now=False, verbose_name="Fecha")
     #perfiles = models.ManyToManyField(Perfil, related_name="partido_perfiles")
-    perfiles = models.ManyToManyField(Perfil, through="Partido_perfiles")
+    perfiles = models.ManyToManyField(Perfil, through="Partido_perfiles", null=True)
     pista = models.ForeignKey(Pista, related_name="partido_pista")
     creado_por = models.ForeignKey(Perfil, related_name="creado_por")
     visible = models.BooleanField(verbose_name="Es visible")
@@ -146,9 +146,9 @@ class Partido_perfiles(models.Model):
     partido = models.ForeignKey(Partido)
     perfil = models.ForeignKey(Perfil)
     pago = models.FloatField(verbose_name="Pago", null=True)
-    fecha_pago = models.DateTimeField(verbose_name="Fecha", auto_now=True, null=True)
+    fecha_pago = models.DateTimeField(verbose_name="Fecha", auto_now=False, null=True)
     def __unicode__(self):
-		return unicode("Perfil: "+self.perfil.id + ", Partido: " + self.partido.id + ", Pago: " + str(self.pago))
+		return unicode("Perfil: " + self.perfil)
 
 class RutaTiempo(models.Model):
     municipio = models.ForeignKey(Municipios)

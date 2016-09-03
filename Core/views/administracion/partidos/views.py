@@ -14,6 +14,7 @@ ruta_administracion_nuevo_partido = 'administracion/partidos/nuevo_partido.html'
 ruta_administracion_editar_partido = 'administracion/partidos/editar_partido.html'
 ruta_administracion_buscador_partidos = 'administracion/partidos/buscador_partidos.html'
 ruta_administracion_ver_partido = 'administracion/partidos/ver_partido.html'
+ruta_administracion_planificar = 'administracion/partidos/planificar.html'
 
 @login_required()
 def administrador_crear_partido(request, id_usuario):
@@ -149,6 +150,99 @@ def buscador_partidos(request, id_usuario):
 
     return render_to_response(ruta_administracion_buscador_partidos, data, context_instance=RequestContext(request))
 
+@login_required()
+def planificar(request, id_usuario):
+    perfil = comprueba_usuario_administrador(id_usuario)
+    club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
+
+    error = None
+    success = None
+    data = {
+        'perfil':perfil, 'club':club
+    }
+
+    try:
+        deportes = Deporte.objects.all()
+        data["deportes"] = deportes
+    except Exception, e:
+        logger.debug("administracion/partidos - Método planificar. " + e.message)
+
+    if request.method == "POST":
+        try:
+            mapa_franjas_partidos = {}
+            fecha = request.POST.get("fecha")
+            deporte_id = request.POST.get("deporte")
+            accion = request.POST.get("accion")
+
+            data["fecha"] = fecha
+
+            if fecha and deporte_id:
+
+                fecha = datetime.strptime(fecha, '%d/%m/%Y').date()
+
+                #Se ha pulsado el boton continuar,se crean los partidos
+                if accion == "":
+
+                    franjas_horarias = FranjaHora.objects.filter(club = club).order_by('inicio')
+                    pistas = Pista.objects.filter(club__id = club.id, deporte__id = deporte_id).order_by("orden")
+
+                    if len(pistas) > 0:
+
+                        #Sacamos los jugadores que ya juegan en este club a esta fecha
+                        jugadores_excluir = Partido_perfiles.objects.values_list('perfil', flat=True).filter(partido__in = Partido.objects.filter(pista__club = club, fecha = fecha))
+
+                        max_jugadores = Deporte.objects.values_list('num_jugadores', flat=True).get(id=deporte_id)
+                        jugadores = PerfilRolClub.objects.filter(club = club, perfil__user__is_active=True)\
+                            .exclude(perfil__id__in = jugadores_excluir)\
+                            .order_by("perfil__user__last_name")
+
+                        data["jugadores"] = jugadores
+                        data["max_jugadores"] = range(0, max_jugadores)
+
+                        #Por cada franja y pista, se crea el partido o se comprueba si ya existe.
+                        for fh in franjas_horarias.all():
+                            lista_partidos = []
+                            for pista in pistas.all():
+                                #Comprobamos si existe partido:
+                                partido_comp = Partido.objects.filter(fecha = fecha, pista = pista, franja_horaria = fh)
+
+                                if partido_comp.count() > 0:
+                                    #Existe un partido con estos datos, se anade a la lista
+                                    lista_partidos.append(partido_comp.first())
+                                else:
+                                    #Se crea el partido
+                                    partido = Partido.objects.create(
+                                        fecha = fecha, pista = pista, franja_horaria = fh, creado_por = perfil, visible = settings.ESTADO_NO
+                                    )
+                                    lista_partidos.append(partido)
+
+                            #Se actualiza el mapa de partidos en franjas horarias
+                            mapa_franjas_partidos[fh] = lista_partidos
+
+                        data["mapa_franjas_partidos"] = mapa_franjas_partidos
+
+                    else:
+                        error = "No existen pistas para el deporte que has seleccionado"
+
+                #Se ha pulsado sobre terminar, se eliminan partidos sin jugadores
+                elif accion == "terminar":
+                    partidos = Partido.objects.filter(pista__club = club, fecha = fecha)
+                    for p in partidos:
+                        if len(p.perfiles.all()) == 0:
+                            p.delete()
+
+                    success = "Se ha guardado su planificación, puede verla en la página principal."
+
+        except Exception, e:
+            logger.debug("administracion/partidos - Método planificar. " + e.message)
+            error = "Ha habido un error en el proceso que acaba de ejecutar"
+
+
+        data["error"] = error
+        data["success"] = success
+
+    return render_to_response(ruta_administracion_planificar, data, context_instance=RequestContext(request))
+
 #****************************************************************************************************
 #FUNCIONES AUXILIARES
 #****************************************************************************************************
@@ -237,10 +331,10 @@ def crear_partido_ajax(request):
                                     partido_perfil.save()
                                     jugadores.append(jugador)
                                 except Perfil.DoesNotExist, e:
-                                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
+                                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e.message)
                                     error = "¡Ups! Ha habido un error al crear el partido."
                                 except Exception, e:
-                                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e)
+                                    logger.debug("administracion/partidos - Método crear_partido_ajax. " + e.message)
                                     error = "¡Ups! Ha habido un error al crear el partido."
 
                     error = "OK"
@@ -366,3 +460,42 @@ def editar_partido_ajax(request):
         return HttpResponse(json.dumps(data))
     else:
         return HttpResponseRedirect("/")
+
+
+# Planificar partido: Guardar
+@login_required()
+def guardar_partido_planificar(request):
+
+    jugador_texto = "jugador_"
+    error = None
+
+    try:
+        if request.method == "POST":
+            partido_id = request.POST.get("partido_id")
+
+            if partido_id:
+
+                partido = Partido.objects.get(id = partido_id)
+
+                if partido:
+
+                    #Eliminamos todos los jugadores y vamos anadiendo
+                    Partido_perfiles.objects.filter(partido = partido).delete()
+
+                    #Recorremos el mapa de request.POST en busca de jugadores.
+                    for clave in request.POST:
+
+                        #Si contiene la palabra jugador_, significa que es un jugador, y se anade al partido
+                        if jugador_texto in clave:
+                            perfil = Perfil.objects.get(id = int(request.POST.get(clave)))
+                            partido_perfil = Partido_perfiles.objects.create(
+                                partido = partido,
+                                perfil = perfil
+                            )
+
+    except Exception, e:
+        logger.debug("administracion/partidos - Método guardar_partido_planificar. " + e.message)
+        error = "¡Ups! ha habido un error al guardar el partido"
+
+    data = {'error':error}
+    return HttpResponse(json.dumps(data))

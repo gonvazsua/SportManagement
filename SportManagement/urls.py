@@ -46,6 +46,8 @@ urlpatterns = patterns('',
     url(r'^administrador/(?P<id_usuario>\d+)/nuevo$', 'Core.views.administrador_crear_partido'),
     url(r'^administrador/(?P<id_usuario>\d+)/partido/(?P<id_partido>\d+)/editar$', 'Core.views.administrador_editar_partido'),
     url(r'^administrador/(?P<id_usuario>\d+)/buscador$', 'Core.views.buscador_partidos'),
+    url(r'^administrador/(?P<id_usuario>\d+)/planificar$', 'Core.views.planificar'),
+    url(r'^administrador/guardar_partido_planificar$', 'Core.views.guardar_partido_planificar'),
 
     #Administracion Estadisticas
     url(r'^administrador/(?P<id_usuario>\d+)/estadisticas$', 'Core.views.administrador_estadisticas'),

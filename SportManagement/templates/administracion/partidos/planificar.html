@@ -1,0 +1,205 @@
+{% extends 'administracion/template_admin.html' %}
+
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Planificar día - {{club.nombre}}
+{% endblock %}
+
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/administrador/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Planificar día</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-12 col-md-12">
+            <h3>1. Seleccione una fecha</h3> <hr>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <form action="/administrador/{{perfil.user.id}}/planificar" method="POST" id="form_fecha_planificar">
+        {% csrf_token %}
+
+        <input type="hidden" name="accion" value="" id="accion">
+
+        <div class="row">
+
+            <div class="form-group col-lg-1"><label for='fecha'>Fecha: </label></div>
+            <div class="form-group col-lg-4"><input type="text" id="id_fecha" name="fecha" placeholder="dd/mm/aaaa" class="form-control" value="{{fecha}}" {% if mapa_franjas_partidos %}disabled="true"{%endif%}/></div>
+
+            <div class="form-group col-lg-1"><label for='deporte'>Deporte: </label></div>
+            <div class="form-group col-lg-4">
+                <select name="deporte" id="deporte" class="form-control"{% if mapa_franjas_partidos %}disabled="true"{%endif%}>
+                {% for deporte in deportes %}
+                    <option value="{{deporte.id}}">{{deporte.deporte}}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+            <button type="button" id="btn_disponibilidad" class="btn btn-success pull-left" aria-label="Right Align" onclick="javascript:continuar_planificar_dia();"
+                    {% if mapa_franjas_partidos %}disabled="true"{%endif%}>
+                <i class="fa fa-arrow-right"></i> Continuar
+            </button>
+        </div>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block pagina_central %}
+
+{% if error %}
+<div class="row row-margin-top-10">
+    <div class="col-lg-12 col-md-12">
+        <div class="alert alert-danger" role="alert">{{error}}</div>
+    </div>
+</div>
+{% endif %}
+{% if success %}
+<div class="row row-margin-top-10">
+    <div class="col-lg-12 col-md-12">
+        <div class="alert alert-success" role="alert">{{success}}</div>
+    </div>
+</div>
+{% endif %}
+
+{% if mapa_franjas_partidos %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-12 col-md-12">
+            <h3>2. Pincha y arrastra jugadores</h3> <hr>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-12 col-md-12">
+            <div class="well well-sm">
+                Arrastra al jugador que quieras seleccionar hasta la pista en la que juegue. <br>
+                Para quitar del partido a un jugador, simplemente haz doble clic sobre él. <br>
+                Puedes buscar jugadores escribiendo su nombre en el recuadro de abajo.<br>
+                Para terminar, pulsa sobre el botón de "He terminado".
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Filtro de jugadores -->
+<div class="row min_height_50">
+    <div class="col-lg-8">
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="filtrar">Filtrar jugadores por palabra clave</label>
+                <input type="text" class="form-control" id="palabra_clave" placeholder="Ej: Gonzalo" onkeyup="javascript:filtrar_palabra_clave_planificar()">
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-4">
+
+        <form action="/administrador/{{perfil.user.id}}/planificar" method="POST" id="form_terminar_planificar">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="terminar" id="accion">
+            <input type="hidden" name="fecha" value="" id="fecha_terminar">
+            <input type="hidden" name="deporte" value="" id="deporte_terminar">
+            <button type="button" id="btn_terminar" class="btn btn-success pull-left" aria-label="Right Align" onclick="javascript:terminar_planificar_dia();">
+                <i class="fa fa-child"></i> ¡He terminado!
+            </button>
+        </form>
+
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-3" id="lista_jugadores">
+
+        <div class="row" id="row_titulo_jugadores">
+            <div class="col-lg-12">
+                <h4>Listado de jugadores</h4> <hr>
+            </div>
+        </div>
+
+        {% for jugador in jugadores %}
+            <div class="row row_jugador" title="Arrastra a {{jugador.perfil.user.first_name}} {{jugador.perfil.user.last_name}} a la pista que quieras" draggable="true"
+                    ondragstart="comenzar_arrastre(event)" id="jugador_{{jugador.perfil.id}}" ondblclick="devolver_jugador(this)">
+                <div class="col-lg-12">
+                    <div class="panel panel-grey margin-bottom-7px cursor-grab">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <i class="fa fa-futbol-o"></i> <span class="campo_busqueda">{{jugador.perfil.user.first_name}} {{jugador.perfil.user.last_name|truncatewords:1}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="jugador_{{jugador.perfil.id}}" value="{{jugador.perfil.id}}">
+            </div>
+        {% endfor %}
+    </div>
+    <div class="col-lg-9">
+    {% for franja, partidos in mapa_franjas_partidos.iteritems %}
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h4>Partidos de {{franja.inicio|time:'G:i'}}h a {{franja.fin|time:'G:i'}}h</h4> <hr>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for partido in partidos %}
+                <form method="POST" id="partido_planificar_{{partido.id}}" action="/administrador/guardar_partido_planificar">
+                    {% csrf_token %}
+                    <input type="hidden" name="partido_id" value="{{partido.id}}">
+                    <div class="col-lg-4">
+                        <div class="row">
+                            <div class="col-lg-12 text-center"><h5>- {{partido.pista.nombre}} -</h5></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 row-altura-planificar pista_evento anidable padding-top-4px" ondragover="durante_arrastre(event)" ondrop="terminar_arrastre(event)">
+                            {% for pp in partido.perfiles.all %}
+                                <div class="row row_jugador" title="Arrastra a {{pp.user.first_name}} {{pp.user.last_name}} a la pista que quieras" draggable="true"
+                                    ondragstart="comenzar_arrastre(event)" id="jugador_{{pp.id}}" ondblclick="devolver_jugador(this)">
+                                <div class="col-lg-12">
+                                    <div class="panel panel-grey margin-bottom-7px cursor-grab">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                <div class="col-xs-12 text-center">
+                                                    <i class="fa fa-futbol-o"></i> <span class="campo_busqueda">{{pp.user.first_name}} {{pp.user.last_name|truncatewords:1}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="jugador_{{pp.id}}" value="{{pp.id}}">
+                            </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            {% endfor %}
+        </div>
+
+    {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+
+{% block js %}
+{% endblock %}

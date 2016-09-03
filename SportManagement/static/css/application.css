@@ -146,7 +146,7 @@ footer{
 
 
 .min_height_50{
-    min-height: 50px;
+    min-height: 50px !important;
 }
 
 .color-seleccionado{
@@ -169,4 +169,35 @@ footer{
     position: fixed !important;
     top: 15px !important;
     right: 15px !important;
+}
+
+.panel-grey{
+    border-color: #F2F2F2 !important;
+    opacity: 0.9;
+}
+
+.panel-grey:hover{
+    border-color: #8181F7 !important;
+}
+
+.panel-grey .panel-heading {
+    background-color: #F2F2F2 !important;
+    border-color: #F2F2F2 !important;
+    color: #848484 !important;
+}
+
+.margin-bottom-7px{
+    margin-bottom: 7px !important;
+}
+
+.cursor-grab{
+    cursor:grab;
+}
+
+.padding-top-4px{
+    padding-top: 4px;
+}
+
+.row-altura-planificar{
+    min-height: 205px !important;
 }

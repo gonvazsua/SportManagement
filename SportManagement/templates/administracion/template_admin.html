@@ -128,6 +128,9 @@
                                 <li>
                                     <a href="/administrador/{{perfil.user.id}}/buscador" id="enlace_buscador_partidos"><i class="fa fa-calendar fa-fw"></i> Buscador de partidos</a>
                                 </li>
+                                <li>
+                                    <a href="/administrador/{{perfil.user.id}}/planificar" id="enlace_planificar_partidos"><i class="fa fa-puzzle-piece fa-fw"></i> Planificar día</a>
+                                </li>
                             </ul>
                             <!-- /.nav-third-level -->
                         </li>
@@ -290,8 +293,11 @@
     <!-- jQuery UI -->
     <script type="text/javascript" src="{{STATIC_URL}}jquery-ui/jquery-ui.js"></script>
 
+    <!-- Dragable content -->
+    <script src="{{STATIC_URL}}admin/js/jquery.dnd_page_scroll.js"></script>
+
     <!-- Admin JS -->
-    <script type="text/javascript" src="{{STATIC_URL}}js/admin.js?version=1"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/admin.js?version=2"></script>
 
     <script type="text/javascript">
         {% block js %}{% endblock %}

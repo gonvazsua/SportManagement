@@ -40,6 +40,9 @@ $(document).ready(function() {
     //Peticiones ajax notificaciones
     setInterval(examinaNotificaciones, 100000);
 
+    //Hacer contenido dragable con scroll
+    $().dndPageScroll();
+
 });
 
 //Peticiones ajax notificaciones
@@ -188,6 +191,8 @@ function filtrar_niveles_jugadores(){
 }
 
 function filtrar_palabra_clave(){
+
+    //Se reinicia el filtro de niveles
     $("#nivel_filtro").val(0);
     filtrar_niveles_jugadores();
 
@@ -403,6 +408,19 @@ function desplaza(destino){
 	$('html,body').animate({
     	scrollTop: $('#'+destino).offset().top
 	}, 2000);
+}
+
+/***********************************************************************************/
+/* PLANIFICAR DIA */
+/***********************************************************************************/
+
+function continuar_planificar_dia(){
+    if($("#id_fecha").val() != ""){
+        $("#form_fecha_planificar").submit();
+    }
+    else{
+        $("#id_fecha").parent().addClass("has-error");
+    }
 }
 
 /************************************************************************************/
@@ -1129,3 +1147,92 @@ function  eliminar_evento(id_evento){
     $("#eliminar_evento_form #evento_id").val(id_evento);
     $("#eliminar_evento_modal").modal("show");
 }
+
+/***********************************************************************
+/*  PLANIFICAR DIA
+***********************************************************************/
+
+function comenzar_arrastre(e){
+    //Guardamos el id del elemento para transferirlo al elemento drop
+    //Contenido es una clave que nos permitirá acceder al valor asignado
+    e.dataTransfer.setData("contenido", e.target.id);
+}
+
+function durante_arrastre(e){
+    //Cancelar el evento que impide que podamos soltar el elemento drag
+	e.preventDefault();
+}
+
+function terminar_arrastre(e){
+    //Obtenemos los datos a través de la clave contenido, en este caso el id
+    var id = e.dataTransfer.getData("contenido");
+
+    if($(e.target).hasClass("anidable")){
+        e.target.appendChild(document.getElementById(id));
+        var correcto  = guardar_partido_planificar($(e.target).closest("form"));
+    }
+}
+
+function devolver_jugador(elem){
+    var form  = $(elem).closest("form");
+    $(elem).insertAfter("#row_titulo_jugadores");
+    var correcto  = guardar_partido_planificar(form);
+}
+
+function filtrar_palabra_clave_planificar(){
+
+    var palabra_clave = $("#palabra_clave").val();
+
+    if(palabra_clave != ""){
+
+        $("#lista_jugadores .campo_busqueda").each(function(){
+
+            var texto_actual = $(this).html();
+
+            //Se convierte a minuscula para compararlas
+            var texto_actual_formateado = texto_actual.toLowerCase();
+            var palabra_clave_formateada = palabra_clave.toLowerCase();
+
+            if(texto_actual_formateado.indexOf(palabra_clave_formateada) != -1){
+                //Se ha encontrado una coincidencia, se muestra
+                var padre = $(this).closest(".row_jugador").first();
+                $(padre).show();
+            }
+            else{
+                //Si no hay coincidencias, se oculta
+                var padre = $(this).closest(".row_jugador").first();
+                $(padre).hide();
+            }
+
+        });
+    }
+    else{
+        //Se muestran todos los jugadores
+        $("#lista_jugadores .campo_busqueda").each(function(){
+            $(this).closest(".row_jugador").first().show();
+        });
+    }
+}
+
+function guardar_partido_planificar(form){
+    var correcto = false;
+    $.ajax({
+        url: $(form).attr("action"),
+        type: 'POST',
+        data: $(form).serialize(),
+        success: function(data) {
+            var r = JSON.parse(data);
+            if(r.error = ""){
+                correcto = true;
+            }
+        }
+    });
+}
+
+function terminar_planificar_dia(){
+    $("#fecha_terminar").val($("#id_fecha").val());
+    $("#deporte_terminar").val($("#deporte").val());
+    $("#btn_terminar").attr("disabled", true);
+    $("#form_terminar_planificar").submit();
+}
+
