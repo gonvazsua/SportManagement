@@ -413,8 +413,8 @@ def editar_partido_ajax(request):
                     partido.fecha = fecha_partido
                     partido.visible = visible
 
-                    #Borrar jugadores anteriores:
-                    #partido.perfiles.all().delete()
+                    #Eliminamos todos los jugadores y vamos anadiendo
+                    Partido_perfiles.objects.filter(partido = partido).delete()
 
                     for i in range(1,max_jugadores+1):
                         id = request.POST["jugador"+str(i)]
