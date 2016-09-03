@@ -337,6 +337,7 @@ function submit_nuevo_partido(url_guardar){
 
 function guardar_partido(url_guardar){
     var user_id = $("#id_usuario_form").val();
+    $("#btn_continuar").attr("disabled", true);
     $.ajax({
         data: $("#form_partido_nuevo").serialize(),
         url: '/'+url_guardar,

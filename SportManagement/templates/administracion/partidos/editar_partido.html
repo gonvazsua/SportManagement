@@ -263,7 +263,7 @@
                                             <input type="hidden" class="perfil_id" value="" name="jugador{{num}}">
                                         </tr>
                                         {% else %}
-                                        <tr class="success" id="jugador_partido_{{jug.id}}">
+                                        <tr class="success {%if jug in partido.perfiles.all%}seleccionado{%endif%}" id="jugador_partido_{{jug.id}}">
                                             <td><h5>{{num}}</h5></td>
                                             <td><h5 class="nombre">{{jug.user.first_name}}</h5></td>
                                             <td><h5 class="username">{{jug.user.username}}</h5></td>
@@ -338,7 +338,7 @@
                                 <button type="button" class="btn btn-danger  pull-left" aria-label="Right Align" onclick="javascript:submit_nuevo_partido_cancelar();">
                                   <i class="fa fa-minus-square fa-fw"></i> Cancelar
                                 </button>
-                                <button type="button" class="btn btn-success  pull-right" aria-label="Right Align" onclick="javascript:guardar_partido('editar_partido');">
+                                <button type="button" id="btn_continuar" class="btn btn-success  pull-right" aria-label="Right Align" onclick="javascript:guardar_partido('editar_partido');">
                                   <i class="fa fa-plus-circle fa-fw"></i> Continuar
                                 </button>
                             </div>

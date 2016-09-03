@@ -102,7 +102,7 @@ def administrador_editar_partido(request, id_usuario, id_partido):
     for perfil_actual in partido.perfiles.all():
         jug_no_disponibles.append(perfil_actual.id)
 
-    jugadores = PerfilRolClub.objects.filter(club = club).exclude(perfil__in = list(jug_no_disponibles)).order_by("perfil__user__last_name")
+    jugadores = PerfilRolClub.objects.filter(club = club).order_by("perfil__user__last_name")
 
     #Se forma el mapa de jugadores del partido
     for i in range(1, partido.pista.deporte.num_jugadores + 1):
