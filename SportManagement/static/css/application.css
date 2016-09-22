@@ -201,3 +201,7 @@ footer{
 .row-altura-planificar{
     min-height: 205px !important;
 }
+
+.margin-top-60px{
+    margin-top: 60px;
+}
