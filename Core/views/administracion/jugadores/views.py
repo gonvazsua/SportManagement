@@ -17,7 +17,7 @@ ruta_administracion_nuevo_jugador = 'administracion/jugadores/nuevo_jugador.html
 
 @login_required()
 def administrador_jugadores(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
     jugadores = PerfilRolClub.objects.filter(club = club, perfil__user__is_active = True).exclude(perfil=perfil).order_by("perfil__user__first_name")
@@ -27,7 +27,7 @@ def administrador_jugadores(request, id_usuario):
 
 @login_required()
 def administrador_perfil_jugador(request, id_usuario, id_jugador):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     perfil_jugador = ""
     try:
@@ -77,7 +77,7 @@ def baja_jugador_club(request):
 
 @login_required()
 def administrador_nuevo_jugador(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     error = ""
     provincias = Provincias.objects.all()

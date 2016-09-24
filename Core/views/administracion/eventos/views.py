@@ -23,7 +23,7 @@ ruta_editar_evento = "administracion/eventos/editar_evento.html"
 
 @login_required()
 def eventos(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
     error = ""
@@ -54,7 +54,7 @@ def eventos(request, id_usuario):
 
 @login_required()
 def nuevo_evento(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
     errores = []
@@ -198,7 +198,7 @@ def nuevo_evento(request, id_usuario):
 
 @login_required()
 def editar_evento(request, id_usuario, id_evento):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
     errores  = []
@@ -392,7 +392,7 @@ def editar_evento(request, id_usuario, id_evento):
 
 @login_required()
 def difundir_evento(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     titulo = "Nuevo evento en el club " + club.nombre
     data = {}
@@ -432,7 +432,7 @@ def difundir_evento(request, id_usuario):
 
 @login_required()
 def eliminar_evento(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     data = {}
     error = ""

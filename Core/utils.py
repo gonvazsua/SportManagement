@@ -10,16 +10,20 @@ import logging
 #Instancia del log
 logger = logging.getLogger(__name__)
 
-def comprueba_usuario_administrador(id_usuario):
+def comprueba_usuario_administrador(id_usuario, request):
     user = ""
     perfil = ""
     try:
-        user = User.objects.get(id = id_usuario)
-        perfil = Perfil.objects.get(user = user)
-        if not PerfilRolClub.objects.filter(perfil = perfil, rol_id = settings.ROL_ADMINISTRADOR).exists():
+        if request.user.is_authenticated() and request.user.id == int(id_usuario):
+            user = User.objects.get(id = id_usuario)
+            perfil = Perfil.objects.get(user = user)
+            if not PerfilRolClub.objects.filter(perfil = perfil, rol_id = settings.ROL_ADMINISTRADOR).exists():
+                raise Http404
+            if not user.is_authenticated():
+                raise Http404
+        else:
             raise Http404
-        if not user.is_authenticated():
-            raise Http404
+
     except User.DoesNotExist:
         logger.debug("util/utils - Método comprueba_usuario_administrador: No existe usuario " + str(id_usuario))
         raise Http404

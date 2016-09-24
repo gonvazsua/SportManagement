@@ -18,7 +18,7 @@ ruta_administracion_planificar = 'administracion/partidos/planificar.html'
 
 @login_required()
 def administrador_crear_partido(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     error = ""
     pistas = Pista.objects.filter(club=club).order_by('deporte__deporte', 'orden')
@@ -75,7 +75,7 @@ def administrador_crear_partido(request, id_usuario):
 
 @login_required()
 def administrador_editar_partido(request, id_usuario, id_partido):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     partido = ""
     error = ""
@@ -124,7 +124,7 @@ def administrador_editar_partido(request, id_usuario, id_partido):
 
 @login_required()
 def buscador_partidos(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     franjas_horarias = FranjaHora.objects.filter(club = club).order_by('inicio')
     data = {
@@ -152,7 +152,7 @@ def buscador_partidos(request, id_usuario):
 
 @login_required()
 def planificar(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
 
     error = None

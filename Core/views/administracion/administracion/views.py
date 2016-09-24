@@ -20,7 +20,7 @@ def administracion_club(request, id_usuario):
     municipio = ""
     provincia = ""
     form_admin_club = FormAdministracionClub()
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     provincias = Provincias.objects.all()
     try:

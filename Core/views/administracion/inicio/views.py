@@ -16,7 +16,7 @@ ruta_imprimir_planificacion = 'administracion/inicio/imprimir.html'
 @login_required()
 def perfil_administrador(request, id_usuario):
 
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
 
     #Esto solo se hace en la pagina principal
     #Cargamos datos en sesion, si fuera necesario

@@ -15,7 +15,7 @@ ruta_administracion_estadisticas = 'administracion/estadisticas/estadisticas.htm
 
 @login_required()
 def administrador_estadisticas(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     error = ""
     mes_buscar = date.today().month

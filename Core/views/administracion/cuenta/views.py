@@ -14,7 +14,7 @@ ruta_administracion_cuenta = "administracion/cuenta/administracion_cuenta.html"
 
 @login_required()
 def administracion_cuenta(request, id_usuario):
-    perfil = comprueba_usuario_administrador(id_usuario)
+    perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     provincias = Provincias.objects.all()
     municipios = []
