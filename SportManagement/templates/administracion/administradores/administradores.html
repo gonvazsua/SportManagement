@@ -73,7 +73,7 @@
                 </div>
                 <div class="col-lg-2">
                     <div class="row row-centered">
-                        <button type="button" class="btn btn-danger btn-redondo" aria-label="Right Align" title="Eliminar" onclick="javascript:mostrar_ventana_modal_administradores({{admin.id}})">
+                        <button type="button" class="btn btn-danger btn-redondo" aria-label="Right Align" title="Eliminar" {% if not request.session.es_demo %}onclick="javascript:mostrar_ventana_modal_administradores({{admin.id}})"{%endif%}>
                           <i class="fa fa-close fa-fw"></i>
                         </button>
                     </div>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="row row-centered">
-                                <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Asignar como administrador" onclick="javascript:mostrar_ventana_modal_asignar_administradores({{jugador.id}})">
+                                <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Asignar como administrador" {% if not request.session.es_demo %}onclick="javascript:mostrar_ventana_modal_asignar_administradores({{jugador.id}})"{%endif%}>
                                   <i class="fa fa-check fa-fw"></i>
                                 </button>
                             </div>

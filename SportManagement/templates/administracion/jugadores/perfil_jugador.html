@@ -64,7 +64,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="pull-right">
-                     <a href="javascript:dar_baja_jugador({{perfil_jugador.id}}, {{club.id}})" class="btn btn-danger" role="button"><i class="fa fa-times fa-fw"></i> Dar de baja</a>
+                     <a {% if not request.session.es_demo %} href="javascript:dar_baja_jugador({{perfil_jugador.id}}, {{club.id}})"{%endif%} class="btn btn-danger" role="button"><i class="fa fa-times fa-fw"></i> Dar de baja</a>
                 </div>
             </div>
         </div>

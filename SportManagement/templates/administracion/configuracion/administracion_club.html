@@ -228,13 +228,17 @@
                 <div class="form-group col-lg-1"><label for='imagen'>Imagen: </label></div>
                 <div class="form-group col-lg-10"><input type="file" name="imagen" ></div>
             </div>
-            <div class="row">
-                <div class="form-group col-lg-11">
-                    <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_club();">
-                      <i class="fa fa-save fa-fw"></i> Guardar
-                    </button>
+
+            {% if not request.session.es_demo %}
+                <div class="row">
+                    <div class="form-group col-lg-11">
+                        <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_club();">
+                          <i class="fa fa-save fa-fw"></i> Guardar
+                        </button>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
+
         </form>
     </div>
 </div>
@@ -296,9 +300,13 @@
                             <button type="button" class="btn btn-default btn-redondo" id="btn_editar_{{fh.id}}" aria-label="Right Align" title="Editar esta franja horaria" onclick="javascript:mostrar_efecto('#alerta_editar_franja_horaria_{{fh.id}}');">
                               <i class="fa fa-pencil fa-fw"></i>
                             </button>
-                            <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_{{fh.id}}" aria-label="Right Align" title="Guardar franja horaria" onclick="javascript:actualizar_franja_horaria('editar', {{fh.id}});" style="display:none;">
-                              <i class="fa fa-save fa-fw"></i>
-                            </button>
+
+                            {% if not request.session.es_demo %}
+                                <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_{{fh.id}}" aria-label="Right Align" title="Guardar franja horaria" onclick="javascript:actualizar_franja_horaria('editar', {{fh.id}});" style="display:none;">
+                                  <i class="fa fa-save fa-fw"></i>
+                                </button>
+                            {% endif %}
+
                         </div>
                     </div>
                     <div class="row alerta_franja_horaria" id="alerta_editar_franja_horaria_{{fh.id}}" style="display:none;">
@@ -318,7 +326,7 @@
                         <div class="col-lg-12">
                             <div class="alert alert-warning" role="alert">
                                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                Se eliminarán también todos los partidos de esta franja horaria. <a href="javascript:actualizar_franja_horaria('eliminar', {{fh.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#eliminar_franja_horaria_{{fh.id}}');">cancelar</a>?
+                                Se eliminarán también todos los partidos de esta franja horaria. <a {% if not request.session.es_demo %}href="javascript:actualizar_franja_horaria('eliminar', {{fh.id}});"{%endif%}>¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#eliminar_franja_horaria_{{fh.id}}');">cancelar</a>?
                             </div>
                         </div>
                     </div>
@@ -373,7 +381,7 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-1">
-                            <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar franja horaria nueva" onclick="javascript:actualizar_franja_horaria('nuevo', null);">
+                            <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar franja horaria nueva" {% if not request.session.es_demo %} onclick="javascript:actualizar_franja_horaria('nuevo', null);" {%endif%}>
                               <i class="fa fa-check fa-fw"></i>
                             </button>
                         </div>
@@ -421,13 +429,13 @@
                 </div>
 
                 <div class="form-group col-lg-2">
-                    <button type="button" class="btn btn-danger btn-redondo" id="btn_eliminar_nj_{{nj.id}}" aria-label="Right Align" title="Eliminar este nivel de juego" onclick="javascript:mostrar_efecto('#eliminar_nivel_juego_{{nj.id}}');">
+                    <button type="button" class="btn btn-danger btn-redondo" id="btn_eliminar_nj_{{nj.id}}" aria-label="Right Align" title="Eliminar este nivel de juego" {% if not request.session.es_demo %} onclick="javascript:mostrar_efecto('#eliminar_nivel_juego_{{nj.id}}');"{%endif%}>
                       <i class="fa fa-trash fa-fw"></i>
                     </button>
                     <button type="button" class="btn btn-default btn-redondo" id="btn_editar_nj_{{nj.id}}" aria-label="Right Align" title="Editar este nivel de juego" onclick="javascript:mostrar_efecto('#alerta_editar_nivel_juego_{{nj.id}}');">
                       <i class="fa fa-pencil fa-fw"></i>
                     </button>
-                    <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_nj_{{nj.id}}" aria-label="Right Align" title="Guardar este nivel de juego" onclick="javascript:actualizar_nivel_juego('editar', {{nj.id}});" style="display:none;">
+                    <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_nj_{{nj.id}}" aria-label="Right Align" title="Guardar este nivel de juego" {% if not request.session.es_demo %}onclick="javascript:actualizar_nivel_juego('editar', {{nj.id}});"{%endif%} style="display:none;">
                       <i class="fa fa-save fa-fw"></i>
                     </button>
                 </div>
@@ -436,7 +444,7 @@
                     <div class="col-lg-12">
                         <div class="alert alert-warning" role="alert">
                             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                            Se modificarán los niveles de todos los jugadores. <a href="javascript:liberar_nivel_juego({{nj.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#alerta_editar_nivel_juego_{{fh.id}}');">cancelar</a>?
+                            Se modificarán los niveles de todos los jugadores. <a href="javascript:liberar_nivel_juego({{nj.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#alerta_editar_nivel_juego_{{nj.id}}');">cancelar</a>?
                         </div>
                     </div>
                 </div>
@@ -449,7 +457,7 @@
                     <div class="col-lg-12">
                         <div class="alert alert-warning" role="alert">
                             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                            Se eliminarán los niveles de todos los jugadores. <a href="javascript:actualizar_nivel_juego('eliminar', {{nj.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#eliminar_nivel_juego_{{fh.id}}');">cancelar</a>?
+                            Se eliminarán los niveles de todos los jugadores. <a href="javascript:actualizar_nivel_juego('eliminar', {{nj.id}});">¡Entendido!</a> o ¿prefieres <a href="javascript:ocultar_efecto('#eliminar_nivel_juego_{{nj.id}}');">cancelar</a>?
                         </div>
                     </div>
                 </div>
@@ -477,7 +485,7 @@
                 </div>
 
                 <div class="form-group col-lg-1">
-                    <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar nivel de juego nuevo" onclick="javascript:actualizar_nivel_juego('nuevo', null);">
+                    <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar nivel de juego nuevo" {% if not request.session.es_demo %}onclick="javascript:actualizar_nivel_juego('nuevo', null);"{%endif%}>
                       <i class="fa fa-check fa-fw"></i>
                     </button>
                 </div>
@@ -527,13 +535,13 @@
                 </div>
 
                 <div class="form-group col-lg-2">
-                    <button type="button" class="btn btn-danger btn-redondo" id="btn_eliminar_pista_{{p.id}}" aria-label="Right Align" title="Eliminar esta pista" onclick="javascript:ocultar_efecto('.alerta_pista');mostrar_efecto('#eliminar_pista_{{p.id}}');">
+                    <button type="button" class="btn btn-danger btn-redondo" id="btn_eliminar_pista_{{p.id}}" aria-label="Right Align" title="Eliminar esta pista" {% if not request.session.es_demo %}onclick="javascript:ocultar_efecto('.alerta_pista');mostrar_efecto('#eliminar_pista_{{p.id}}');"{%endif%}>
                       <i class="fa fa-trash fa-fw"></i>
                     </button>
                     <button type="button" class="btn btn-default btn-redondo" id="btn_editar_pista_{{p.id}}" aria-label="Right Align" title="Editar esta pista" onclick="javascript:ocultar_efecto('.alerta_pista');mostrar_efecto('#alerta_editar_pista_{{p.id}}');">
                       <i class="fa fa-pencil fa-fw"></i>
                     </button>
-                    <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_pista_{{p.id}}" aria-label="Right Align" title="Guardar esta pista" onclick="javascript:ocultar_efecto('.alerta_pista');actualizar_pista('editar', {{p.id}});" style="display:none;">
+                    <button type="button" class="btn btn-success btn-redondo" id="btn_guardar_pista_{{p.id}}" aria-label="Right Align" title="Guardar esta pista" {% if not request.session.es_demo %}onclick="javascript:ocultar_efecto('.alerta_pista');actualizar_pista('editar', {{p.id}});"{%endif%} style="display:none;">
                       <i class="fa fa-save fa-fw"></i>
                     </button>
                 </div>
@@ -589,7 +597,7 @@
                 </div>
 
                 <div class="form-group col-lg-1">
-                    <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar pista nueva" onclick="javascript:actualizar_pista('nuevo', null);">
+                    <button type="button" class="btn btn-success btn-redondo" aria-label="Right Align" title="Guardar pista nueva" {% if not request.session.es_demo %}onclick="javascript:actualizar_pista('nuevo', null);"{%endif%}>
                       <i class="fa fa-check fa-fw"></i>
                     </button>
                 </div>

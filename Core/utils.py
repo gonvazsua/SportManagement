@@ -15,11 +15,15 @@ def comprueba_usuario_administrador(id_usuario, request):
     perfil = ""
     try:
         if request.user.is_authenticated() and request.user.id == int(id_usuario):
-            user = User.objects.get(id = id_usuario)
-            perfil = Perfil.objects.get(user = user)
+            perfil = Perfil.objects.get(user = request.user)
+
+            #Se anade comprobacion para evitar que no se pierda la sesion de demo
+            if not "es_demo" in request.session and request.user.username == settings.USERNAME_DEMO:
+                request.session["es_demo"] = True
+
             if not PerfilRolClub.objects.filter(perfil = perfil, rol_id = settings.ROL_ADMINISTRADOR).exists():
                 raise Http404
-            if not user.is_authenticated():
+            if not request.user.is_authenticated():
                 raise Http404
         else:
             raise Http404

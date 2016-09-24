@@ -73,6 +73,11 @@ def login(request):
                         rol_id = settings.ROL_JUGADOR #Rol de usuario
                         if num > 0:
                             rol_id = settings.ROL_ADMINISTRADOR #Rol administrador
+
+                         #Se desactiva la demo por si no se hubiera limpiado la sesión
+                        if "es_demo" in request.session:
+                            request.session["es_demo"] = False
+
                     except Perfil.DoesNotExist:
                         error = "Usuario o contraseña incorrecto."
                     except Exception:
@@ -201,6 +206,39 @@ def recuperar_pass(request):
 
     data = {'error' : error}
     return HttpResponse(json.dumps(data))
+
+
+def demo(request):
+
+    try:
+        #Obtener usuario de demo
+        user = authenticate(username=settings.USERNAME_DEMO, password=settings.PASS_DEMO)
+        if user is not None and user.is_active:
+            id = user.id
+            auth.login(request, user)
+            try:
+                perfil = Perfil.objects.get(user = user)
+                num = PerfilRolClub.objects.filter(perfil_id = perfil.id, rol_id = settings.ROL_ADMINISTRADOR).count()
+                rol_id = settings.ROL_JUGADOR #Rol de usuario
+                if num > 0:
+                    rol_id = settings.ROL_ADMINISTRADOR #Rol administrador
+            except Perfil.DoesNotExist:
+                error = "Usuario o contraseña incorrecto."
+            except Exception:
+                logger.debug("inicio/views - Método login")
+        else:
+            error = "Usuario o contraseña incorrecto."
+
+        #Metemos en sesion que es una demo
+        if not "es_demo" in request.session:
+            request.session["es_demo"] = True
+
+        return HttpResponseRedirect("/administrador/" + str(user.id))
+
+    except Exception, e:
+        logger.debug("inicio/views - Método demo: " + e.message)
+
+    return HttpResponseRedirect("/administrador/" + str(user.id))
 
 
 ######################################################

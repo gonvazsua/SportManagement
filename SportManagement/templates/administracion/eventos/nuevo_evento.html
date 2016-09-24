@@ -209,7 +209,7 @@
     {% if not success %}
     <div class="row form-group">
         <div class="col-lg-2 col-md-2">
-            <button type="button" class="btn btn-primary" onclick="javascript:submit_nuevo_evento()"><i class="fa fa-save"></i> Guardar</button>
+            <button type="button" class="btn btn-primary" {% if not request.session.es_demo %}onclick="javascript:submit_nuevo_evento()"{%endif%}><i class="fa fa-save"></i> Guardar</button>
         </div>
     </div>
     {% endif %}

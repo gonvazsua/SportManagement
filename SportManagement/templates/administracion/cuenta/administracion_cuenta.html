@@ -162,15 +162,20 @@
                     <div class="alert alert-danger" role="alert">El formato del email no es correcto</div>
                 </div>
             </div>
-            <div class="row form-group">
-                <div class="col-lg-1 col-md-1"></div>
-                <div class="col-lg-3"></div>
-                <div class="col-lg-7">
-                     <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_mi_cuenta();">
-                         <i class="fa fa-savelg"></i> Guardar información
-                     </button>
+
+            {% if not request.session.es_demo %}
+
+                <div class="row form-group">
+                    <div class="col-lg-1 col-md-1"></div>
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-7">
+                         <button type="button" class="btn btn-primary  pull-right" aria-label="Right Align" onclick="javascript:submit_mi_cuenta();">
+                             <i class="fa fa-savelg"></i> Guardar información
+                         </button>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
+
         </div>
     </div>
 </form>

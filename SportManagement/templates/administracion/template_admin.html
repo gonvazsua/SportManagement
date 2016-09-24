@@ -102,9 +102,11 @@
                                 </a>
                         {% endfor %}
 
+                        {% if not request.session.es_demo %}
                         <li class="divider"></li>
                         <li><a href="/usuario/{{perfil.user.id}}"><i class="fa fa-key fa-fw"></i> Cambiar a rol jugador</a>
                         </li>
+                        {% endif %}
 
                         <li class="divider"></li>
                         <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Salir</a>
@@ -177,6 +179,25 @@
         </nav>
 
         <div id="page-wrapper">
+
+            {% if request.session.es_demo %}
+                <div class="row margen_superior">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="well well-sm">
+                            <h4>Bienvenido a la demo de SportClick</h4>
+                            <p>
+                                Ahora eres Juan Pérez, administrador del club Sport Club Demo.<br>
+                                Puedes crear partidos, planificar los días, consultar las estadísticas de tu club, crear campeonatos, etc.
+                                ¡Que no te de miedo toquetear!
+                                <br><br>
+                                Recuerda que algunas de las funcionalidades de los botones están desactivadas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">{% block nombre_principal %}{% endblock %}</h1>
