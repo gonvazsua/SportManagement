@@ -175,6 +175,7 @@ def planificar(request, id_usuario):
             accion = request.POST.get("accion")
 
             data["fecha"] = fecha
+            data["deporte_id"] = int(deporte_id)
 
             if fecha and deporte_id:
 

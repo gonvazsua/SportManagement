@@ -52,7 +52,7 @@
             <div class="form-group col-lg-4">
                 <select name="deporte" id="deporte" class="form-control"{% if mapa_franjas_partidos %}disabled="true"{%endif%}>
                 {% for deporte in deportes %}
-                    <option value="{{deporte.id}}">{{deporte.deporte}}</option>
+                    <option value="{{deporte.id}}" {%if deporte.id == deporte_id%}selected="selected"{%endif%}>{{deporte.deporte}}</option>
                 {% endfor %}
                 </select>
             </div>
