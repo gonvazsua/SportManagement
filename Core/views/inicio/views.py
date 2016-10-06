@@ -15,6 +15,8 @@ from django.db.models import Q
 #Instancia del log
 logger = logging.getLogger(__name__)
 
+ruta_blog = "inicio/blog.html"
+
 
 def inicio(request):
 
@@ -240,6 +242,22 @@ def demo(request):
 
     return HttpResponseRedirect("/administrador/" + str(user.id))
 
+
+######################################################
+# Vista de blog
+######################################################
+def blog(request):
+
+    datos = {}
+
+    try:
+        entradasBlog = Blog.objects.all().order_by("-fecha")
+        datos["entradasBlog"] = entradasBlog
+
+    except Exception, e:
+        logger.debug("inicio/views - Método blog: " + e.message)
+
+    return render_to_response(ruta_blog, datos, context_instance=RequestContext(request))
 
 ######################################################
 #Metodo que genera claves aleatorias para los usuarios

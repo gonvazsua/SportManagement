@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//ES"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <!-- Schema  org -->
+    <script type="application/ld+json">
+        {
+        "@context": "http://schema.org",
+        "@type": "Product",
+        "brand": "Gestion de pistas deportivas",
+        "logo": "http://www.gestiondepistasdeportivas.com/static/img/favicon.png",
+        "category": "Gestión de pistas deportivas",
+        "name": "Gestión de pistas deportivas"
+        }
+    </script>
+
+    <!-- META Tags -->
+    <META name="description" content="Gestión de pistas deportivas, organiza tu club, usuarios y partidos. Inscripción de jugadores. Reserva de pistas online">
+    <META name="keywords" content="Gestión de pistas deportivas, Aplicación gestionar club, Montar partidos,
+    Gestión de pistas de padel gratis, programa gestion padel, reservas online, gimnasios, gestion deportiva, reserva pistas online,
+    centros deportivos, instalaciones, deportes, reservar, reservas, gestion de pistas de padel, gestion club">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{STATIC_URL}}img/favicon.png">
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+     <!-- Bootstrap Core CSS -->
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom CSS -->
+    <link href="{{ STATIC_URL }}css/landing-page.css?version=2" rel="stylesheet" type="text/css">
+    <!-- Custom Fonts -->
+    <!-- <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <!-- Javascript -->
+    <script type="text/javascript" src="{{STATIC_URL}}js/js.js"></script>
+    <!-- Css propio -->
+    <link href="{{STATIC_URL}}css/application.css?version=1" rel="stylesheet" type="text/css">
+    <!-- jQuery UI -->
+    <script type="text/javascript" src="{{STATIC_URL}}jquery-ui/jquery-ui.js"></script>
+    <link href="{{STATIC_URL}}jquery-ui/jquery-ui.css" rel="stylesheet"/>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            submit_intro();
+        });
+    </script>
+
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-84478782-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <title>Sportclick: Gestión de pistas deportivas</title>
+</head>
+<body>
+        <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+        <div class="container topnav">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Menu</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand topnav" href="/">Sport Click</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Acceder</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/blog">Blog</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/#services">Servicios</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/#contact">Contacto</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Header -->
+    <a name="about"></a>
+    <div class="intro-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="intro-message">
+                        <h1>Bienvenido al blog</h1>
+                        <h3 class="margin-top-60px">... de SportClick</h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.intro-header -->
+
+    <!-- Page Content -->
+
+   {% for entrada in entradasBlog %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5 col-sm-6">
+                <h2 class="section-heading">{{entrada.titulo}}</h2>
+                <h5 class="cursiva">El {{entrada.fecha}}, por @{{entrada.creado_por.user.username}}</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-sm-12">
+                <p class="lead">
+                    {{entrada.texto|linebreaksbr}}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="list-inline">
+                        <li>
+                            <a href="/">Inicio</a>
+                        </li>
+
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/">Acceder</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/blog">Blog</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/#services">Servicios</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/#contact">Contacto</a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted small">Copyright &copy; Sport Click 2016. Todos los derechos reservados</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -194,3 +194,12 @@ class Evento(models.Model):
             return True
         else:
             return False
+
+class Blog(models.Model):
+    fecha = models.DateField(auto_now=False, verbose_name="Fecha")
+    creado_por = models.ForeignKey(Perfil, null=True, blank=True)
+    titulo = models.CharField(max_length=300, verbose_name="Titulo")
+    texto = models.CharField(max_length=2000, verbose_name="Texto")
+    def __unicode__(self):
+		return unicode("Entrada blog: "+self.fecha)
+
