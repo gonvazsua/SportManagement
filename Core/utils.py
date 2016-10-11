@@ -37,18 +37,20 @@ def comprueba_usuario_administrador(id_usuario, request):
     return perfil
 
 
-def comprueba_usuario_logado_no_administrador(id_usuario):
+def comprueba_usuario_logado_no_administrador(id_usuario, request):
     user = ""
     perfil = ""
     try:
-        user = User.objects.get(id = id_usuario)
-        perfil = Perfil.objects.get(user = user)
-        if not user.is_authenticated():
+        if request.user.is_authenticated() and request.user.id == int(id_usuario):
+            user = User.objects.get(id = id_usuario)
+            perfil = Perfil.objects.get(user = user)
+        else:
             raise Http404
     except User.DoesNotExist:
         raise Http404
     except Exception:
         logger.debug("util/utils - Método comprueba_usuario_logado_no_administrador: id_usuario " + str(id_usuario))
+        raise Http404
     return perfil
 
 #Metodo que obtiene el club a partir del id

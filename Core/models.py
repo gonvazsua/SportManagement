@@ -12,6 +12,12 @@ def get_file_path(instance, filename):
     filename = "%s.%s" % (uuid.uuid4(), ext)
     return os.path.join('Imagenes', filename)
 
+#Evitar que imagenes se dupliquen en el blog
+def get_file_path_blog(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return os.path.join('Blog', filename)
+
 # Create your models here.
 class Comunidades(models.Model):
 	comunidad = models.CharField(max_length=255, verbose_name="Comunidad")
@@ -200,6 +206,7 @@ class Blog(models.Model):
     creado_por = models.ForeignKey(Perfil, null=True, blank=True)
     titulo = models.CharField(max_length=300, verbose_name="Titulo")
     texto = models.CharField(max_length=2000, verbose_name="Texto")
+    imagen = models.ImageField(upload_to=get_file_path_blog, verbose_name='Imagen', blank=True, null=True)
     def __unicode__(self):
-		return unicode("Entrada blog: "+self.fecha)
+		return unicode("Entrada blog: "+str(self.fecha))
 

@@ -14,7 +14,7 @@ ruta_cuenta_usuarios = 'usuarios/cuenta/usuarios_cuenta.html'
 
 @login_required()
 def usuario_mi_cuenta(request, id_usuario):
-    perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+    perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
     if perfil == None:
         return HttpResponseRedirect("/")
     try:
@@ -22,7 +22,7 @@ def usuario_mi_cuenta(request, id_usuario):
         if perfil.municipio:
             municipios = Municipios.objects.filter(provincia = perfil.municipio.provincia)
     except Exception, e:
-        logger.debug("usuarios/cuenta - Método usuario_mi_cuenta. id_usuario " + str(id_usuario) +". " + e)
+        logger.debug("usuarios/cuenta - Método usuario_mi_cuenta. id_usuario " + str(id_usuario) +". " + e.message)
         provincias = None
         municipios = None
 
@@ -78,7 +78,7 @@ def usuario_mi_cuenta(request, id_usuario):
                 perfil.save()
                 success = "Sus datos se han guardado correctamente."
             except Exception, e:
-                logger.debug("usuarios/cuenta - Método usuario_mi_cuenta. id_usuario " + str(id_usuario) +". " + e)
+                logger.debug("usuarios/cuenta - Método usuario_mi_cuenta. id_usuario " + str(id_usuario) +". " + e.message)
                 error = "Ha habido un error al guardar sus datos."
 
     data = {'perfil': perfil, 'provincias':provincias, 'municipios':municipios, 'error':error, 'success':success}
@@ -90,7 +90,7 @@ def borrar_imagen_anterior(url_imagen):
         if os.path.isfile(url_imagen):
             os.remove(url_imagen)
     except Exception, e:
-        logger.debug("usuarios/cuenta - Método borrar_imagen_anterior. URL_IMAGEN:" + str(url_imagen) +". " + e)
+        logger.debug("usuarios/cuenta - Método borrar_imagen_anterior. URL_IMAGEN:" + str(url_imagen) +". " + e.message)
 
 @login_required()
 def clubes_niveles_cuenta(request):
@@ -138,7 +138,7 @@ def eliminar_niveles_club_cuenta(request):
                 perfil.deporteNivel.remove(nivel)
                 perfil.save()
             except Exception, e:
-                logger.debug("usuarios/cuenta - Método eliminar_niveles_club_cuenta." + e)
+                logger.debug("usuarios/cuenta - Método eliminar_niveles_club_cuenta." + e.message)
                 error = "Ha habido un error al eliminar el nivel. Actualice la página e inténtelo de nuevo."
     data = {"error":error}
     return HttpResponse(json.dumps(data))
@@ -147,7 +147,7 @@ def eliminar_niveles_club_cuenta(request):
 def eliminar_cuenta_usuario(request, id_usuario):
     error = ""
     try:
-        perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+        perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
 
         #Desactivamos al jugador y hacemos logout
         if not PerfilRolClub.objects.filter(perfil = perfil, rol = settings.ROL_ADMINISTRADOR).exists():
@@ -161,6 +161,6 @@ def eliminar_cuenta_usuario(request, id_usuario):
             return render_to_response(ruta_cuenta_usuarios, {'error':error,'perfil': perfil, 'provincias':provincias, 'municipios':municipios}, context_instance=RequestContext(request))
 
     except Exception, e:
-        logger.debug("usuarios/cuenta - Método eliminar_cuenta_usuario." + e)
+        logger.debug("usuarios/cuenta - Método eliminar_cuenta_usuario." + e.message)
 
     return HttpResponseRedirect("/logout")

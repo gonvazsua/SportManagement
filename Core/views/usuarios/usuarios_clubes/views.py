@@ -14,7 +14,7 @@ ruta_usuarios_buscador_clubes = 'usuarios/clubes/usuarios_buscador_clubes.html'
 
 @login_required()
 def usuario_mis_clubes(request, id_usuario):
-    perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+    perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
     if perfil == None:
         return HttpResponseRedirect("/")
 
@@ -34,7 +34,7 @@ def usuario_mis_clubes(request, id_usuario):
 
 @login_required()
 def usuario_buscador_clubes(request, id_usuario):
-    perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+    perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
     if perfil == None:
         return HttpResponseRedirect("/")
     try:
@@ -96,7 +96,7 @@ def usuario_club_inscripcion(request):
                 else:
                     error = "Ya está inscrito en este club"
             except Exception, e:
-                logger.debug("usuarios/clubes - Método usuario_club_inscripcion." + e)
+                logger.debug("usuarios/clubes - Método usuario_club_inscripcion." + e.message)
                 error = "No hemos podido generar su petición, inténtelo de nuevo más tarde"
     data = {"error":error}
     return HttpResponse(json.dumps(data))
@@ -128,7 +128,7 @@ def usuario_club_baja(request):
                 PerfilRolClub.objects.get(perfil=perfil, club=club).delete()
 
             except Exception, e:
-                logger.debug("usuarios/clubes - Método usuario_club_baja." + e)
+                logger.debug("usuarios/clubes - Método usuario_club_baja." + e.message)
                 error = "No hemos podido generar su petición, actualice la página e inténtelo de nuevo."
     data = {"error":error}
     return HttpResponse(json.dumps(data))

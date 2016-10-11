@@ -16,7 +16,7 @@ ruta_buscador_partidos_usuarios = 'usuarios/partidos/usuarios_buscador_partidos.
 
 @login_required()
 def usuario_partido(request, id_usuario, id_partido):
-    perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+    perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
     if perfil == None:
         return HttpResponseRedirect("/")
 
@@ -115,14 +115,14 @@ def inscripcion_partidos(request):
                 else:
                     error = "Ya está inscrito en este partido"
             except Exception, e:
-                logger.debug("usuarios/partidos - Método inscripcion_partidos." + e)
+                logger.debug("usuarios/partidos - Método inscripcion_partidos." + e.message)
                 error = "No hemos podido generar su petición, inténtelo de nuevo más tarde"
     data = {"error":error}
     return HttpResponse(json.dumps(data))
 
 @login_required()
 def usuario_mis_partidos(request, id_usuario):
-    perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+    perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
     if perfil == None:
         return HttpResponseRedirect("/")
 
@@ -135,7 +135,7 @@ def usuario_mis_partidos(request, id_usuario):
                     mis_partidos.append(partido)
                     break
     except Exception, e:
-        logger.debug("usuarios/partidos - Método usuario_mis_partidos. id_usuario " + str(id_usuario) +". " + e)
+        logger.debug("usuarios/partidos - Método usuario_mis_partidos. id_usuario " + str(id_usuario) +". " + e.message)
         partidos = []
         mis_partidos = []
 
@@ -144,7 +144,7 @@ def usuario_mis_partidos(request, id_usuario):
 
 @login_required()
 def usuario_buscador_partido(request, id_usuario):
-    perfil = comprueba_usuario_logado_no_administrador(id_usuario)
+    perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
     if perfil == None:
         return HttpResponseRedirect("/")
 
@@ -152,7 +152,7 @@ def usuario_buscador_partido(request, id_usuario):
         clubes = Club.objects.filter(id__in=PerfilRolClub.objects.values_list('club_id',flat=True).filter(perfil=perfil, rol__id=settings.ROL_JUGADOR))
 
     except Exception, e:
-        logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e)
+        logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e.message)
         clubes = []
 
     data = {'perfil': perfil, 'clubes':clubes}
@@ -174,7 +174,7 @@ def usuario_buscador_partido(request, id_usuario):
                 franjas_horas = FranjaHora.objects.filter(club__id = id_club)
                 data["franjas_horas"] = franjas_horas
             except Exception, e:
-                logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e)
+                logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e.message)
                 franjas_horas = []
         if id_fh != None and int(id_fh) != 0:
             queryset.add(Q(franja_horaria__id = id_fh), Q.AND)
@@ -194,7 +194,7 @@ def usuario_buscador_partido(request, id_usuario):
                 queryset.add(Q(visible=settings.ESTADO_SI), Q.AND)
                 partidos = Partido.objects.filter(queryset).order_by("-fecha")
         except Exception, e:
-            logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e)
+            logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e.message)
             partidos = []
         data["partidos"] = partidos
 
