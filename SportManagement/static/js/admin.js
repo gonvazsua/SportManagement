@@ -1269,3 +1269,18 @@ function filtrar_jugadores_letra(letra){
         });
     }
 }
+
+function filtrar_franjas_horarias(){
+
+    var fh = $("#franja_horaria").val();
+
+    if(fh != ""){
+
+        $(".fila_franja_horaria").hide();
+        $("#fila_franja_horaria_" + fh).show();
+
+    }else{
+        $(".fila_franja_horaria").show();
+    }
+
+}

@@ -199,6 +199,7 @@ def planificar(request, id_usuario):
 
                         data["jugadores"] = jugadores
                         data["max_jugadores"] = range(0, max_jugadores)
+                        data["franjas_horarias"] = franjas_horarias
 
                         #Por cada franja y pista, se crea el partido o se comprueba si ya existe.
                         for fh in franjas_horarias.all():

@@ -148,7 +148,7 @@
     <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
             <div class="btn-group" role="group">
-                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('');">*</button>
+                <button type="button" title="Ver todos" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('');">*</button>
                 <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('A');">A</button>
                 <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('B');">B</button>
                 <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('C');">C</button>
@@ -183,6 +183,9 @@
 
 
 <div class="row">
+
+    <hr>
+
     <div class="col-lg-3" id="lista_jugadores">
 
         <div class="row" id="row_titulo_jugadores">
@@ -210,48 +213,76 @@
         {% endfor %}
     </div>
     <div class="col-lg-9">
+
+        {% if franjas_horarias %}
+
+            <div class="row form-group">
+                <div class="col-lg-12 text-center" title="Selección de franja horaria">
+                    <form action="" class="form-inline" id="franjas_horarias_form" method="POST">{% csrf_token %}
+                        <div class="form-group">
+                            <label for="filtrar_franjas">Filtrar por franja horaria:</label>
+                            <select name="franja_horaria" class="form-control" id="franja_horaria" onchange="javascript:filtrar_franjas_horarias();">
+                                <option value="">Ver todas...</option>
+                                {%for franja in franjas_horarias%}
+                                    <option value="{{franja.id}}" {% if franja.id == franja_horaria_actual.id %}selected = "selected"{% endif %}>{{franja.inicio|time:'G:i'}} - {{franja.fin|time:'G:i'}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr>
+        {% endif %}
+
+
     {% for franja, partidos in mapa_franjas_partidos.iteritems %}
 
-        <div class="row">
+        <div class="row fila_franja_horaria" id="fila_franja_horaria_{{franja.id}}">
             <div class="col-lg-12">
-                <h4>Partidos de {{franja.inicio|time:'G:i'}}h a {{franja.fin|time:'G:i'}}h</h4> <hr>
-            </div>
-        </div>
 
-        <div class="row">
-            {% for partido in partidos %}
-                <form method="POST" id="partido_planificar_{{partido.id}}" action="/administrador/guardar_partido_planificar">
-                    {% csrf_token %}
-                    <input type="hidden" name="partido_id" value="{{partido.id}}">
-                    <div class="col-lg-4">
-                        <div class="row">
-                            <div class="col-lg-12 text-center"><h5>- {{partido.pista.nombre}} -</h5></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12 row-altura-planificar pista-planificar anidable padding-top-4px" ondragover="durante_arrastre(event)" ondrop="terminar_arrastre(event)">
-                            {% for pp in partido.perfiles.all %}
-                                <div class="row row_jugador" title="Arrastra a {{pp.user.first_name}} {{pp.user.last_name}} a la pista que quieras" draggable="true"
-                                    ondragstart="comenzar_arrastre(event)" id="jugador_{{pp.id}}" ondblclick="devolver_jugador(this)">
-                                <div class="col-lg-12">
-                                    <div class="panel panel-grey margin-bottom-7px cursor-grab">
-                                        <div class="panel-heading">
-                                            <div class="row">
-                                                <div class="col-xs-12 text-center">
-                                                    <i class="fa fa-futbol-o"></i> <span class="campo_busqueda">{{pp.user.first_name}} {{pp.user.last_name|truncatewords:1}}</span>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h4>Partidos de {{franja.inicio|time:'G:i'}}h a {{franja.fin|time:'G:i'}}h</h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    {% for partido in partidos %}
+                        <form method="POST" id="partido_planificar_{{partido.id}}" action="/administrador/guardar_partido_planificar">
+                            {% csrf_token %}
+                            <input type="hidden" name="partido_id" value="{{partido.id}}">
+                            <div class="col-lg-4">
+                                <div class="row">
+                                    <div class="col-lg-12 text-center"><h5>- {{partido.pista.nombre}} -</h5></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 row-altura-planificar pista-planificar anidable padding-top-4px" ondragover="durante_arrastre(event)" ondrop="terminar_arrastre(event)">
+                                    {% for pp in partido.perfiles.all %}
+                                        <div class="row row_jugador" title="Arrastra a {{pp.user.first_name}} {{pp.user.last_name}} a la pista que quieras" draggable="true"
+                                            ondragstart="comenzar_arrastre(event)" id="jugador_{{pp.id}}" ondblclick="devolver_jugador(this)">
+                                        <div class="col-lg-12">
+                                            <div class="panel panel-grey margin-bottom-7px cursor-grab">
+                                                <div class="panel-heading">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 text-center">
+                                                            <i class="fa fa-futbol-o"></i> <span class="campo_busqueda">{{pp.user.first_name}} {{pp.user.last_name|truncatewords:1}}</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <input type="hidden" name="jugador_{{pp.id}}" value="{{pp.id}}">
+                                    </div>
+                                    {% endfor %}
                                     </div>
                                 </div>
-                                <input type="hidden" name="jugador_{{pp.id}}" value="{{pp.id}}">
                             </div>
-                            {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                        </form>
 
-            {% endfor %}
+                    {% endfor %}
+                </div>
+                <hr>
+            </div>
         </div>
 
     {% endfor %}
