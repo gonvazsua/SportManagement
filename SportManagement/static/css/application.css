@@ -205,3 +205,9 @@ footer{
 .margin-top-60px{
     margin-top: 60px;
 }
+
+.pista-planificar{
+    background-size: 99% 99% !important;
+    background-image: url("../img/evento.png");
+    background-repeat:no-repeat;
+}

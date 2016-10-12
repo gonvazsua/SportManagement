@@ -101,8 +101,9 @@
         <div class="col-lg-12 col-md-12">
             <div class="well well-sm">
                 Arrastra al jugador que quieras seleccionar hasta la pista en la que juegue. <br>
-                Para quitar del partido a un jugador, simplemente haz doble clic sobre él. <br>
-                Puedes buscar jugadores escribiendo su nombre en el recuadro de abajo.<br>
+                Para quitar del partido a un jugador, simplemente haz <strong>doble clic</strong> sobre él. <br>
+                Puedes buscar jugadores escribiendo su nombre en el recuadro de abajo o bien pulsando sobre la letra que quieras para
+                ver los jugadores cuyo nombre empieza por esa letra.<br>
                 Para terminar, pulsa sobre el botón de "He terminado".
             </div>
         </div>
@@ -130,6 +131,53 @@
             </button>
         </form>
 
+    </div>
+</div>
+
+<!-- Filtro alfabetico -->
+<div class="row min_height_50">
+    <div class="col-lg-8">
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="filtrar">Filtrar jugadores por letra inicial:</label>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row min_height_50">
+    <div class="col-lg-12">
+        <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group" role="group">
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('');">*</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('A');">A</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('B');">B</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('C');">C</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('D');">D</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('E');">E</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('F');">F</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('G');">G</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('H');">H</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('I');">I</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('J');">J</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('K');">K</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('L');">L</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('M');">M</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('N');">N</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('Ñ');">Ñ</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('O');">O</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('P');">P</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('Q');">Q</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('R');">R</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('S');">S</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('T');">T</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('U');">U</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('V');">V</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('W');">W</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('X');">X</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('Y');">Y</button>
+                <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra('Z');">Z</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -180,7 +228,7 @@
                             <div class="col-lg-12 text-center"><h5>- {{partido.pista.nombre}} -</h5></div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-12 row-altura-planificar pista_evento anidable padding-top-4px" ondragover="durante_arrastre(event)" ondrop="terminar_arrastre(event)">
+                            <div class="col-lg-12 row-altura-planificar pista-planificar anidable padding-top-4px" ondragover="durante_arrastre(event)" ondrop="terminar_arrastre(event)">
                             {% for pp in partido.perfiles.all %}
                                 <div class="row row_jugador" title="Arrastra a {{pp.user.first_name}} {{pp.user.last_name}} a la pista que quieras" draggable="true"
                                     ondragstart="comenzar_arrastre(event)" id="jugador_{{pp.id}}" ondblclick="devolver_jugador(this)">

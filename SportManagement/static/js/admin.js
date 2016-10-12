@@ -1237,3 +1237,35 @@ function terminar_planificar_dia(){
     $("#form_terminar_planificar").submit();
 }
 
+function filtrar_jugadores_letra(letra){
+
+    if(letra != ""){
+
+        $("#lista_jugadores .campo_busqueda").each(function(){
+
+            var texto_actual = $(this).html();
+
+            //Se convierte a minuscula para compararlas
+            var texto_actual_formateado = texto_actual.toLowerCase();
+            var letra_formateada = letra.toLowerCase();
+
+            if(texto_actual_formateado.charAt(0) == letra_formateada){
+                //Se ha encontrado una coincidencia, se muestra
+                var padre = $(this).closest(".row_jugador").first();
+                $(padre).show();
+            }
+            else{
+                //Si no hay coincidencias, se oculta
+                var padre = $(this).closest(".row_jugador").first();
+                $(padre).hide();
+            }
+
+        });
+    }
+    else{
+        //Se muestran todos los jugadores
+        $("#lista_jugadores .campo_busqueda").each(function(){
+            $(this).closest(".row_jugador").first().show();
+        });
+    }
+}
