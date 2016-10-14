@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db.models import Q
 import logging
 from django.contrib.auth.decorators import login_required
+from Core.utils import cargar_tipos_notificaciones_settings
 
 #Instancia del log
 logger = logging.getLogger(__name__)
@@ -93,11 +94,10 @@ def perfil_administrador(request, id_usuario):
 
     #Notificaciones
     try:
-        inscripciones_club_id = InscripcionesEnClub.objects.values_list('id', flat=True).filter(club=club, estado=settings.ESTADO_NULL)
-        inscripciones_partido_id = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido__pista__club=club, estado=settings.ESTADO_NULL)
+        campos_fijos_query = Q(estado = settings.ESTADO_NULL, tipo__in = (settings.TIPO_NOTIF_UNIRSE_A_PARTIDO, settings.TIPO_NOTIF_INSCRIPCION_CLUB),
+                               destino=settings.NOTIF_CLUB, leido = settings.ESTADO_NO)
         notificaciones = Notificacion.objects.filter(
-            Q(inscripcionEnClub__id__in=inscripciones_club_id) | Q(inscripcionEnPartido__id__in=inscripciones_partido_id),
-            destino=settings.NOTIF_CLUB, leido = settings.ESTADO_NO
+            (Q(club = club) | Q(partido__pista__club = club)) & campos_fijos_query
         ).order_by("-fecha")
 
     except Exception:
@@ -112,6 +112,8 @@ def perfil_administrador(request, id_usuario):
             'rutaTiempo':rutaTiempo, 'notificaciones':notificaciones,
             'franjas_horarias':franjas_horarias, 'municipio_guiones':municipio_guiones
     }
+
+    data = cargar_tipos_notificaciones_settings(data)
 
     return render_to_response(ruta_pagina_principal, data, context_instance=RequestContext(request))
 

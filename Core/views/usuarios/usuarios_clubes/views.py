@@ -22,9 +22,7 @@ def usuario_mis_clubes(request, id_usuario):
 
     #Comprobar si existen notificaciones de club para marcar como leídas
     try:
-        inscripciones_club_ids = InscripcionesEnClub.objects.values_list('id', flat=True).filter(jugador = perfil)
-        if inscripciones_club_ids.count() > 0:
-            notificaciones = Notificacion.objects.filter(inscripcionEnClub__id__in=inscripciones_club_ids, destino=settings.NOTIF_JUGADOR).update(leido = settings.ESTADO_SI)
+        notificaciones = Notificacion.objects.filter(jugador = perfil, tipo = settings.TIPO_NOTIF_INSCRIPCION_CLUB, destino=settings.NOTIF_JUGADOR).update(leido = settings.ESTADO_SI)
 
     except Exception:
         notificaciones = []
@@ -57,7 +55,7 @@ def usuario_buscador_clubes(request, id_usuario):
             #Buscar clubes a los que ya pertenece el jugador o ha enviado peticiones para que no pueda
             #volverlas a enviar.
             clubes_ya_pertenece = PerfilRolClub.objects.values_list('club_id',flat=True).filter(perfil=perfil)
-            clubes_ya_peticion_enviada = InscripcionesEnClub.objects.values_list('club_id',flat=True).filter(jugador=perfil, estado=settings.ESTADO_NULL)
+            clubes_ya_peticion_enviada = Notificacion.objects.values_list('club_id',flat=True).filter(tipo = settings.TIPO_NOTIF_INSCRIPCION_CLUB, jugador=perfil, estado=settings.ESTADO_NULL)
 
             if municipio_id  and int(municipio_id) != 0:
                 clubes = Club.objects.filter(municipio__id = municipio_id)
@@ -88,10 +86,17 @@ def usuario_club_inscripcion(request):
                 perfil = Perfil.objects.get(id=perfil_id)
                 club = Club.objects.get(id=club_id)
                 if(PerfilRolClub.objects.filter(perfil=perfil, club=club).count() == 0):
-                    inscripcion = InscripcionesEnClub.objects.create(club=club, jugador=perfil, estado=settings.ESTADO_NULL)
-                    inscripcion.save()
-                    #Asociar notificacion para el club
-                    notificacion = Notificacion.objects.create(leido = settings.ESTADO_NO, fecha=datetime.now().date(), inscripcionEnClub = inscripcion, destino=settings.NOTIF_CLUB)
+
+                    #Crear notificacion para el club
+                    notificacion = Notificacion.objects.create(
+                        leido = settings.ESTADO_NO,
+                        fecha=datetime.now().date(),
+                        tipo = settings.TIPO_NOTIF_INSCRIPCION_CLUB,
+                        destino=settings.NOTIF_CLUB,
+                        club = club,
+                        jugador = perfil,
+                        estado = settings.ESTADO_NULL
+                    )
                     notificacion.save()
                 else:
                     error = "Ya está inscrito en este club"
@@ -113,12 +118,9 @@ def usuario_club_baja(request):
                 club = Club.objects.get(id=club_id)
 
                 #Borrar notificaciones
-                Notificacion.objects.filter(inscripcionEnPartido__in = InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club)))).delete()
-                Notificacion.objects.filter(inscripcionEnClub__in = InscripcionesEnClub.objects.filter(jugador=perfil, club=club)).delete()
-
-                #Borrar inscripciones
-                InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club))).delete()
-                InscripcionesEnClub.objects.filter(jugador=perfil, club=club).delete()
+                Notificacion.objects.filter(
+                    (Q(club = club) | Q(partido__pista__club = club)) & Q(jugador = perfil)
+                ).delete()
 
                 #Borrar niveles de juego del jugador en el club
                 for dn in perfil.deporteNivel.all():

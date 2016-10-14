@@ -18,7 +18,7 @@ def usuario_inicio(request, id_usuario):
     try:
         provincias = Provincias.objects.all()
         clubes = Club.objects.filter(id__in=PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil=perfil, rol=settings.ROL_JUGADOR))
-        clubes_pendientes_aceptar = Club.objects.filter(id__in=InscripcionesEnClub.objects.values_list('club_id', flat=True).filter(jugador=perfil, estado=settings.ESTADO_NULL))
+        clubes_pendientes_aceptar = Club.objects.filter(id__in=Notificacion.objects.values_list('club_id', flat=True).filter(jugador=perfil, estado=settings.ESTADO_NULL))
         club_partidos_disponibles = {}
         for c in clubes:
             try:
@@ -38,14 +38,15 @@ def usuario_inicio(request, id_usuario):
 
     #Notificaciones
     try:
-        inscripciones_club_id = InscripcionesEnClub.objects.values_list('id', flat=True).filter(jugador = perfil)
-        inscripciones_partido_id = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(jugador = perfil)
-        notificaciones = Notificacion.objects.filter(Q(inscripcionEnClub__id__in=inscripciones_club_id) | Q(inscripcionEnPartido__id__in=inscripciones_partido_id), destino=settings.NOTIF_JUGADOR, leido=settings.ESTADO_NO).order_by("leido","-fecha")
+        notificaciones = Notificacion.objects.filter(jugador = perfil, destino=settings.NOTIF_JUGADOR, leido=settings.ESTADO_NO).order_by("leido","-fecha")
     except Exception:
         notificaciones = []
 
     data = {'perfil': perfil, 'provincias':provincias, 'clubes':clubes, 'clubes_pendientes_aceptar':clubes_pendientes_aceptar,
             'club_partidos_disponibles':club_partidos_disponibles, 'notificaciones':notificaciones}
+
+    data = cargar_tipos_notificaciones_settings(data)
+
     return render_to_response(ruta_inicio_usuarios, data, context_instance=RequestContext(request))
 
 @login_required()

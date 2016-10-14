@@ -55,12 +55,9 @@ def baja_jugador_club(request):
         club = Club.objects.get(id=club_id)
 
         #Borrar notificaciones
-        Notificacion.objects.filter(inscripcionEnPartido__in = InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club)))).delete()
-        Notificacion.objects.filter(inscripcionEnClub__in = InscripcionesEnClub.objects.filter(jugador=perfil, club=club)).delete()
-
-        #Borrar inscripciones
-        InscripcionesEnPartido.objects.filter(jugador=perfil, partido__in=(Partido.objects.filter(pista__club=club))).delete()
-        InscripcionesEnClub.objects.filter(jugador=perfil, club=club).delete()
+        Notificacion.objects.filter(
+            (Q(club = club) | Q(partido__pista__club = club)) & Q(jugador = perfil)
+        ).delete()
 
         #Borrar niveles de juego del jugador en el club
         for dn in perfil.deporteNivel.all():

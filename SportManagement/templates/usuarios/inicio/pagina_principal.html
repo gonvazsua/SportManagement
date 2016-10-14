@@ -164,29 +164,20 @@
                 {% for n in notificaciones|slice:":5" %}
                     <div class="row">
                         <div class="col-lg-4">
-                            {% if n.inscripcionEnClub %}
-                                {% if n.inscripcionEnClub.club.imagen == "" %}
-                                    <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.inscripcionEnClub.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
-                                {% else %}
-                                    <img src="{{MEDIA_URL}}{{n.inscripcionEnClub.club.imagen}}" title="{{n.inscripcionEnClub.jugador.user.first_name}}" alt="{{n.inscripcionEnClub.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
-                                {% endif %}
-                            {% endif %}
-                            {% if n.inscripcionEnPartido %}
-                                {% if n.inscripcionEnPartido.partido.pista.club.imagen == "" %}
-                                    <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.inscripcionEnPartido.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
-                                {% else %}
-                                    <img src="{{MEDIA_URL}}{{n.inscripcionEnPartido.partido.pista.club.imagen}}" title="{{n.inscripcionEnPartido.jugador.user.first_name}}" alt="{{n.inscripcionEnPartido.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
-                                {% endif %}
+                            {% if n.club.imagen == "" or n.club.imagen == None %}
+                                <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                            {% else %}
+                                <img src="{{MEDIA_URL}}{{n.club.imagen}}" title="{{n.club.nombre}}" alt="{{n.club.nombre}}" class="img-rounded" style="max-width: 100%">
                             {% endif %}
                         </div>
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    {% if n.inscripcionEnClub %}
-                                        <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.inscripcionEnClub.club.nombre}}</strong></a>, ha <strong>{%if n.inscripcionEnClub.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte al club.
+                                    {% if n.tipo == TIPO_NOTIF_UNIRSE_A_PARTIDO %}
+                                        <strong>{{n.club.nombre}}</strong>, ha <strong>{%if n.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte a <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a> .
                                     {% endif %}
-                                    {% if n.inscripcionEnPartido %}
-                                        <strong>{{n.inscripcionEnPartido.partido.pista.club.nombre}}</strong>, ha <strong>{%if n.inscripcionEnPartido.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte a <a href="/usuario/{{perfil.user.id}}/partidos/{{n.inscripcionEnPartido.partido.id}}">este partido</a> .
+                                    {% if n.tipo == TIPO_NOTIF_INSCRIPCION_CLUB %}
+                                        <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.club.nombre}}</strong></a>, ha <strong>{%if n.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte al club.
                                     {% endif %}
                                 </div>
                             </div>

@@ -6,6 +6,7 @@ import json
 from django.db.models import Q
 import logging
 from django.contrib.auth.decorators import login_required
+from Core.utils import cargar_tipos_notificaciones_settings
 
 #Instancia del log
 logger = logging.getLogger(__name__)
@@ -14,18 +15,24 @@ ruta_administracion_notificaciones = 'administracion/notificaciones/notificacion
 
 @login_required()
 def notificaciones(request, id_usuario):
+
     perfil = comprueba_usuario_administrador(id_usuario, request)
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
 
     #Notificaciones
     try:
-        inscripciones_club_id = InscripcionesEnClub.objects.values_list('id', flat=True).filter(club=club)
-        inscripciones_partido_id = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido__pista__club=club)
-        notificaciones = Notificacion.objects.filter(Q(inscripcionEnClub__id__in=inscripciones_club_id) | Q(inscripcionEnPartido__id__in=inscripciones_partido_id), destino=settings.NOTIF_CLUB).order_by("-fecha","-id")
+
+        notificaciones = Notificacion.objects.filter(
+            club = club, destino = settings.NOTIF_CLUB
+        ).order_by("-fecha","-id")
+
     except Exception:
         notificaciones = []
 
     data = {'perfil':perfil, 'club':club, 'notificaciones':notificaciones}
+
+    data = cargar_tipos_notificaciones_settings(data)
+
     return render_to_response(ruta_administracion_notificaciones, data, context_instance=RequestContext(request))
 
 @login_required()
@@ -55,54 +62,61 @@ def aceptar_denegar_inscripcion(request):
         estado = request.POST.get("estado")
         club_id = request.POST.get("club_id")
         jugador_id = request.POST.get("jugador_id")
+
         if notificacion_id and estado and club_id and jugador_id:
             try:
                 #Convertir a boolean el estado
                 estado = bool(int(estado))
 
-                #Crear PerfilRolClub
-                rol = Rol.objects.get(id=settings.ROL_JUGADOR)
-                jugador = Perfil.objects.get(id=jugador_id)
-                club = Club.objects.get(id=club_id)
-
                 notificacion = Notificacion.objects.get(id=notificacion_id)
-                #Generar notificacion para el jugador
-                notificacion_jugador = Notificacion.objects.create(
-                    leido = settings.ESTADO_NO,
-                    destino = settings.NOTIF_JUGADOR,
-                    fecha = notificacion.fecha
-                )
 
-                notificacion.leido = settings.ESTADO_SI
+                if notificacion:
 
-                if notificacion.inscripcionEnClub:
-                    notificacion.inscripcionEnClub.estado = estado
-                    notificacion_jugador.inscripcionEnClub = notificacion.inscripcionEnClub
-                    notificacion.inscripcionEnClub.save()
+                    #Consultar datos necesarios
+                    rol = Rol.objects.get(id=settings.ROL_JUGADOR)
+                    jugador = Perfil.objects.get(id=jugador_id)
+                    club = Club.objects.get(id=club_id)
+
+                    notificacion.leido = settings.ESTADO_SI
+                    notificacion.estado = estado
                     notificacion.save()
 
-                    if estado != settings.ESTADO_NO:
-                        perfilRolClub = PerfilRolClub.objects.create(rol=rol, perfil=jugador, club=club)
-                        perfilRolClub.save()
+                    partido = None
 
-                elif notificacion.inscripcionEnPartido:
-                    notificacion.inscripcionEnPartido.estado = estado
-                    if estado:
-                        partido = Partido.objects.get(id=notificacion.inscripcionEnPartido.partido.id)
-                        if partido.num_perfiles() >= partido.max_perfiles():
-                            error = "El partido ya tiene el máximo de jugadores"
-                        elif partido.bloqueado():
-                            error = "Este partido tiene fecha anterior a hoy"
-                        else:
-                            partido_perfil = Partido_perfiles.objects.create(
-                                partido = partido,
-                                perfil = jugador,
-                                pago = None,
-                                fecha_pago = None
-                            )
-                    notificacion.inscripcionEnPartido.save()
-                    notificacion_jugador.inscripcionEnPartido = notificacion.inscripcionEnPartido
-                    notificacion.save()
+                    if notificacion.tipo == settings.TIPO_NOTIF_UNIRSE_A_PARTIDO:
+
+                        #Si se acepta la notificacion, se crea el partido
+                        if estado == settings.ESTADO_SI:
+                            partido = Partido.objects.get(id=notificacion.partido.id)
+                            if partido.num_perfiles() >= partido.max_perfiles():
+                                error = "El partido ya tiene el máximo de jugadores"
+                            elif partido.bloqueado():
+                                error = "Este partido tiene fecha anterior a hoy"
+                            else:
+                                partido_perfil = Partido_perfiles.objects.create(
+                                    partido = partido,
+                                    perfil = jugador,
+                                    pago = None,
+                                    fecha_pago = None
+                                )
+
+                    elif notificacion.tipo == settings.TIPO_NOTIF_INSCRIPCION_CLUB:
+
+                        #Si se acepta la notificacion, se crea el PerfilRolClub
+                        if estado == settings.ESTADO_SI:
+                            perfilRolClub = PerfilRolClub.objects.create(rol=rol, perfil=jugador, club=club)
+                            perfilRolClub.save()
+
+                    #Generar notificacion del mismo tipo para el jugador
+                    notificacion_jugador = Notificacion.objects.create(
+                        tipo = notificacion.tipo,
+                        leido = settings.ESTADO_NO,
+                        destino = settings.NOTIF_JUGADOR,
+                        club = club,
+                        estado = estado,
+                        jugador = jugador,
+                        partido = partido
+                    )
 
                 if error == "" and notificacion and notificacion_jugador:
                     notificacion_jugador.save()
@@ -129,9 +143,10 @@ def comprobar_notificaciones(request):
     try:
         club_id = request.session["club_id"]
         if club_id:
-            inscripciones_club_id = InscripcionesEnClub.objects.values_list('id', flat=True).filter(club__id=club_id)
-            inscripciones_partido_id = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido__pista__club__id=club_id)
-            num_notificaciones = Notificacion.objects.filter(Q(inscripcionEnClub__id__in=inscripciones_club_id) | Q(inscripcionEnPartido__id__in=inscripciones_partido_id), destino=settings.NOTIF_CLUB,leido = settings.ESTADO_NO).count()
+
+            num_notificaciones = Notificacion.objects.filter(
+                club__id = club_id, destino=settings.NOTIF_CLUB, leido = settings.ESTADO_NO
+            ).count()
 
     except Exception, e:
         num_notificaciones = 0

@@ -91,3 +91,13 @@ def enviar_email(titulo, de, para, texto):
         enviado = False
 
     return enviado
+
+
+#Cargar tipos de notificaciones desde settings
+def cargar_tipos_notificaciones_settings(data):
+
+    data["TIPO_NOTIF_UNIRSE_A_PARTIDO"] = settings.TIPO_NOTIF_UNIRSE_A_PARTIDO
+    data["TIPO_NOTIF_INSCRIPCION_CLUB"] = settings.TIPO_NOTIF_INSCRIPCION_CLUB
+    data["TIPO_NOTIF_JUEGA_PARTIDO"] = settings.TIPO_NOTIF_JUEGA_PARTIDO
+
+    return data

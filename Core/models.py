@@ -160,26 +160,15 @@ class RutaTiempo(models.Model):
     municipio = models.ForeignKey(Municipios)
     ruta = models.TextField(blank=True)
 
-class InscripcionesEnClub(models.Model):
-    club = models.ForeignKey(Club, verbose_name="Club")
-    jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
-    estado = models.NullBooleanField(verbose_name="Estado aceptación") #None=Pendiente, 1=Aceptada, 0=Denegada
-    def __unicode__(self):
-		return unicode("Club: "+self.club.nombre)
-
-class InscripcionesEnPartido(models.Model):
-    partido = models.ForeignKey(Partido, verbose_name="Partido")
-    jugador = models.ForeignKey(Perfil, verbose_name="Perfil")
-    estado = models.NullBooleanField(verbose_name="Estado aceptación") #None=Pendiente, 1=Aceptada, 0=Denegada
-    def __unicode__(self):
-		return unicode("Club: "+self.club.nombre)
-
 class Notificacion(models.Model):
     leido = models.BooleanField(verbose_name="Estado lectura")
-    fecha = models.DateField(auto_now=False, verbose_name="Fecha")
-    inscripcionEnClub = models.ForeignKey(InscripcionesEnClub, null=True, blank=True)
-    inscripcionEnPartido = models.ForeignKey(InscripcionesEnPartido, null=True, blank=True)
-    destino = models.IntegerField(max_length=1, verbose_name="Destino")
+    fecha = models.DateField(auto_now=True, verbose_name="Fecha")
+    tipo = models.IntegerField(max_length=1, verbose_name="Tipo") #Ver settings
+    destino = models.IntegerField(max_length=1, verbose_name="Destino") #0 = Club; 1 = Jugador
+    partido = models.ForeignKey(Partido, verbose_name="Partido", blank=True, null=True)
+    jugador = models.ForeignKey(Perfil, verbose_name="Perfil", blank=True, null=True)
+    estado = models.NullBooleanField(verbose_name="Estado aceptación", blank=True, null=True) #None=Pendiente, 1=Aceptada, 0=Denegada
+    club = models.ForeignKey(Club, verbose_name="Club", blank=True, null=True)
     def __unicode__(self):
 		return unicode("Club: "+self.fecha)
 

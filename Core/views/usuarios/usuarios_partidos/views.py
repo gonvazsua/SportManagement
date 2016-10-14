@@ -24,8 +24,21 @@ def usuario_partido(request, id_usuario, id_partido):
     bloqueo_notificaciones = False
     try:
         partido = Partido.objects.get(id=id_partido)
-        inscripciones_partidos_ids = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(partido=partido, jugador=perfil, estado=settings.ESTADO_NO)
-        notificaciones = Notificacion.objects.filter(inscripcionEnPartido__id__in = inscripciones_partidos_ids).count()
+
+        #comprobar si tiene notificaciones de partidos asociadas y marcarlas como leidas
+        try:
+            notificaciones = []
+            if not bloqueo_notificaciones:
+
+                notificaciones = Notificacion.objects.filter(
+                    tipo = settings.TIPO_NOTIF_UNIRSE_A_PARTIDO,
+                    jugador = perfil,
+                    partido = partido,
+                    destino = settings.NOTIF_JUGADOR
+                ).update(leido = settings.ESTADO_SI)
+
+        except Exception:
+            notificaciones = []
 
         nivel_medio = calcular_nivel_medio(partido)
         if perfil in partido.perfiles.all():
@@ -37,15 +50,6 @@ def usuario_partido(request, id_usuario, id_partido):
     except Exception:
         partido = None
         nivel_medio = ""
-
-    #comprobar si tiene notificaciones de partidos asociadas y marcarlas como leidas
-    try:
-        notificaciones = []
-        if not bloqueo_notificaciones:
-            inscripciones_partidos_ids = InscripcionesEnPartido.objects.values_list('id', flat=True).filter(jugador=perfil)
-            notificaciones = Notificacion.objects.filter(inscripcionEnPartido__id__in = inscripciones_partidos_ids).update(leido = settings.ESTADO_SI)
-    except Exception:
-        notificaciones = []
 
     data = {'perfil': perfil, 'partido':partido, 'nivel_medio':nivel_medio, 'bloqueo_usuario':bloqueo_usuario, 'bloqueo_notificaciones':bloqueo_notificaciones}
 
@@ -97,17 +101,22 @@ def inscripcion_partidos(request):
             try:
                 partido = Partido.objects.get(id=partido_id)
                 perfil = Perfil.objects.get(id=perfil_id)
+                club = Club.objects.get(id = partido.pista.id)
+
                 if not perfil in partido.perfiles.all():
-                    #Crear peticion para inscripcion
-                    inscripcion = InscripcionesEnPartido.objects.create(partido=partido, jugador=perfil, estado=settings.ESTADO_NULL)
+
+                    #Crear notificacion para inscripcion
                     notificacion = Notificacion.objects.create(
-                        inscripcionEnPartido = inscripcion,
+                        partido = partido,
+                        jugador = perfil,
+                        estado = settings.ESTADO_NULL,
+                        tipo = settings.TIPO_NOTIF_UNIRSE_A_PARTIDO,
                         leido = settings.ESTADO_NO,
-                        fecha = datetime.now().date(),
-                        destino = settings.NOTIF_CLUB
+                        destino = settings.NOTIF_CLUB,
+                        club = partido.pista.club
                     )
-                    if inscripcion and notificacion:
-                        inscripcion.save()
+
+                    if notificacion:
                         notificacion.save()
                     else:
                         logger.debug("usuarios/partidos - Método inscripcion_partidos.")

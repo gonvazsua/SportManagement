@@ -345,7 +345,7 @@ def crear_partido_ajax(request):
                         logger.debug("administracion/partidos - Método crear_partido_ajax. ")
                         error = "¡Ups! ha habido un error al crear el partido"
 
-                #Si es necesario, se envian notificaciones
+                #Si es necesario, se envian emails
                 try:
                     if notificar and len(jugadores) > 0 and error == "OK":
                         for jugador in jugadores:
@@ -354,6 +354,10 @@ def crear_partido_ajax(request):
                                 error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
                 except Exception, e:
                     error = "Se ha creado el partido correctamente, pero no se han podido enviar las notificaciones"
+
+
+                #Se generan notificaciones a los perfiles
+                generarNotificacionesPartidoPerfiles(jugadores, nuevo_partido)
 
             else:
                 error = "Debe seleccionar, fecha, hora y pista."
@@ -501,3 +505,16 @@ def guardar_partido_planificar(request):
 
     data = {'error':error}
     return HttpResponse(json.dumps(data))
+
+
+#Generar notificaciones de nuevo partido
+def generarNotificacionesPartidoPerfiles(jugadores, nuevo_partido):
+
+    try:
+
+        a = 2
+
+    except Exception, e:
+        logger.debug("administracion/partidos - Método generarNotificacionesPartidoPerfiles. " + e.message)
+
+    return ""
