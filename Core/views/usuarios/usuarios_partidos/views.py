@@ -25,6 +25,9 @@ def usuario_partido(request, id_usuario, id_partido):
     try:
         partido = Partido.objects.get(id=id_partido)
 
+        if(not esPartidoDeClubDeUsuario(perfil, partido)):
+            return HttpResponseRedirect("/")
+
         #comprobar si tiene notificaciones de partidos asociadas y marcarlas como leidas
         try:
             notificaciones = []
@@ -216,3 +219,17 @@ def actualizar_franjas_club_ajax(request):
     data = serializers.serialize('json', franjas_horas,
 		fields=('id', 'inicio', 'fin'))
     return HttpResponse(data, mimetype='application/json')
+
+
+def esPartidoDeClubDeUsuario(perfil, partido):
+
+    esPartidoDeClub = False
+
+    if partido:
+        esPartidoDeClub = PerfilRolClub.objects.filter(
+            club__id = partido.pista.club.id,
+            perfil__id = perfil.id,
+            rol = Rol.objects.get(id = settings.ROL_JUGADOR)
+        ).exists()
+
+    return esPartidoDeClub
