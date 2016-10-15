@@ -101,3 +101,43 @@ def cargar_tipos_notificaciones_settings(data):
     data["TIPO_NOTIF_JUEGA_PARTIDO"] = settings.TIPO_NOTIF_JUEGA_PARTIDO
 
     return data
+
+
+#Generar notificaciones de nuevo partido
+def generarNotificacionesPartidoPerfiles(nuevo_partido):
+
+    try:
+        #Consultar club
+        club = nuevo_partido.pista.club
+
+        #Se genera notificacion para jugadores
+        for jugador in nuevo_partido.perfiles.all():
+
+            #Si el perfil es el mismo que crea el partido, no se crea notificacion
+            if nuevo_partido.creado_por.id == jugador.id:
+                continue
+
+            #Si no existe notificacion generada para este partido y este jugador, se crea
+            notificacion = Notificacion.objects.filter(
+                tipo = settings.TIPO_NOTIF_JUEGA_PARTIDO,
+                destino = settings.NOTIF_JUGADOR,
+                partido = nuevo_partido,
+                club = club,
+                jugador = jugador
+            ).exists()
+
+            if(notificacion == False):
+
+                Notificacion.objects.create(
+                    tipo = settings.TIPO_NOTIF_JUEGA_PARTIDO,
+                    destino = settings.NOTIF_JUGADOR,
+                    leido = settings.ESTADO_NO,
+                    partido = nuevo_partido,
+                    club = club,
+                    jugador = jugador
+                )
+
+    except Exception, e:
+        logger.debug("utils.py - Método generarNotificacionesPartidoPerfiles. " + e.message)
+
+    return ""

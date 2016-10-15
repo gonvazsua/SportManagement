@@ -1,0 +1,97 @@
+{% extends 'usuarios/template_usuarios.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Notificaciones
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/usuario/{{perfil.user.id}}">Inicio</a></li>
+  <li class="active">Notificaciones</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="well well-sm">
+            <h4>Notificaciones</h4>
+            <p>
+                En esta página podrás ver todas las notificaciones que has recibido: <br>
+                - Partidos en los que has jugado<br>
+                - Inscripciones en partidos
+            </p>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12">
+        <h4>Notificaciones</h4><hr>
+    </div>
+</div>
+{% for n in notificaciones %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-info {%if not n.leido %}fondo-info{% endif %}" id="panel_{{n.id}}">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {% if n.jugador.imagen == "" %}
+                                <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{n.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                            {% else %}
+                                <img src="{{MEDIA_URL}}{{n.jugador.imagen}}" title="{{n.jugador.user.first_name}}" alt="{{n.jugador.user.first_name}}" class="img-rounded" style="max-width: 100%">
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                {% if n.tipo == TIPO_NOTIF_UNIRSE_A_PARTIDO %}
+                                    <strong>{{n.club.nombre}}</strong>, ha <strong>{%if n.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte a <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a> .
+                                {% endif %}
+                                {% if n.tipo == TIPO_NOTIF_INSCRIPCION_CLUB %}
+                                    <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.club.nombre}}</strong></a>, ha <strong>{%if n.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte al club.
+                                {% endif %}
+                                {% if n.tipo == TIPO_NOTIF_JUEGA_PARTIDO %}
+                                    <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.club.nombre}}</strong></a>, ha indicado que juegas este partido <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a>.
+                                {% endif %}
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12"><h5><i class="fa fa-phone fa-fw"></i> {{n.jugador.telefono}}</h5></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12"><h5><i class="fa fa-calendar fa-fw"></i> {{n.fecha}}</h5></div>
+                            </div>
+                            {% if not n.leido %}
+                            <div class="row" id="texto_leida_{{n.id}}">
+                                <div class="col-lg-12"><h5><i class="fa fa-check fa-fw"></i><a href="javascript:marcar_como_leida({{n.id}})" style="cursor:pointer"> Marcar como leída</a> </h5></div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-2">
+
+                        </div>
+                    </div>
+                    <div class="row row-margin-top-10" id="error_notificacion_{{n.id}}" style="display:none">
+                        <div class="col-lg-12">
+                            <p class="bg-danger my_error" id="error_notificacion_texto_{{n.id}}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% empty %}
+
+{% endfor %}
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

@@ -6,6 +6,7 @@ import json
 import logging
 from django.contrib.auth.decorators import login_required
 from Core.plantillas_mail import *
+from Core.utils import generarNotificacionesPartidoPerfiles
 
 #Instancia del log
 logger = logging.getLogger(__name__)
@@ -232,6 +233,9 @@ def planificar(request, id_usuario):
                     for p in partidos:
                         if len(p.perfiles.all()) == 0:
                             p.delete()
+                        else:
+                            #Generar notificaciones a jugadores
+                            generarNotificacionesPartidoPerfiles(p)
 
                     success = "Se ha guardado su planificación, puede verla en la página principal."
 
@@ -357,7 +361,7 @@ def crear_partido_ajax(request):
 
 
                 #Se generan notificaciones a los perfiles
-                generarNotificacionesPartidoPerfiles(jugadores, nuevo_partido)
+                generarNotificacionesPartidoPerfiles(nuevo_partido)
 
             else:
                 error = "Debe seleccionar, fecha, hora y pista."
@@ -442,6 +446,10 @@ def editar_partido_ajax(request):
                 if error == "" and len(jugadores) <= max_jugadores and partido.fecha != "" and partido.franja_horaria is not None:
                     partido.save()
                     error = "OK"
+
+                    #Se generan notificaciones a los perfiles
+                    generarNotificacionesPartidoPerfiles(partido)
+
                 else:
                     if error == "":
                         logger.debug("administracion/partidos - Método editar_partido_ajax. ")
@@ -505,16 +513,3 @@ def guardar_partido_planificar(request):
 
     data = {'error':error}
     return HttpResponse(json.dumps(data))
-
-
-#Generar notificaciones de nuevo partido
-def generarNotificacionesPartidoPerfiles(jugadores, nuevo_partido):
-
-    try:
-
-        a = 2
-
-    except Exception, e:
-        logger.debug("administracion/partidos - Método generarNotificacionesPartidoPerfiles. " + e.message)
-
-    return ""

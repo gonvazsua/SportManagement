@@ -110,6 +110,9 @@ urlpatterns = patterns('',
     url(r'^usuario/(?P<id_usuario>\d+)/partidos$', 'Core.views.usuario_mis_partidos'),
     url(r'^actualizar_franjas_club_ajax$', 'Core.views.actualizar_franjas_club_ajax'),
 
+    #Notificaciones
+    url(r'^usuario/(?P<id_usuario>\d+)/notificaciones$', 'Core.views.usuario_notificaciones'),
+
     ###########################################################
     ########## UTILES URLS
     ###########################################################

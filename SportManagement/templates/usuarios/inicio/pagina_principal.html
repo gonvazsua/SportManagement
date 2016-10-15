@@ -179,6 +179,9 @@
                                     {% if n.tipo == TIPO_NOTIF_INSCRIPCION_CLUB %}
                                         <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.club.nombre}}</strong></a>, ha <strong>{%if n.estado%}aceptado{%else%}denegado{%endif%}</strong> tu petición para unirte al club.
                                     {% endif %}
+                                    {% if n.tipo == TIPO_NOTIF_JUEGA_PARTIDO %}
+                                        <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.club.nombre}}</strong></a>, ha indicado que juegas este partido <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a>.
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="row-centered">

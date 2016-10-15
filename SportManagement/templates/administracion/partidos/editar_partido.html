@@ -248,7 +248,7 @@
                                     <input type="hidden" id="max_jugadores" value="{{map_jugadores|length}}">
                                     <input type="hidden" id="partido_id_form" name="partido_id" value="{{partido.id}}">
                                     <input type="hidden" id="visible" name="visible" {%if partido.visible%}value="1"{%else%}value="0"{%endif%}>
-                                    <input type="hidden" id="notificar" name="notificar" value="1">
+                                    <input type="hidden" id="notificar" name="notificar" value="0">
 
                                     {% for num, jug in map_jugadores.iteritems %}
                                         {% if jug == "" %}

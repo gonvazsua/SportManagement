@@ -17,8 +17,22 @@ def usuario_inicio(request, id_usuario):
 
     try:
         provincias = Provincias.objects.all()
+
+        #Clubes del usuario
         clubes = Club.objects.filter(id__in=PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil=perfil, rol=settings.ROL_JUGADOR))
-        clubes_pendientes_aceptar = Club.objects.filter(id__in=Notificacion.objects.values_list('club_id', flat=True).filter(jugador=perfil, estado=settings.ESTADO_NULL))
+
+        #Inscripciones pendientes en clubes
+        notificaciones_pendientes_club = Notificacion.objects.filter(
+            tipo = settings.TIPO_NOTIF_INSCRIPCION_CLUB,
+            estado = settings.ESTADO_NULL,
+            jugador = perfil
+        )
+
+        clubes_pendientes_aceptar = []
+        for notif in notificaciones_pendientes_club:
+            clubes_pendientes_aceptar.append(notif.club)
+
+        #Partidos publicos abiertos por club
         club_partidos_disponibles = {}
         for c in clubes:
             try:
