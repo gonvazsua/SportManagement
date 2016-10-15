@@ -1,5 +1,6 @@
 from django.contrib import admin
 from Core.models import *
+from django import forms
 
 admin.site.register(Comunidades)
 admin.site.register(Provincias)
@@ -17,4 +18,14 @@ admin.site.register(FranjaHora)
 admin.site.register(PerfilRolClub)
 admin.site.register(RutaTiempo)
 admin.site.register(Notificacion)
-admin.site.register(Blog)
+
+#Caso para poner textarea en administracion para la clase Blog
+class BlogForm(forms.ModelForm):
+    texto = forms.CharField(widget=forms.Textarea)
+    class Meta:
+        model = Blog
+
+class BlogAdmin(admin.ModelAdmin):
+    form = BlogForm
+
+admin.site.register(Blog, BlogAdmin)
