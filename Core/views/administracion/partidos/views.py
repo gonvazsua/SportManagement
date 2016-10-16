@@ -80,47 +80,58 @@ def administrador_editar_partido(request, id_usuario, id_partido):
     club = obtener_club_de_sesion_administrador(request.session.get("club_id", None), perfil.id)
     partido = ""
     error = ""
+
     try:
         partido = Partido.objects.get(id=id_partido)
+
+        map_jugadores = {}
+        ids_jugadores = []
+        count_jugadores = partido.perfiles.count()
+
+        #Ids de jugadores seleccionados
+        ids_jugadores_seleccionados = []
+
+        #Sacar partidos con esa misma fecha y franja hora para quitar a los jugadores
+        partidos = Partido.objects.filter(fecha__startswith=partido.fecha, franja_horaria__id = partido.franja_horaria.id).exclude(id=partido.id)
+        jug_no_disponibles = []
+        for p in partidos:
+            for p2 in p.perfiles.all():
+                jug_no_disponibles.append(p2.id)
+
+        #Anadir jugadores del partido que se va a editar
+        for perfil_actual in partido.perfiles.all():
+            jug_no_disponibles.append(perfil_actual.id)
+
+        jugadores = PerfilRolClub.objects.filter(club = club).order_by("perfil__user__last_name")
+
+        #Se forma el mapa de jugadores del partido
+        for i in range(1, partido.pista.deporte.num_jugadores + 1):
+            if i <= count_jugadores:
+                map_jugadores[i] = partido.perfiles.all()[i-1]
+                ids_jugadores_seleccionados.append(partido.perfiles.all()[i-1].id)
+            else:
+                map_jugadores[i] = ""
+
+        pistas = Pista.objects.filter(club=club).order_by('deporte__deporte', 'orden')
+        franjas_horarias = FranjaHora.objects.filter(club = club)
+        niveles = Nivel.objects.filter(club=club)
+
+        #Deporte para el filtro de niveles
+        deporte_id = partido.pista.deporte.id
+
+        #Consultar comentarios del partido
+        comentarios = ComentarioPartido.objects.filter(partido = partido).order_by("-fecha")[:30]
+
+        data = {
+            'perfil':perfil, 'error':error, 'partido':partido, 'club':club, 'pistas':pistas, 'franjas_horarias':franjas_horarias, 'jugadores':jugadores,
+            'map_jugadores':map_jugadores, "niveles" : niveles, 'ids_jugadores_seleccionados':ids_jugadores_seleccionados,
+            'comentarios': comentarios, 'deporte_id': deporte_id
+        }
+
     except Partido.DoesNotExist:
         logger.debug("administracion/partidos - Método administrador_editar_partido - id_usuario " + str(id_usuario) + ", id_partido " + str(id_partido))
         error = "Ha habido un error al editar el partido."
-    map_jugadores = {}
-    ids_jugadores = []
-    count_jugadores = partido.perfiles.count()
 
-    #Ids de jugadores seleccionados
-    ids_jugadores_seleccionados = []
-
-    #Sacar partidos con esa misma fecha y franja hora para quitar a los jugadores
-    partidos = Partido.objects.filter(fecha__startswith=partido.fecha, franja_horaria__id = partido.franja_horaria.id).exclude(id=partido.id)
-    jug_no_disponibles = []
-    for p in partidos:
-        for p2 in p.perfiles.all():
-            jug_no_disponibles.append(p2.id)
-
-    #Anadir jugadores del partido que se va a editar
-    for perfil_actual in partido.perfiles.all():
-        jug_no_disponibles.append(perfil_actual.id)
-
-    jugadores = PerfilRolClub.objects.filter(club = club).order_by("perfil__user__last_name")
-
-    #Se forma el mapa de jugadores del partido
-    for i in range(1, partido.pista.deporte.num_jugadores + 1):
-        if i <= count_jugadores:
-            map_jugadores[i] = partido.perfiles.all()[i-1]
-            ids_jugadores_seleccionados.append(partido.perfiles.all()[i-1].id)
-        else:
-            map_jugadores[i] = ""
-
-    pistas = Pista.objects.filter(club=club).order_by('deporte__deporte', 'orden')
-    franjas_horarias = FranjaHora.objects.filter(club = club)
-    niveles = Nivel.objects.filter(club=club)
-
-    data = {
-        'perfil':perfil, 'error':error, 'partido':partido, 'club':club, 'pistas':pistas, 'franjas_horarias':franjas_horarias, 'jugadores':jugadores,
-        'map_jugadores':map_jugadores, "niveles" : niveles, 'ids_jugadores_seleccionados':ids_jugadores_seleccionados
-    }
     return render_to_response(ruta_administracion_editar_partido, data, context_instance=RequestContext(request))
 
 @login_required()

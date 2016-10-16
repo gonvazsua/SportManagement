@@ -39,7 +39,7 @@ def usuario_inicio(request, id_usuario):
                 partidos = Partido.objects.filter(
                     Q(fecha=datetime.today(), franja_horaria__inicio__gt=datetime.now()) | Q(fecha__gt=datetime.today()),
                     pista__club=c, visible = settings.ESTADO_SI
-                ).order_by('fecha', 'franja_horaria__inicio')[:6]
+                ).order_by('fecha', 'franja_horaria__inicio')[:4]
                 club_partidos_disponibles[c] = partidos
             except Exception:
                 club_partidos_disponibles[c] = None
@@ -61,6 +61,8 @@ def usuario_inicio(request, id_usuario):
 
     data = cargar_tipos_notificaciones_settings(data)
 
+    data = cargarDatosExtraPaginaPrincipal(perfil, clubes, data)
+
     return render_to_response(ruta_inicio_usuarios, data, context_instance=RequestContext(request))
 
 @login_required()
@@ -81,7 +83,33 @@ def completar_datos_inicio(request):
             if perfil:
                 perfil.save()
         except Exception, e:
-            logger.debug("usuarios/inicio - Método completar_datos_inicio. " + e.message)
+            logger.debug("usuarios/inicio - Metodo completar_datos_inicio. " + e.message)
             error = "Ha habido un error al guardar sus datos, actualice la página y vuelva a intentarlo"
     data = {'error':error}
     return HttpResponse(json.dumps(data))
+
+
+def cargarDatosExtraPaginaPrincipal(perfil, clubes, data):
+
+    try:
+
+        #Partidos jugador
+        partidos_jugados = Partido_perfiles.objects.filter(perfil = perfil).count()
+        data["partidos_jugados"] = partidos_jugados
+
+        #Partidos disponibles hoy
+        partidos_disponibles_hoy = Partido.objects.filter(
+            pista__club__id__in = (PerfilRolClub.objects.values_list('club_id', flat=True).filter(perfil = perfil, rol = settings.ROL_JUGADOR)),
+            fecha = datetime.today()
+        ).count()
+        data["partidos_disponibles_hoy"] = partidos_disponibles_hoy
+
+        #Clubes a los que pertenece
+        clubes_pertenece = clubes.count()
+        data["clubes_pertenece"] = clubes_pertenece
+
+    except Exception, e:
+        logger.debug("usuarios/inicio - Metodo cargarDatosExtraPaginaPrincipal. " + e.message)
+        error = "Ha habido un error al guardar sus datos, actualice la página y vuelva a intentarlo"
+
+    return data

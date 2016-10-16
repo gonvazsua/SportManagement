@@ -50,11 +50,14 @@ def usuario_partido(request, id_usuario, id_partido):
         if notificaciones > 0:
             bloqueo_notificaciones = True
 
+        comentarios = ComentarioPartido.objects.filter(partido = partido).order_by("-fecha")[:30]
+
     except Exception:
         partido = None
         nivel_medio = ""
 
-    data = {'perfil': perfil, 'partido':partido, 'nivel_medio':nivel_medio, 'bloqueo_usuario':bloqueo_usuario, 'bloqueo_notificaciones':bloqueo_notificaciones}
+    data = {'perfil': perfil, 'partido':partido, 'nivel_medio':nivel_medio, 'bloqueo_usuario':bloqueo_usuario, 'bloqueo_notificaciones':bloqueo_notificaciones,
+            'comentarios':comentarios}
 
     #Establecer direccion de retorno
     if request.method == "GET":
@@ -170,27 +173,31 @@ def usuario_buscador_partido(request, id_usuario):
     data = {'perfil': perfil, 'clubes':clubes}
 
     if request.method == "GET":
-        data["id_club"] = request.GET.get("id_club")
-        data["id_fh"] = request.GET.get("franja_horaria")
-        data["fecha"] = request.GET.get("fecha")
+        data["fecha"] = datetime.now().date()
 
     if request.method == "POST":
         id_club = request.POST.get("id_club")
         id_fh = request.POST.get("franja_horaria")
         fecha = request.POST.get("fecha")
         queryset = Q()
-        if id_club != None and int(id_club) != 0:
+        if id_club:
             data["id_club"] = int(id_club)
             queryset.add(Q(pista__club__id = id_club), Q.AND)
+
             try:
                 franjas_horas = FranjaHora.objects.filter(club__id = id_club)
                 data["franjas_horas"] = franjas_horas
             except Exception, e:
                 logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e.message)
                 franjas_horas = []
-        if id_fh != None and int(id_fh) != 0:
+
+        else:
+            queryset.add(Q(pista__club__in=clubes), Q.AND)
+
+        if id_fh and int(id_fh) != 0:
             queryset.add(Q(franja_horaria__id = id_fh), Q.AND)
             data["id_fh"] = id_fh
+
         if fecha:
             date = datetime.strptime(fecha, '%d/%m/%Y').date()
             queryset.add(Q(fecha__startswith = date), Q.AND)
@@ -200,11 +207,11 @@ def usuario_buscador_partido(request, id_usuario):
             queryset.add(Q(fecha__gt = date), Q.AND)
 
         try:
-            if (id_club and id_fh and fecha) == None:
-                partidos = Partido.objects.filter(visible=settings.ESTADO_SI, pista__club__in=clubes, fecha__gt=datetime.now().date()).order_by("-fecha")
-            else:
-                queryset.add(Q(visible=settings.ESTADO_SI), Q.AND)
-                partidos = Partido.objects.filter(queryset).order_by("-fecha")
+            #Campos comunes de busqueda
+            queryset.add(Q(visible=settings.ESTADO_SI), Q.AND)
+
+            partidos = Partido.objects.filter(queryset).order_by("-fecha")
+
         except Exception, e:
             logger.debug("usuarios/partidos - Método usuario_buscador_partido. id_usuario " + str(id_usuario) +". " + e.message)
             partidos = []

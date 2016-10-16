@@ -99,6 +99,7 @@ def cargar_tipos_notificaciones_settings(data):
     data["TIPO_NOTIF_UNIRSE_A_PARTIDO"] = settings.TIPO_NOTIF_UNIRSE_A_PARTIDO
     data["TIPO_NOTIF_INSCRIPCION_CLUB"] = settings.TIPO_NOTIF_INSCRIPCION_CLUB
     data["TIPO_NOTIF_JUEGA_PARTIDO"] = settings.TIPO_NOTIF_JUEGA_PARTIDO
+    data["TIPO_NOTIF_COMENTARIO_PARTIDO"] = settings.TIPO_NOTIF_COMENTARIO_PARTIDO
 
     return data
 

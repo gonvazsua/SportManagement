@@ -77,12 +77,15 @@ def perfil_administrador(request, id_usuario):
     else:
         num_partidos_en_juego = 0
         franja_horaria_actual = FranjaHora.objects.filter(club = club).order_by('inicio').first()
+
     #Partidos de la franja horaria
     partidos_ahora = Partido.objects.annotate(num_perfiles=Count('perfiles')).filter(
         pista__in = Pista.objects.filter(club=club), franja_horaria=franja_horaria_actual,
         num_perfiles = 4
     )
+
     pistas = Pista.objects.filter(club = club).order_by("deporte", "orden", "nombre")
+
     #Pistas y partidos de la franja horaria
     pistas_partidos = {}
     for p in pistas:
@@ -94,11 +97,17 @@ def perfil_administrador(request, id_usuario):
 
     #Notificaciones
     try:
-        campos_fijos_query = Q(estado = settings.ESTADO_NULL, tipo__in = (settings.TIPO_NOTIF_UNIRSE_A_PARTIDO, settings.TIPO_NOTIF_INSCRIPCION_CLUB),
-                               destino=settings.NOTIF_CLUB, leido = settings.ESTADO_NO)
+
+        campos_fijos_query = Q(estado = settings.ESTADO_NULL, leido = settings.ESTADO_NO)
         notificaciones = Notificacion.objects.filter(
-            (Q(club = club) | Q(partido__pista__club = club)) & campos_fijos_query
-        ).order_by("-fecha")
+            Q(
+                Q(tipo__in = (settings.TIPO_NOTIF_UNIRSE_A_PARTIDO, settings.TIPO_NOTIF_INSCRIPCION_CLUB)) &
+                (Q(club = club) | Q(partido__pista__club = club)) & campos_fijos_query
+            ) |
+            Q(
+                Q(tipo = settings.TIPO_NOTIF_COMENTARIO_PARTIDO, jugador = perfil) & campos_fijos_query
+            )
+        ).order_by("-fecha")[:5]
 
     except Exception:
         notificaciones = []

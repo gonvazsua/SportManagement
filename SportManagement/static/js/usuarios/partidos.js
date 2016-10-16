@@ -70,3 +70,42 @@ function inicia_pagina_buscador_partidos(){
         dateFormat: 'dd/mm/yy'
     });
 }
+
+function busca_partidos(){
+
+    //Fecha obligatoria
+    var fecha = $("#id_fecha").val();
+
+    if(fecha != ""){
+        $("#form_buscador_partidos").submit();
+    }
+    else{
+        $("#id_fecha").parent().parent().addClass("has-error");
+    }
+
+}
+
+function contarCaracteres(elem, id_contador) {
+    var len = elem.value.length;
+    if (len >= 150) {
+        elem.value = elem.value.substring(0, 500);
+    }
+    $('#'+id_contador).text("Caracteres disponibles: " + String(150 - len));
+}
+
+function submitComentario(){
+
+    var texto = $("#comentario").val();
+
+    if(texto == ""){
+        $("#comentario").parent().addClass("has-error");
+    }
+    else{
+
+        $("#comentario").parent().removeClass("has-error");
+
+        $("#form_comentario").submit();
+
+    }
+
+}

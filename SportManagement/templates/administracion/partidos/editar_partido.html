@@ -152,6 +152,57 @@
             </div>
         </div>
         {% endif %}
+
+        {% if not partido.bloqueado %}
+            <!-- Filtro alfabetico -->
+            <div class="row min_height_50">
+                <div class="col-lg-8">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <h4>Filtrar jugadores por letra inicial: </h4>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row min_height_50">
+                <div class="col-lg-12">
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group" role="group">
+                            <button type="button" title="Ver todos" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('');">TODOS</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('A');">A</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('B');">B</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('C');">C</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('D');">D</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('E');">E</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('F');">F</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('G');">G</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('H');">H</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('I');">I</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('J');">J</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('K');">K</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('L');">L</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('M');">M</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('N');">N</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('Ñ');">Ñ</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('O');">O</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('P');">P</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('Q');">Q</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('R');">R</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('S');">S</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('T');">T</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('U');">U</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('V');">V</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('W');">W</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('X');">X</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('Y');">Y</button>
+                            <button type="button" title="Filtrar jugadores por nombre" class="btn btn-default" aria-label="Right Align" onclick="javascript:filtrar_jugadores_letra_partido('Z');">Z</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+
         <div class="row">
 
             {% if not partido.bloqueado %}
@@ -166,9 +217,19 @@
                                 <select class="form-control" id="nivel_filtro" onchange="javascript:filtrar_niveles_jugadores()" {% if partido.bloqueado %}disabled="disabled"{%endif%}>
                                     <option value="0">Ver todos</option>
                                     {% for nivel in niveles %}
-                                        <option value="{{nivel.id}}">{{nivel.nivel}}</option>
+                                        {% if nivel.deporte.id == deporte_id %}
+                                            <option value="{{nivel.id}}">{{nivel.nivel}}</option>
+                                        {% endif %}
                                     {% endfor %}
                                 </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 form-group">
+                                <h4>Filtrar por palabra clave: </h4>
+                            </div>
+                            <div class="col-lg-6 col-md-6 form-group">
+                                <input type="text" id="palabra_clave" value="" class="form-control" onkeyup="javascript:filtrar_palabra_clave()">
                             </div>
                         </div>
                     </div>
@@ -193,15 +254,19 @@
                                         {% if jugador.id in ids_jugadores_seleccionados %}class="seleccionado"  style="display:none"{% endif %}
                                     >
                                         <td>{{forloop.counter}}</td>
-                                        <td class="campo_busqueda">{{jugador.perfil.user.first_name}}</td>
+                                        <td class="campo_busqueda filtro_letras">{{jugador.perfil.user.first_name}}</td>
                                         <td class="campo_busqueda">{{jugador.perfil.user.username}}</td>
                                         <td class="campo_busqueda">{{jugador.perfil.telefono}}</td>
                                         <td>
                                             {% for n in jugador.perfil.deporteNivel.all %}
-                                                {% if n.deporte.id == partido.pista.deporte.id %}
+                                                {% if n.deporte.id == deporte_id %}
                                                     {{n.nivel}}
                                                     <input type="hidden" id="nivel_jugador_{{jugador.perfil.id}}" class="nivel" value="{{n.id}}">
+                                                {% else %}
+                                                    <input type="hidden" id="nivel_jugador_{{jugador.perfil.id}}" class="nivel" value="">
                                                 {% endif %}
+                                            {% empty %}
+                                                <input type="hidden" id="nivel_jugador_{{jugador.perfil.id}}" class="nivel" value="">
                                             {% endfor %}
                                         </td>
                                     </tr>
@@ -370,6 +435,79 @@
         </div>
     </div>
 </div>
+
+<!-- Comentarios partido -->
+
+<!-- Nuevo comentario -->
+<div class="row" id="fila_comentarios">
+    <div class="col-lg-12">
+        <form id='form_comentario' method='post' action='/nuevoComentarioPartido' role="form">
+            {% csrf_token %}
+            <input type="hidden" name="partido_id" value="{{partido.id}}">
+            <input type="hidden" name="perfil_id" value="{{perfil.id}}">
+            <input type="hidden" name="vieneDe" value="administrador">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label for='comentario'>Nuevo comentario: </label>
+                        <textarea id="comentario" style="resize: none;" name="comentario" class="form-control" maxlength="150" onkeyup="javascript:contarCaracteres(this, 'contadorCaracteres')"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-xs-6 text-left">
+                    <h5 id="contadorCaracteres" title="Caracteres disponibles" class="cursiva">Caracteres disponibles: 150</h5>
+                </div>
+                <div class="col-lg-6 col-xs-6 text-right">
+                    <button id="btn-pass" type="button" class="btn btn-success" onClick="submitComentario()">
+                        <span class="glyphicon" id="icono_login_pass" aria-hidden="true"></span> Enviar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12"><hr></div>
+</div>
+
+<!-- Listado de comentarios -->
+{% for comentario in comentarios %}
+
+     <div class="row">
+         <div class="hidden-xs hidden-sm col-lg-1 col-xs-1">
+             {% if comentario.perfil.imagen == "" or comentario.perfil.imagen == None %}
+                <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+             {% else %}
+                <img src="{{MEDIA_URL}}{{perfil.imagen}}" title="{{perfil.user.first_name}}" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+             {% endif %}
+         </div>
+         <div class="col-lg-10 col-xs-10">
+             <blockquote>
+                 <p class=""><i class="fa fa-quote-right fa-1x"></i> {{comentario.texto}}</p>
+                 <footer>Por <strong class="blue">@{{comentario.creado_por.user.username}}</strong>, {{comentario.fecha}}</footer>
+             </blockquote>
+         </div>
+         <div class="col-lg-1">
+             {% if comentario.creado_por == perfil %}
+                 <button type="button" title="Eliminar comentario" class="btn btn-danger pull-right" aria-label="Right Align">
+                     <i class="fa fa-trash"></i>
+                 </button>
+             {% endif %}
+         </div>
+
+    </div>
+
+{% empty %}
+
+    <div class="row min_height_50">
+        <div class="col-lg-12">
+            No hay comentarios sobre este partido, ¡se el primero en comentarlo!
+        </div>
+    </div>
+
+{% endfor %}
 
 {% endblock %}
 

@@ -167,13 +167,86 @@
     <div class="col-lg-12"></div>
 </div>
 
+<!-- Comentarios partido -->
+
+<!-- Nuevo comentario -->
+<div class="row">
+    <div class="col-lg-12">
+        <form id='form_comentario' method='post' action='/nuevoComentarioPartido' role="form">
+            {% csrf_token %}
+            <input type="hidden" name="partido_id" value="{{partido.id}}">
+            <input type="hidden" name="perfil_id" value="{{perfil.id}}">
+            <input type="hidden" name="vieneDe" value="usuarios">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label for='comentario'>Nuevo comentario: </label>
+                        <textarea id="comentario" style="resize: none;" name="comentario" class="form-control" maxlength="150" onkeyup="javascript:contarCaracteres(this, 'contadorCaracteres')"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-xs-6 text-left">
+                    <h5 id="contadorCaracteres" title="Caracteres disponibles" class="cursiva">Caracteres disponibles: 150</h5>
+                </div>
+                <div class="col-lg-6 col-xs-6 text-right">
+                    <button id="btn-pass" type="button" class="btn btn-success" onClick="submitComentario()">
+                        <span class="glyphicon" id="icono_login_pass" aria-hidden="true"></span> Enviar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row" id="fila_comentarios">
+    <div class="col-lg-12"><hr></div>
+</div>
+
+<!-- Listado de comentarios -->
+{% for comentario in comentarios %}
+
+     <div class="row">
+         <div class="hidden-xs hidden-sm col-lg-1 col-xs-1">
+             {% if comentario.perfil.imagen == "" or comentario.perfil.imagen == None %}
+                <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+             {% else %}
+                <img src="{{MEDIA_URL}}{{perfil.imagen}}" title="{{perfil.user.first_name}}" alt="{{perfil.user.first_name}}" class="img-rounded" style="max-width: 100%">
+             {% endif %}
+         </div>
+         <div class="col-lg-10 col-xs-10">
+             <blockquote>
+                 <p class=""><i class="fa fa-quote-right fa-1x"></i> {{comentario.texto}}</p>
+                 <footer>Por <strong class="blue">@{{comentario.creado_por.user.username}}</strong>, {{comentario.fecha}}</footer>
+             </blockquote>
+         </div>
+         <div class="col-lg-1">
+             {% if comentario.creado_por == perfil %}
+                 <button type="button" title="Eliminar comentario" class="btn btn-danger pull-right" aria-label="Right Align">
+                     <i class="fa fa-trash"></i>
+                 </button>
+             {% endif %}
+         </div>
+
+    </div>
+
+{% empty %}
+
+    <div class="row min_height_50">
+        <div class="col-lg-12">
+            No hay comentarios sobre este partido, ¡se el primero en comentarlo!
+        </div>
+    </div>
+
+{% endfor %}
+
 {% endblock %}
 
 {% block js %}
 {% endblock %}
 
 {% block importaciones %}
-    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/partidos.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/partidos.js?v=1.0"></script>
 {% endblock %}
 
 {% block document_ready %}

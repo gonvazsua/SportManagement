@@ -60,12 +60,18 @@
                                 {% if n.tipo == TIPO_NOTIF_JUEGA_PARTIDO %}
                                     <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.club.nombre}}</strong></a>, ha indicado que juegas este partido <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a>.
                                 {% endif %}
+                                {% if n.tipo == TIPO_NOTIF_COMENTARIO_PARTIDO %}
+                                    Hay nuevos comentarios disponibles en este partido <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a>.
+                                {% endif %}
                             </div>
                             <div class="row">
-                                <div class="col-lg-12"><h5><i class="fa fa-phone fa-fw"></i> {{n.jugador.telefono}}</h5></div>
+                                <div class="col-lg-12"><h5><i class="fa fa-road fa-fw"></i> {{n.club.direccion}}</h5></div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-12"><h5><i class="fa fa-calendar fa-fw"></i> {{n.fecha}}</h5></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12"><h5><i class="fa fa-info fa-fw"></i>En {{n.partido.pista.nombre}}</h5></div>
                             </div>
                             {% if not n.leido %}
                             <div class="row" id="texto_leida_{{n.id}}">

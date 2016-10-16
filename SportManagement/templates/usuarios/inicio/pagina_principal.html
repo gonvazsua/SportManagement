@@ -9,6 +9,56 @@
 {% endblock %}
 
 {% block fila_superior %}
+<div class="row">
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-green">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-futbol-o fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{partidos_disponibles_hoy}}</div>
+                        <div>Partidos para hoy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-check-circle fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{partidos_jugados}}</div>
+                        <div>Partidos jugados</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-red">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-university fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{clubes_pertenece}}</div>
+                        <div>Clubes</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- /.row -->
 {% endblock %}
 
 {% block pagina_central %}
@@ -72,6 +122,32 @@
 
 <div class="row">
     <div class="col-lg-8">
+
+        <!-- Leyenda de pistas -->
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <i class="fa fa-graduation-cap fa-fw"></i> Leyenda de pistas
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <i class="fa fa-circle fa-fw color-pista-roja"></i> Partido sin jugadores
+                    </div>
+                    <div class="col-lg-6">
+                        <i class="fa fa-circle fa-fw color-pista-amarilla"></i> Partido no completo
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <i class="fa fa-circle fa-fw color-pista-verde"></i> Partido completo
+                    </div>
+                    <div class="col-lg-6">
+                        <i class="fa fa-circle fa-fw color-pista-evento"></i> Partido de evento
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-clock-o fa-fw"></i> Partidos disponibles
@@ -182,6 +258,9 @@
                                     {% if n.tipo == TIPO_NOTIF_JUEGA_PARTIDO %}
                                         <a href="/usuario/{{perfil.user.id}}/clubes"><strong>{{n.club.nombre}}</strong></a>, ha indicado que juegas este partido <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a>.
                                     {% endif %}
+                                    {% if n.tipo == TIPO_NOTIF_COMENTARIO_PARTIDO %}
+                                        Hay nuevos comentarios disponibles en este partido <a href="/usuario/{{perfil.user.id}}/partidos/{{n.partido.id}}">este partido</a>.
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="row-centered">
@@ -202,10 +281,10 @@
             </div>
         </div>
 
-        <!-- Leyenda de pistas -->
+        <!-- Últimos eventos de mis clubes -->
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-graduation-cap fa-fw"></i> Leyenda de pistas
+                <i class="fa fa-bullhorn fa-fw"></i> Noticias en mis clubes
             </div>
             <div class="panel-body">
                 <div class="row">

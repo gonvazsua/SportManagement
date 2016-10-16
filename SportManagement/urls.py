@@ -117,4 +117,5 @@ urlpatterns = patterns('',
     ########## UTILES URLS
     ###########################################################
     url(r'^enviarEmail', 'Core.views.send_email'),
+    url(r'^nuevoComentarioPartido', 'Core.views.comentario_partido'),
 )

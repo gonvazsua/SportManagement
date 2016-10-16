@@ -1270,6 +1270,45 @@ function filtrar_jugadores_letra(letra){
     }
 }
 
+function filtrar_jugadores_letra_partido(letra){
+
+    //Reiniciar otros filtros
+    $("#nivel_filtro").val(0);
+    $("#palabra_clave").val("");
+    filtrar_niveles_jugadores();
+    filtrar_palabra_clave();
+
+    if(letra != ""){
+
+        $(".filtro_letras").each(function(){
+
+            var texto_actual = $(this).html();
+
+            //Se convierte a minuscula para compararlas
+            var texto_actual_formateado = texto_actual.toLowerCase();
+            var letra_formateada = letra.toLowerCase();
+
+            if(texto_actual_formateado.charAt(0) == letra_formateada){
+                //Se ha encontrado una coincidencia, se muestra
+                var padre = $(this).closest("tr").first();
+                $(padre).show();
+            }
+            else{
+                //Si no hay coincidencias, se oculta
+                var padre = $(this).closest("tr").first();
+                $(padre).hide();
+            }
+
+        });
+    }
+    else{
+        //Se muestran todos los jugadores
+        $(".filtro_letras").each(function(){
+            $(this).closest("tr").first().show();
+        });
+    }
+}
+
 function filtrar_franjas_horarias(){
 
     var fh = $("#franja_horaria").val();
@@ -1281,6 +1320,34 @@ function filtrar_franjas_horarias(){
 
     }else{
         $(".fila_franja_horaria").show();
+    }
+}
+
+/**********************
+** Comentarios partidos
+************************/
+
+function contarCaracteres(elem, id_contador) {
+    var len = elem.value.length;
+    if (len >= 150) {
+        elem.value = elem.value.substring(0, 500);
+    }
+    $('#'+id_contador).text("Caracteres disponibles: " + String(150 - len));
+}
+
+function submitComentario(){
+
+    var texto = $("#comentario").val();
+
+    if(texto == ""){
+        $("#comentario").parent().addClass("has-error");
+    }
+    else{
+
+        $("#comentario").parent().removeClass("has-error");
+
+        $("#form_comentario").submit();
+
     }
 
 }

@@ -57,6 +57,9 @@
                                 {% if n.tipo == TIPO_NOTIF_INSCRIPCION_CLUB %}
                                     <div class="col-lg-12"><i class="fa fa-user fa-fw"></i> <strong>{{n.jugador.user.first_name}} {{n.jugador.user.last_name}}</strong>, te ha envidado una petición para unirse a tu club.</div>
                                 {% endif %}
+                                {% if n.tipo == TIPO_NOTIF_COMENTARIO_PARTIDO %}
+                                    Hay nuevos comentarios disponibles <a href="/administrador/{{perfil.user.id}}/partido/{{n.partido.id}}/editar#fila_comentarios">este partido</a>.
+                                {% endif %}
                             </div>
                             <div class="row">
                                 <div class="col-lg-12"><h5><i class="fa fa-phone fa-fw"></i> {{n.jugador.telefono}}</h5></div>
@@ -71,47 +74,50 @@
                             {% endif %}
                         </div>
                         <div class="col-lg-2">
-                            {% if n.estado == None %}
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <button type="button" id="btn_aceptar_inscripcion_{{n.id}}" class="btn btn-success btn-sm" {%if n.partido.bloqueado %}disabled="disabled"{%endif%} aria-label="Right Align" onclick="javascript:inscripcion_clubes({{n.id}}, 1);">
-                                            <i class="fa fa-check"></i> Aceptar
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="row row-margin-top-10">
-                                    <div class="col-lg-12">
-                                        <button type="button" id="btn_denegar_inscripcion_{{n.id}}" class="btn btn-info btn-sm"{%if n.partido.bloqueado %}disabled="disabled"{%endif%} aria-label="Right Align" onclick="javascript:inscripcion_clubes({{n.id}}, 0);">
-                                            <i class="fa fa-close"></i> Denegar
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <form id="form_inscripcion_{{n.id}}" action="">
-                                    {% csrf_token %}
-                                    <input type="hidden" id="inscripcion_id_{{n.id}}" name="inscripcion_id" value="{{n.id}}">
-                                    <input type="hidden" id="estado_id_{{n.id}}" name="estado" value="">
-                                    <input type="hidden" id="club_id" name="club_id" value="{{club.id}}">
-                                    <input type="hidden" id="jugador_id_{{n.id}}" name="jugador_id" value="{{n.jugador.id}}">
-                                </form>
-                            {%  else %}
-                                {%if n.estado == 1 %}
+                            <!-- Solo se muestran botones para notificaciones que no sean de informacion -->
+                            {% if not n.tipo  == TIPO_NOTIF_COMENTARIO_PARTIDO %}
+                                {% if n.estado == None %}
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            <button type="button" id="btn_aceptar_inscripcion_{{n.id}}" disabled="disabled" class="btn btn-success btn-sm" aria-label="Right Align">
-                                                <i class="fa fa-check"></i> Aceptada
+                                            <button type="button" id="btn_aceptar_inscripcion_{{n.id}}" class="btn btn-success btn-sm" {%if n.partido.bloqueado %}disabled="disabled"{%endif%} aria-label="Right Align" onclick="javascript:inscripcion_clubes({{n.id}}, 1);">
+                                                <i class="fa fa-check"></i> Aceptar
                                             </button>
                                         </div>
                                     </div>
-                                {% endif %}
-                                {%if n.estado == 0%}
                                     <div class="row row-margin-top-10">
                                         <div class="col-lg-12">
-                                            <button type="button" id="btn_denegar_inscripcion_{{n.id}}" disabled="disabled" class="btn btn-info btn-sm" aria-label="Right Align">
-                                                <i class="fa fa-close"></i> Denegada
+                                            <button type="button" id="btn_denegar_inscripcion_{{n.id}}" class="btn btn-info btn-sm"{%if n.partido.bloqueado %}disabled="disabled"{%endif%} aria-label="Right Align" onclick="javascript:inscripcion_clubes({{n.id}}, 0);">
+                                                <i class="fa fa-close"></i> Denegar
                                             </button>
                                         </div>
                                     </div>
+
+                                    <form id="form_inscripcion_{{n.id}}" action="">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="inscripcion_id_{{n.id}}" name="inscripcion_id" value="{{n.id}}">
+                                        <input type="hidden" id="estado_id_{{n.id}}" name="estado" value="">
+                                        <input type="hidden" id="club_id" name="club_id" value="{{club.id}}">
+                                        <input type="hidden" id="jugador_id_{{n.id}}" name="jugador_id" value="{{n.jugador.id}}">
+                                    </form>
+                                {%  else %}
+                                    {%if n.estado == 1 %}
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <button type="button" id="btn_aceptar_inscripcion_{{n.id}}" disabled="disabled" class="btn btn-success btn-sm" aria-label="Right Align">
+                                                    <i class="fa fa-check"></i> Aceptada
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {%if n.estado == 0%}
+                                        <div class="row row-margin-top-10">
+                                            <div class="col-lg-12">
+                                                <button type="button" id="btn_denegar_inscripcion_{{n.id}}" disabled="disabled" class="btn btn-info btn-sm" aria-label="Right Align">
+                                                    <i class="fa fa-close"></i> Denegada
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         </div>

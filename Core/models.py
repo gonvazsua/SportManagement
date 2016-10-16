@@ -170,7 +170,7 @@ class Notificacion(models.Model):
     estado = models.NullBooleanField(verbose_name="Estado aceptación", blank=True, null=True) #None=Pendiente, 1=Aceptada, 0=Denegada
     club = models.ForeignKey(Club, verbose_name="Club", blank=True, null=True)
     def __unicode__(self):
-		return unicode("Club: "+self.fecha)
+		return unicode("Club: "+str(self.fecha))
 
 class Evento(models.Model):
     partidos = models.ManyToManyField(Partido, null=True, blank=True)
@@ -191,11 +191,20 @@ class Evento(models.Model):
             return False
 
 class Blog(models.Model):
-    fecha = models.DateField(auto_now=False, verbose_name="Fecha")
+    fecha = models.DateField(auto_now=True, verbose_name="Fecha")
     creado_por = models.ForeignKey(Perfil, null=True, blank=True)
     titulo = models.CharField(max_length=300, verbose_name="Titulo")
     texto = models.CharField(max_length=2000, verbose_name="Texto")
     imagen = models.ImageField(upload_to=get_file_path_blog, verbose_name='Imagen', blank=True, null=True)
     def __unicode__(self):
 		return unicode("Entrada blog: "+str(self.fecha))
+
+class ComentarioPartido(models.Model):
+    fecha = models.DateTimeField(auto_now=True, verbose_name="Fecha")
+    creado_por = models.ForeignKey(Perfil, null=True, blank=True)
+    texto = models.CharField(max_length=150, verbose_name="Texto")
+    partido = models.ForeignKey(Partido, null=False, blank=False)
+    def __unicode__(self):
+		return unicode("Comentario: "+str(self.id))
+
 

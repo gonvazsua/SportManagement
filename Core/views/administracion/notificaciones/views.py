@@ -23,8 +23,14 @@ def notificaciones(request, id_usuario):
     try:
 
         notificaciones = Notificacion.objects.filter(
-            club = club, destino = settings.NOTIF_CLUB
-        ).order_by("-fecha","-id")
+            Q(
+                Q(tipo__in = (settings.TIPO_NOTIF_UNIRSE_A_PARTIDO, settings.TIPO_NOTIF_INSCRIPCION_CLUB)) &
+                (Q(club = club) | Q(partido__pista__club = club))
+            ) |
+            Q(
+                Q(tipo = settings.TIPO_NOTIF_COMENTARIO_PARTIDO, jugador = perfil)
+            )
+        ).order_by("-fecha")[:50]
 
     except Exception:
         notificaciones = []
