@@ -211,3 +211,12 @@ footer{
     background-image: url("../img/evento.png");
     background-repeat:no-repeat;
 }
+
+.redes_sociales{
+    position: fixed;
+    top: 70px;
+    right: 0;
+}
+.btn-rrss{
+    border-radius: 15px 0 0 15px !important;
+}

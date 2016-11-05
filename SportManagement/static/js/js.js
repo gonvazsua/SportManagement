@@ -177,3 +177,14 @@ function submit_olvida_pass(){
 
     $("#btn-pass").attr("disabled", false);
 }
+
+function addHtml(inout){
+    var html = "<i class='fa fa-thumbs-up fa-fw'></i>";
+
+    if(inout == 'in'){
+        html += " Síguenos en Facebook"
+    }
+
+    $("#btn-facebook").html(html);
+
+}

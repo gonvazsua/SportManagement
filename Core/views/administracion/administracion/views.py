@@ -56,8 +56,9 @@ def guardar_administracion(request):
     club = Club.objects.get(id=club_id)
     error = ""
     if accion == "club":
-        club.nombre = request.POST['nombre']
-        club.direccion = request.POST['direccion']
+        club.nombre = request.POST.get('nombre')
+        club.direccion = request.POST.get('direccion')
+        club.facebook = request.POST.get('facebook')
         try:
             municipio = Municipios.objects.get(id=request.POST['municipio'])
             club.municipio = municipio

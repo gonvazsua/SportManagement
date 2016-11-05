@@ -510,6 +510,24 @@ function submit_club(){
     }
 }
 
+//Validar direccion de facebook
+function validar_facebook(){
+
+    var url = $("#facebook").val();
+
+    if(url != ""){
+
+        $("#facebook").parent().removeClass("has-error");
+
+        window.open(url);
+
+    }
+    else{
+        $("#facebook").parent().addClass("has-error");
+    }
+
+}
+
 //Franjas horarias
 function liberar_franja_horaria(franja_horaria_id){
 

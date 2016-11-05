@@ -321,6 +321,44 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- API Facebook -->
+        <div id="fb-root"></div>
+        <script>(function(d, s, id) {
+              var js, fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) return;
+              js = d.createElement(s); js.id = id;
+              js.src = "//connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v2.8";
+              fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+
+        <!-- Panel Facebook -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-facebook fa-fw"></i> Mi club en Facebook
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% if club.facebook %}
+                            <div class="fb-page" data-href="https://www.facebook.com/gestiondepistasdeportivas"
+                            data-tabs="timeline" data-small-header="false"
+                            data-adapt-container-width="true"
+                            data-hide-cover="false" data-show-facepile="true">
+                            <blockquote cite="https://www.facebook.com/gestiondepistasdeportivas"
+                            class="fb-xfbml-parse-ignore">
+                            <a href="https://www.facebook.com/gestiondepistasdeportivas" target="_blank">{{club.nombre}}</a></blockquote></div>
+                        {% else %}
+                            <h5>No has registrado ninguna cuenta de Facebook aún. Puedes hacerlo desde la
+                            <a href="/administrador/{{perfil.user.id}}/club"> página de administración del club</a>
+                            </h5>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- /.col-lg-4 -->
 

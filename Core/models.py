@@ -61,6 +61,7 @@ class Club(models.Model):
     descripcion = models.TextField(max_length=400, verbose_name="Descripción")
     imagen = models.ImageField(upload_to=get_file_path, verbose_name='Imagen', blank=True)
     direccion = models.CharField(max_length=50, verbose_name="Dirección")
+    facebook = models.CharField(max_length=200, verbose_name="Facebook", blank=True, null=True)
     def __unicode__(self):
 		return unicode(self.nombre)
 
