@@ -1,0 +1,202 @@
+{% extends 'usuarios/template_usuarios.html' %}
+{% block nombre_usuario %}
+    {{perfil.user.first_name}}
+{% endblock %}
+
+{% block nombre_principal %}
+    Mis clubes - {{club.nombre}}
+{% endblock %}
+
+{% block barra_navegacion %}
+<ol class="breadcrumb">
+  <li><a href="/usuario/{{perfil.user.id}}">Inicio</a></li>
+  <li><a href="/usuario/{{perfil.user.id}}/clubes">Mis clubes</a></li>
+  <li class="active">Club</li>
+</ol>
+{% endblock %}
+
+{% block fila_superior %}
+{% endblock %}
+
+{% block pagina_central %}
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+
+        <div class="row">
+            <div class="col-lg-6 col-sm-12  col-lg-offset-5">
+                <h2 class="section-heading">{{club.nombre}} en {{club.municipio.municipio}}</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                {% if club.imagen == "" %}
+                    <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{club.nombre}}" class="img-rounded img-buscador" title="{{club.nombre}}" style="max-width: 100%">
+                {% else %}
+                    <img src="{{MEDIA_URL}}{{club.imagen}}" alt="{{club.nombre}}" class="img-rounded img-buscador" title="{{club.nombre}}" style="max-width: 100%">
+                {% endif %}
+            </div>
+            <div class="col-lg-4 col-lg-offset-1">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h5><stong>Dirección:</stong></h5>
+                        <p class="cursiva">{{club.direccion}}</p>
+                    </div>
+                    {% if club.facebook and club.facebook != ""%}
+                        <div class="col-lg-12">
+                            <h5><stong>Facebook:</stong></h5>
+                            <p class="cursiva"><a href="{{club.facebook}}">{{club.facebook}}</a></p>
+                        </div>
+                    {% endif %}
+                    <div class="col-lg-12">
+                        <h5><stong>Descripción:</stong></h5>
+                        <p class="cursiva">{{club.descripcion}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <hr/>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="active" id="enlace_club_eventos"><a href="javascript:mostrar_ocultar_club('eventos');">Noticias</a></li>
+                        <li id="enlace_club_partidos"><a href="javascript:mostrar_ocultar_club('partidos');">Partidos</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row" id="apartado_club_eventos">
+
+            {% for evento in eventos %}
+
+                    <div class="col-lg-6">
+                        <div class="panel panel-default hover-panel-border-info">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-lg-2">
+                                        <div class="row row-centered">
+                                            <strong>{{evento.fecha|date:"d"}}</strong>
+                                        </div>
+                                        <div class="row row-centered">
+                                            <strong class="color-pista-roja">{{evento.fecha|date:"M"}}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        {{evento.nombre}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-lg-4 border-right">
+                                        <div class="row row-centered">
+                                            <div class="col-lg-12">
+                                                {% if evento.imagen == "" or evento.imagen == None %}
+                                                    <img src="{{STATIC_URL}}img/club-no-image.png" title="Imagen no disponible" alt="{{evento.nombre}}" class="img-rounded" style="max-width: 100%">
+                                                {% else %}
+                                                    <img src="{{MEDIA_URL}}{{evento.imagen}}" title="{{evento.nombre}}" alt="{{evento.nombre}}" class="img-rounded" style="max-width: 100%">
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8">
+                                        <div class="row">
+                                            <div class="col-lg-12 padding5 cursiva gris">
+                                                {{evento.fecha|date:"D"}} a las {{evento.hora|time:'G:i'}} h.
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12 oscuro">
+                                                {% if evento.descripcion %}
+                                                    {{evento.descripcion}}
+                                                {% else %}
+                                                    No hay descripción para este evento
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+            {% empty %}
+
+                <div class="col-lg-12 row-altura-planificar text-center">
+                    <h5>Parece que todavia no hay noticias en tu club</h5>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Partidos -->
+        <div class="row" id="apartado_club_partidos" style="display:none">
+
+            <div class="col-lg-12">
+
+                {% for partido in partidos %}
+                    {% if forloop.counter0|divisibleby:"2" %}
+                        <div class="row">
+                    {% endif %}
+                        <div class="col-lg-1"></div>
+                        <a href="/usuario/{{perfil.user.id}}/partidos/{{partido.id}}" title="Ver partido">
+                            <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10
+                            {%if partido.perfiles.count == 4%} pista_verde
+                            {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla
+                            {%elif partido.es_partido_evento %} pista_evento
+                            {%else%}pista_roja{%endif%}">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 row-centered">
+                                        <h4 class="color_blanco">{{partido.pista.nombre}}</h4>
+                                        <h4 class="color_blanco">- {{partido.pista.deporte.deporte}} -</h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                   <div class="col-lg-12 col-md-12 row-centered">
+                                        <h5 class="color_blanco">{{partido.fecha}}</h5>
+                                        <h5 class="color_blanco">{{partido.franja_horaria.inicio|time:'G:i'}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="col-lg-1"></div>
+                    {% if not forloop.counter0|divisibleby:"2"  or forloop.last %}
+                        </div>
+                    {% endif %}
+
+                {% empty %}
+
+                    <div class="row row-altura-planificar">
+                        <div class="col-lg-12 text-center">
+                            <h5>Ups, parece que no hay partidos en este club todavía</h5>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    $(".botonera").removeClass("active");
+{% endblock %}
+
+{% block importaciones %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/usuarios/clubes.js"></script>
+{% endblock %}
+
+{% block document_ready %}
+    $(".botonera").removeClass("active");
+    $("#enlace_mis_clubes").addClass("active");
+{% endblock %}

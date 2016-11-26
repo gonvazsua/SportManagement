@@ -93,6 +93,38 @@ function actualiza_enlace_menu(){
     });
 }
 
+function comprobar_obligatorios(form_id){
+
+    var todo_ok = true;
+
+    //Eliminar error
+    $("."+form_id+" .obligatorio").parent().removeClass("has-error");
+
+    $(".obligatorio").each(function(){
+
+        //Input
+        if($(this).is("input:text") && $(this).val() == ""){
+            $(this).parent().addClass("has-error");
+            todo_ok = false;
+        }
+
+        //Select
+        else if($(this).is("select") && $(this).val() == ""){
+            $(this).parent().addClass("has-error");
+            todo_ok = false;
+        }
+
+        //Textarea
+        else if($(this).is("textarea") && $(this).val() == ""){
+            $(this).parent().addClass("has-error");
+            todo_ok = false;
+        }
+
+    });
+
+    return todo_ok;
+}
+
 /******************************************************************************/
 /* Página de nuevo partido */
 /******************************************************************************/
@@ -1175,6 +1207,7 @@ function comenzar_arrastre(e){
     //Guardamos el id del elemento para transferirlo al elemento drop
     //Contenido es una clave que nos permitirá acceder al valor asignado
     e.dataTransfer.setData("contenido", e.target.id);
+    e.dataTransfer.setData("anterior_form", $(e.target).closest("form").attr("id"))
 }
 
 function durante_arrastre(e){
@@ -1185,10 +1218,17 @@ function durante_arrastre(e){
 function terminar_arrastre(e){
     //Obtenemos los datos a través de la clave contenido, en este caso el id
     var id = e.dataTransfer.getData("contenido");
+    var id_form_anterior = e.dataTransfer.getData("anterior_form");
 
     if($(e.target).hasClass("anidable")){
         e.target.appendChild(document.getElementById(id));
         var correcto  = guardar_partido_planificar($(e.target).closest("form"));
+
+        if(id_form_anterior != "undefined"){
+            //Si es undefined significa que no viene de otro partido
+            var form = $("#"+id_form_anterior);
+            guardar_partido_planificar(form);
+        }
     }
 }
 

@@ -178,6 +178,13 @@ function submit_olvida_pass(){
     $("#btn-pass").attr("disabled", false);
 }
 
+function ir_registro_desde_login(){
+
+    //Cerrar modal login
+    $("#login_modal").modal("hide");
+    desplaza("apartado_registro");
+}
+
 function addHtml(inout){
     var html = "<i class='fa fa-thumbs-up fa-fw'></i>";
 
@@ -186,5 +193,134 @@ function addHtml(inout){
     }
 
     $("#btn-facebook").html(html);
+
+}
+
+/******************************
+    Buscador de clubes
+******************************/
+function actualiza_municipios(elem){
+    var provincia_id = $(elem).val();
+
+    if(provincia_id != 0){
+        $.ajax({
+            data: {'provincia_id':provincia_id},
+            url: '/municipios_ajax',
+            type: 'GET',
+            success: function(data){
+              var html;
+              //Eliminamos opciones anteriores:
+              if(document.getElementById("id_municipio").options.length != 0){
+                  document.getElementById("id_municipio").options.length = 0;
+              }
+
+              //Añadimos nuevos valores
+              $("#id_municipio").append("<option value=\"0\">Selecciona municipio</option>");
+              for(var i = 0; i < data.length; i++){
+                var s = '<option value="'+data[i].pk+'">'+data[i].fields.municipio+'</option>';
+                $("#id_municipio").append(s);
+              }
+
+              $("#id_municipio").attr("disabled", false);
+            }
+        });
+    }
+    else{
+        $("#id_municipio").html("<option value='0'>Selecciona provincia</option>");
+        $("#id_municipio").attr("disabled", true);
+    }
+}
+
+function buscar_club_inicio(){
+
+    var provincia_id = $("#provincia_id").val();
+    $("#provincia_id").parent().removeClass("has-error");
+
+    if (provincia_id != 0 && provincia_id != ""){
+        $("#buscador_clubes").submit();
+    }
+    else{
+        $("#provincia_id").parent().addClass("has-error");
+    }
+}
+
+function buscar_club_ajax(){
+
+    $.ajax({
+        data: $("#form-buscar").serialize(),
+        url: $("#form-buscar").attr("action"),
+        type: 'POST',
+        success: function(data){
+
+            $("#primeros-resultados").slideUp("slow");
+            $("#primeros-resultados").remove();
+            $("#resultados_buscador").html(data);
+            $("#resultados_buscador").slideDown("slow");
+        }
+    });
+
+}
+
+function inicializar_datepicker(){
+    $.datepicker.regional['es'] = {
+         closeText: 'Cerrar',
+         prevText: '<Ant',
+         nextText: 'Sig>',
+         currentText: 'Hoy',
+         monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+         monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+         dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+         dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+         dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+         weekHeader: 'Sm',
+         dateFormat: 'dd/mm/yy',
+         firstDay: 1,
+         isRTL: false,
+         showMonthAfterYear: false,
+         yearSuffix: ''
+         };
+         $.datepicker.setDefaults($.datepicker.regional['es']
+    );
+
+    $("#id_fecha").datepicker({
+        dateFormat: 'dd/mm/yy'
+    });
+}
+
+function buscar_partidos_ajax(){
+    $.ajax({
+        data: $("#buscador-partidos").serialize(),
+        url: $("#buscador-partidos").attr("action"),
+        type: 'POST',
+        success: function(data){
+
+            $("#resultados_buscador").html(data);
+            $("#resultados_buscador").slideDown("slow");
+        }
+    });
+}
+
+function mostrar_ocultar_club(menu){
+
+    if(menu == 'eventos'){
+
+        $("#enlace_club_partidos").removeClass("active");
+        $("#enlace_club_eventos").addClass("active");
+
+        $("#apartado_club_partidos").slideUp( "slow", function() {
+            $("#apartado_club_eventos").slideDown("slow");
+        });
+
+    }
+    else{
+
+        $("#enlace_club_eventos").removeClass("active");
+        $("#enlace_club_partidos").addClass("active");
+
+        $("#apartado_club_eventos").slideUp( "slow", function() {
+            $("#apartado_club_partidos").slideDown("slow");
+        });
+
+    }
 
 }

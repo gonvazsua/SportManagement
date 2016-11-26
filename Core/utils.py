@@ -142,3 +142,18 @@ def generarNotificacionesPartidoPerfiles(nuevo_partido):
         logger.debug("utils.py - Método generarNotificacionesPartidoPerfiles. " + e.message)
 
     return ""
+
+#Comprobar si un usuario pertenece a un club
+def compruebaUsuarioPerteneceAClub(id_perfil, id_club):
+
+    pertenece = False
+
+    try:
+        pertenece = PerfilRolClub.objects.filter(perfil__id = id_perfil, club__id = id_club).exists()
+
+        if pertenece == False:
+            raise 404
+
+    except Exception, e:
+        logger.debug("utils.py - Método compruebaUsuarioPerteneceAClub. " + e.message)
+        raise 404

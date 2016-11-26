@@ -220,3 +220,20 @@ footer{
 .btn-rrss{
     border-radius: 15px 0 0 15px !important;
 }
+
+.r-vertical{
+    resize: vertical;
+}
+
+.hr{
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.img-buscador{
+    cursor:pointer;
+}
+
+.img-buscador:hover{
+    opacity: 0.8;
+}

@@ -56,8 +56,15 @@ def usuario_inicio(request, id_usuario):
     except Exception:
         notificaciones = []
 
+    #Eventos de clubes
+    try:
+        eventos = Evento.objects.filter(club__in = clubes).order_by("-fecha")[:5]
+    except Exception:
+        eventos = []
+
     data = {'perfil': perfil, 'provincias':provincias, 'clubes':clubes, 'clubes_pendientes_aceptar':clubes_pendientes_aceptar,
-            'club_partidos_disponibles':club_partidos_disponibles, 'notificaciones':notificaciones}
+            'club_partidos_disponibles':club_partidos_disponibles, 'notificaciones':notificaciones,
+            'eventos':eventos}
 
     data = cargar_tipos_notificaciones_settings(data)
 

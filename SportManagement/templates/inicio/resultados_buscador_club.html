@@ -1,0 +1,44 @@
+{% for club in clubes %}
+
+    <form action="/club/{{club.separa_guiones_nombre}}" id="club_{{forloop.counter}}" method="POST">
+        {% csrf_token %}
+
+        <input type="hidden" value="{{club.id}}" name="club">
+
+        <div class="col-lg-3">
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if club.imagen == "" %}
+                                <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{club.nombre}}" class="img-rounded img-buscador" title="Ver club {{club.nombre}}" style="max-width: 100%" onclick="$('#club_{{forloop.counter}}').submit()">
+                            {% else %}
+                                <img src="{{MEDIA_URL}}{{club.imagen}}" alt="{{club.nombre}}" class="img-rounded img-buscador" title="Ver club {{club.nombre}}" style="max-width: 100%" onclick="$('#club_{{forloop.counter}}').submit()">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            {{club.nombre}}
+                            <hr class="hr">
+                            {{club.municipio.municipio}}, {{club.municipio.provincia.provincia}}
+                        </div>
+                    </div>
+
+                </div>
+                <!-- ./panel body -->
+            </div>
+            <!-- ./panel -->
+
+        </div>
+    </form>
+
+{% empty %}
+
+    <div class="col-lg-12">
+        <h5>No se han encontrado resultados para tu búsqueda</h5>
+    </div>
+
+{% endfor %}

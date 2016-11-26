@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 ruta_usuarios_mis_clubes = 'usuarios/clubes/usuarios_mis_clubes.html'
 ruta_usuarios_buscador_clubes = 'usuarios/clubes/usuarios_buscador_clubes.html'
+ruta_usuarios_club = 'usuarios/clubes/usuarios_club.html'
 
 @login_required()
 def usuario_mis_clubes(request, id_usuario):
@@ -134,3 +135,36 @@ def usuario_club_baja(request):
                 error = "No hemos podido generar su petición, actualice la página e inténtelo de nuevo."
     data = {"error":error}
     return HttpResponse(json.dumps(data))
+
+
+@login_required()
+def usuario_clubes_club(request, id_usuario, id_club):
+    perfil = comprueba_usuario_logado_no_administrador(id_usuario, request)
+    if perfil == None:
+        return HttpResponseRedirect("/")
+    else:
+        data = {'perfil': perfil}
+
+    compruebaUsuarioPerteneceAClub(perfil.id, id_club)
+
+    try:
+
+        club = Club.objects.get(id = id_club)
+        data["club"] = club
+
+        #Eventos
+        eventos = Evento.objects.filter(club = club).order_by("-creado_el")[:20]
+        data["eventos"] = eventos
+
+        #Partidos
+        partidos = Partido.objects.filter(
+            Q(fecha = datetime.today(), franja_horaria__inicio__gt=datetime.now()) | Q(fecha__gt=datetime.today()),
+            pista__club=club, visible = settings.ESTADO_SI
+        ).order_by('fecha', 'franja_horaria__inicio')[:10]
+
+        data["partidos"] = partidos
+
+    except Exception, e:
+        logger.debug("usuarios/clubes - Método usuario_clubes_club." + e.message)
+
+    return render_to_response(ruta_usuarios_club, data, context_instance=RequestContext(request))

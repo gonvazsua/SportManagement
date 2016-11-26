@@ -283,29 +283,33 @@
 
         <!-- Últimos eventos de mis clubes -->
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bullhorn fa-fw"></i> Noticias en mis clubes
-            </div>
             <div class="panel-body">
+
                 <div class="row">
                     <div class="col-lg-12">
-                        <i class="fa fa-circle fa-fw color-pista-roja"></i> Partido sin jugadores
+                        <h4><i class="fa fa-newspaper-o fa-fw"></i> Últimas noticias de tus clubes...</h4> <hr>
                     </div>
                 </div>
+
                 <div class="row">
-                    <div class="col-lg-12">
-                        <i class="fa fa-circle fa-fw color-pista-amarilla"></i> Partido no completo
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <i class="fa fa-circle fa-fw color-pista-verde"></i> Partido completo
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <i class="fa fa-circle fa-fw color-pista-evento"></i> Partido de evento
-                    </div>
+                    {% for evento in eventos %}
+
+                        <a href="/usuario/{{perfil.user.id}}/clubes/{{evento.club.id}}" class="principal_partido" title="Ir a noticia">
+                            <div class="col-lg-12">
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="list-group-item-heading">{{evento.nombre}}</h4>
+                                    <p class="list-group-item-text cursiva">{{evento.descripcion|slice:"50"}}...</p>
+                                </div>
+                            </div>
+                        </a>
+
+                    {% empty %}
+                        <div class="row">
+                            <div class="col-lg-12 text-center">
+                                <h5 class="text-center">No hay eventos disponibles para mostrar</h5>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

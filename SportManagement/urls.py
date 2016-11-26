@@ -21,6 +21,11 @@ urlpatterns = patterns('',
     url(r'^demo', 'Core.views.demo'),
     url(r'^blog', 'Core.views.blog'),
 
+    url(r'^buscar_partidos_ajax', 'Core.views.buscar_partidos_inicio'),
+    url(r'^club/(?P<nombre_club>[\w\-]+)', 'Core.views.inicio_club'),
+    url(r'^buscador/club/buscar', 'Core.views.inicio_buscar_clubes'),
+    url(r'^buscador/club', 'Core.views.inicio_buscador_club'),
+
     ###########################################################
     ########## ADMINISTRADOR URLS
     ###########################################################
@@ -91,10 +96,12 @@ urlpatterns = patterns('',
     url(r'^completar_datos_inicio', 'Core.views.completar_datos_inicio'),
 
     #Clubes
+    url(r'^usuario/(?P<id_usuario>\d+)/clubes/(?P<id_club>\d+)$', 'Core.views.usuario_clubes_club'),
     url(r'^usuario/(?P<id_usuario>\d+)/clubes$', 'Core.views.usuario_mis_clubes'),
     url(r'^usuario/(?P<id_usuario>\d+)/buscador/clubes$', 'Core.views.usuario_buscador_clubes'),
-    url(r'^buscador/clubes/inscripcion$', 'Core.views.usuario_club_inscripcion'),
-    url(r'^buscador/clubes/baja$', 'Core.views.usuario_club_baja'),
+    url(r'^usuario/buscador/clubes/inscripcion$', 'Core.views.usuario_club_inscripcion'),
+    url(r'^usuario/buscador/clubes/baja$', 'Core.views.usuario_club_baja'),
+
 
     #Cuenta
     url(r'^usuario/(?P<id_usuario>\d+)/cuenta$', 'Core.views.usuario_mi_cuenta'),

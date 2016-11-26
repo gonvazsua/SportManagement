@@ -16,6 +16,10 @@ from django.db.models import Q
 logger = logging.getLogger(__name__)
 
 ruta_blog = "inicio/blog.html"
+ruta_buscador_club = "inicio/clubes_buscador.html"
+ruta_buscar_clubes = "inicio/resultados_buscador_club.html"
+ruta_inicio_club = "inicio/inicio_club.html"
+ruta_buscar_partidos_club = "inicio/resultados_buscador_partidos.html"
 
 
 def inicio(request):
@@ -45,9 +49,18 @@ def inicio(request):
     if request.user.is_authenticated():
         auth.logout(request)
 
+    #Provincias y municipios para el buscador de clubes
+    municipios = []
+    try:
+        provincias = Provincias.objects.all()
+    except Exception, e:
+        provincias = []
+
     datos = {
             'login_form' : login_form,
-            'registro_form' : registro_form
+            'registro_form' : registro_form,
+            'municipios': municipios,
+            'provincias': provincias
         }
     return render_to_response('inicio/index.html', datos, context_instance=RequestContext(request))
 
@@ -251,6 +264,9 @@ def blog(request):
     datos = {}
 
     try:
+        login_form = formulario_login()
+        datos["login_form"] = login_form
+
         entradasBlog = Blog.objects.all().order_by("-fecha")
         datos["entradasBlog"] = entradasBlog
 
@@ -258,6 +274,153 @@ def blog(request):
         logger.debug("inicio/views - Método blog: " + e.message)
 
     return render_to_response(ruta_blog, datos, context_instance=RequestContext(request))
+
+######################################################
+# Buscador de clubes
+######################################################
+
+def municipios_ajax(request):
+    try:
+        id_provincia = request.GET['provincia_id']
+        municipios = Municipios.objects.filter(provincia__id = id_provincia)
+    except Exception:
+        municipios = {}
+        logger.debug("inicio - Método municipios_ajax")
+    data = serializers.serialize('json', municipios,
+        fields=('id', 'municipio'))
+    return HttpResponse(data, mimetype='application/json')
+
+def inicio_buscador_club(request):
+
+    datos = {}
+
+    try:
+        provincias = Provincias.objects.all()
+        municipios = []
+        clubes = []
+
+        login_form = formulario_login()
+        datos["login_form"] = login_form
+
+        if request.method == "POST":
+            provincia_id = request.POST.get("provincia")
+            municipio_id = request.POST.get("municipio")
+            datos["provincia_id"] = int(provincia_id)
+            datos["municipio_id"] = int(municipio_id)
+
+            if provincia_id and municipio_id and int(municipio_id) != 0:
+                clubes = Club.objects.filter(municipio__id = municipio_id)
+                municipios = Municipios.objects.filter(provincia__id = provincia_id)
+
+            elif provincia_id:
+                clubes = Club.objects.filter(municipio__provincia__id = provincia_id)
+                municipios = Municipios.objects.filter(provincia__id = provincia_id)
+
+        datos["clubes"] = clubes
+        datos["provincias"] = provincias
+        datos["municipios"] = municipios
+
+    except Exception, e:
+        logger.debug("inicio/views - Método inicio_buscador_club: " + e.message)
+
+    return render_to_response(ruta_buscador_club, datos, context_instance=RequestContext(request))
+
+
+def inicio_buscar_clubes(request):
+
+    datos = {}
+
+    try:
+        clubes = []
+
+        if request.method == "POST":
+            provincia_id = request.POST.get("provincia")
+            municipio_id = request.POST.get("municipio")
+
+            if provincia_id and municipio_id:
+                if int(municipio_id) != 0:
+                    clubes = Club.objects.filter(municipio__id = municipio_id)[:20]
+                    datos["provincia_id"] = int(provincia_id)
+                    datos["municipio_id"] = int(municipio_id)
+                elif provincia_id:
+                    clubes = Club.objects.filter(municipio__provincia__id = provincia_id)[:20]
+                    datos["provincia_id"] = int(provincia_id)
+
+            elif provincia_id:
+                clubes = Club.objects.filter(municipio__provincia__id = provincia_id)[:20]
+                datos["provincia_id"] = int(provincia_id)
+
+            else:
+                clubes = Club.objects.all()[:20]
+
+        datos["clubes"] = clubes
+
+    except Exception, e:
+        logger.debug("inicio/views - Método inicio_buscar_clubes: " + e.message)
+
+    return render_to_response(ruta_buscar_clubes, datos, context_instance=RequestContext(request))
+
+
+def inicio_club(request, nombre_club):
+
+    datos = {}
+
+    try:
+
+        login_form = formulario_login()
+        datos["login_form"] = login_form
+
+        if request.method == "POST":
+            club_id = request.POST.get("club")
+
+            if club_id:
+                club = Club.objects.get(id = club_id)
+                datos["club"] = club
+
+                franjas_horarias = FranjaHora.objects.filter(club = club).order_by("inicio")
+                datos["franjas_horarias"] = franjas_horarias
+
+                eventos = Evento.objects.filter(club = club).order_by("-fecha")[:10]
+                datos["eventos"] = eventos
+
+    except Exception, e:
+        logger.debug("inicio/views - Método inicio_club: " + e.message)
+
+    return render_to_response(ruta_inicio_club, datos, context_instance=RequestContext(request))
+
+
+def buscar_partidos_inicio(request):
+
+    datos = {}
+    queryset = Q()
+
+    try:
+
+        if request.method == "POST":
+            club_id = request.POST.get("club")
+            fecha = request.POST.get("fecha")
+            franja_horaria_id = request.POST.get("franja_horaria")
+
+            if club_id:
+                queryset.add(Q(pista__club__id = club_id), Q.AND)
+            if fecha:
+                fecha = datetime.strptime(fecha, '%d/%m/%Y').date()
+                queryset.add(Q(fecha = fecha), Q.AND)
+            else:
+                fecha = date.today()
+                queryset.add(Q(fecha = fecha), Q.AND)
+
+            if franja_horaria_id and int(franja_horaria_id) != 0:
+                queryset.add(Q(franja_horaria__id = franja_horaria_id), Q.AND)
+
+            partidos = Partido.objects.filter(queryset).order_by("fecha")[:20]
+            datos["partidos"] = partidos
+
+    except Exception, e:
+        logger.debug("inicio/views - Método inicio_buscar_partidos: " + e.message)
+
+    return render_to_response(ruta_buscar_partidos_club, datos, context_instance=RequestContext(request))
+
 
 ######################################################
 #Metodo que genera claves aleatorias para los usuarios
@@ -270,3 +433,4 @@ def generar_clave_aleatoria():
     clave = clave.join([choice(valores) for i in range(longitud)])
 
     return clave
+

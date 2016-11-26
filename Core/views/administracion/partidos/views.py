@@ -226,7 +226,7 @@ def planificar(request, id_usuario):
                                 else:
                                     #Se crea el partido
                                     partido = Partido.objects.create(
-                                        fecha = fecha, pista = pista, franja_horaria = fh, creado_por = perfil, visible = settings.ESTADO_NO
+                                        fecha = fecha, pista = pista, franja_horaria = fh, creado_por = perfil, visible = settings.ESTADO_SI
                                     )
                                     lista_partidos.append(partido)
 

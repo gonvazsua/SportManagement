@@ -278,7 +278,7 @@
                                     <input type="hidden" id="id_usuario_form" name="user" value="{{perfil.user.id}}"/>
                                     <input type="hidden" id="max_jugadores" value="{{map_jugadores|length}}">
                                     <input type="hidden" id="visible" name="visible" value="1">
-                                    <input type="hidden" id="notificar" name="notificar" value="0">
+                                    <input type="hidden" id="notificar" name="notificar" value="1">
                                     {% for num, jug in map_jugadores.iteritems %}
                                         {% if jug == "" %}
                                         <tr class="warning vacio">
@@ -314,7 +314,7 @@
                     <div class="col-lg-12 col-md-12">
                         <div class="checkbox" title="Los jugadores recibirán un email con los datos del partido">
                             <label>
-                                <input type="checkbox" onchange="javascript:actualiza_estado_visible(this, 'notificar');"> Enviar notificaciones
+                                <input type="checkbox" checked="checked" onchange="javascript:actualiza_estado_visible(this, 'notificar');"> Enviar notificaciones
                             </label>
                         </div>
                     </div>

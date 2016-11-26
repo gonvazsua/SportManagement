@@ -1,0 +1,485 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//ES"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <!-- Schema  org -->
+    <script type="application/ld+json">
+        {
+        "@context": "http://schema.org",
+        "@type": "Product",
+        "brand": "Gestion de pistas deportivas",
+        "logo": "http://www.gestiondepistasdeportivas.com/static/img/Logo_v2.png",
+        "category": "Gestión de pistas deportivas",
+        "name": "Gestión de pistas deportivas"
+        }
+    </script>
+
+    <!-- META Tags -->
+    <META name="description" content="Gestión de pistas deportivas, organiza tu club, usuarios y partidos. Inscripción de jugadores. Reserva de pistas online">
+    <META name="keywords" content="Gestión de pistas deportivas, Aplicación gestionar club, Montar partidos,
+    Gestión de pistas de padel gratis, programa gestion padel, reservas online, gimnasios, gestion deportiva, reserva pistas online,
+    centros deportivos, instalaciones, deportes, reservar, reservas, gestion de pistas de padel, gestion club">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{STATIC_URL}}img/Logo_v2.png?v=1">
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+     <!-- Bootstrap Core CSS -->
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom CSS -->
+    <link href="{{ STATIC_URL }}css/landing-page.css?version=2" rel="stylesheet" type="text/css">
+    <!-- Custom Fonts -->
+    <!-- <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <!-- Javascript -->
+    <script type="text/javascript" src="{{STATIC_URL}}js/js.js?v=1"></script>
+    <!-- Css propio -->
+    <link href="{{STATIC_URL}}css/application.css?version=2" rel="stylesheet" type="text/css">
+    <!-- jQuery UI -->
+    <script type="text/javascript" src="{{STATIC_URL}}jquery-ui/jquery-ui.js"></script>
+    <link href="{{STATIC_URL}}jquery-ui/jquery-ui.css" rel="stylesheet"/>
+    <!-- Font awesome -->
+    <link href="{{STATIC_URL}}admin/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            submit_intro();
+
+            inicializar_datepicker();
+        });
+    </script>
+
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-84478782-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+
+
+    <title>Sportclick: Gestión de pistas deportivas</title>
+</head>
+<body>
+        <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+        <div class="container topnav">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Menu</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand topnav" href="/">Sport Click</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="javascript:loginDialog();">Acceder</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/buscador/club">Clubes</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/blog">Blog</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#services">Servicios</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#contact">Contacto</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+    <div class="content-section-b">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-sm-12  col-lg-offset-5">
+                    <h2 class="section-heading">{{club.nombre}} en {{club.municipio.municipio}}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    {% if club.imagen == "" %}
+                        <img src="{{STATIC_URL}}img/club-no-image.png" alt="{{club.nombre}}" class="img-rounded img-buscador" title="{{club.nombre}}" style="max-width: 100%">
+                    {% else %}
+                        <img src="{{MEDIA_URL}}{{club.imagen}}" alt="{{club.nombre}}" class="img-rounded img-buscador" title="{{club.nombre}}" style="max-width: 100%">
+                    {% endif %}
+                </div>
+                <div class="col-lg-4 col-lg-offset-1">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5><stong>Dirección:</stong></h5>
+                            <p class="cursiva">{{club.direccion}}</p>
+                        </div>
+                        {% if club.facebook and club.facebook != ""%}
+                            <div class="col-lg-12">
+                                <h5><stong>Facebook:</stong></h5>
+                                <p class="cursiva"><a href="{{club.facebook}}">{{club.facebook}}</a></p>
+                            </div>
+                        {% endif %}
+                        <div class="col-lg-12">
+                            <h5><stong>Descripción:</stong></h5>
+                            <p class="cursiva">{{club.descripcion}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <hr/>
+            </div>
+            <div class="row">
+                {% if club.facebook %}
+                    <div class="col-lg-3">
+                        <!-- API Facebook -->
+                        <div id="fb-root"></div>
+                        <script>(function(d, s, id) {
+                              var js, fjs = d.getElementsByTagName(s)[0];
+                              if (d.getElementById(id)) return;
+                              js = d.createElement(s); js.id = id;
+                              js.src = "//connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v2.8";
+                              fjs.parentNode.insertBefore(js, fjs);
+                            }(document, 'script', 'facebook-jssdk'));
+                        </script>
+
+                        <!-- Panel Facebook -->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-facebook fa-fw"></i> El club en Facebook
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        {% if club.facebook %}
+                                            <div class="fb-page" data-href="{{club.facebook}}"
+                                            data-tabs="timeline" data-small-header="false"
+                                            data-adapt-container-width="true"
+                                            data-hide-cover="false" data-show-facepile="true">
+                                            <blockquote cite="{{club.facebook}}"
+                                            class="fb-xfbml-parse-ignore">
+                                            <a href="{{club.facebook}}" target="_blank">{{club.nombre}}</a></blockquote></div>
+                                        {% else %}
+                                            <h5>No has registrado ninguna cuenta de Facebook aún. Puedes hacerlo desde la
+                                            <a href="/administrador/{{perfil.user.id}}/club"> página de administración del club</a>
+                                            </h5>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="col-lg-9 {%if not club.facebook%}col-lg-offset-3{%endif%}">
+
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    <li class="" id="enlace_club_eventos"><a href="javascript:mostrar_ocultar_club('eventos');">Noticias</a></li>
+                                    <li class="active" id="enlace_club_partidos"><a href="javascript:mostrar_ocultar_club('partidos');">Partidos</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <div class="row" id="apartado_club_eventos" style="display:none">
+
+                        {% for evento in eventos %}
+
+                                <div class="col-lg-6">
+                                    <div class="panel panel-default hover-panel-border-info">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                <div class="col-lg-2">
+                                                    <div class="row row-centered">
+                                                        <strong>{{evento.fecha|date:"d"}}</strong>
+                                                    </div>
+                                                    <div class="row row-centered">
+                                                        <strong class="color-pista-roja">{{evento.fecha|date:"M"}}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-10">
+                                                    {{evento.nombre}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-lg-4 border-right">
+                                                    <div class="row row-centered">
+                                                        <div class="col-lg-12">
+                                                            {% if evento.imagen == "" or evento.imagen == None %}
+                                                                <img src="{{STATIC_URL}}img/club-no-image.png" title="Imagen no disponible" alt="{{evento.nombre}}" class="img-rounded" style="max-width: 100%">
+                                                            {% else %}
+                                                                <img src="{{MEDIA_URL}}{{evento.imagen}}" title="{{evento.nombre}}" alt="{{evento.nombre}}" class="img-rounded" style="max-width: 100%">
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 padding5 cursiva gris">
+                                                            {{evento.fecha|date:"D"}} a las {{evento.hora|time:'G:i'}} h.
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12 oscuro">
+                                                            {% if evento.descripcion %}
+                                                                {{evento.descripcion}}
+                                                            {% else %}
+                                                                No hay descripción para este evento
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                        {% empty %}
+
+                            <div class="col-lg-12 row-altura-planificar text-center">
+                                <h5>Parece que todavia no hay noticias en tu club</h5>
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="row" id="apartado_club_partidos">
+                        <div class="col-lg-12">
+
+                            <!-- Panel Partidos -->
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="fa fa-trophy fa-fw"></i> Busca los partidos del club
+                                </div>
+                                <div class="panel-body">
+                                    <form action="/buscar_partidos_ajax" id="buscador-partidos" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="club" value="{{club.id}}"/>
+
+                                        <div class="row">
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label for="fecha">1. Elige una fecha</label>
+                                                    <input type="text" class="form-control" id="id_fecha" name="fecha" placeholder="dd/mm/aaaa">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label for="franja_horaria">2. Si quieres, elige una franja horaria</label>
+                                                    <select class="form-control" name="franja_horaria" id="franja_horaria">
+                                                        <option value="" selected="selected">Selecciona...</option>
+                                                        {% for franja in franjas_horarias %}
+                                                            <option value="{{franja.id}}">{{franja.inicio|time:'G:i'}} - {{franja.fin|time:'G:i'}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="form-group">
+                                                    <label for="encuentra">3. ¡Encuentra!</label>
+                                                    <button type="button" class="btn btn-success btn-block" aria-label="Right Align" onclick="javascript:buscar_partidos_ajax();">
+                                                      <i class="fa fa-search" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <hr/>
+                                        </div>
+                                    </div>
+
+                                    <!-- Resultados buscar partidos -->
+                                    <div class="row" id="resultados_buscador" style="display:none">
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-a -->
+
+    <div class="content-section-a">
+
+    </div>
+    <!-- ./content-section-a -->
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <ul class="list-inline">
+                        <li>
+                            <a href="#">Inicio</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="" data-toggle="modal" data-target="#login_modal">Acceder</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/blog">Blog</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="#services">Servicios</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="#contact">Contacto</a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted small">Copyright &copy; Sport Click 2016. Todos los derechos reservados</p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="fb-like" data-href="https://www.facebook.com/gestiondepistasdeportivas" data-layout="button" data-action="like" data-size="small" data-show-faces="true" data-share="true">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                      <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Acceso a la aplicación</h4>
+                      </div>
+                      <div class="modal-body">
+                            <form id='form_login' method='post' action='' role="form">{% csrf_token %}
+                                    <h5>Nombre de usuario o Email: </h5>
+                                    {{login_form.usuario}}
+                                <br>
+                                    <label for='password'>Contraseña: </label>
+                                    {{login_form.password}}
+                            </form>
+                            <a data-toggle="modal" href="javascript:pass_olvidada();"><h5>¿Has olvidado tu contraseña?</h5></a>
+                            <a href="/#apartado_registro"><h5>Aún no tengo cuenta</h5></a>
+                            <p class="bg-danger my_error" id="form_error" style="display:none"></p>
+                      </div>
+                      <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                Cerrar
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="javascript:submit_login();">
+                                <span class="glyphicon" id="icono_login" aria-hidden="true"></span> Acceder
+                            </button>
+                      </div>
+                </div>
+          </div>
+    </div>
+
+    <div class="modal fade" id="login_modal_pass" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                      <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="recuperar_pass_title">Recuperar contraseña</h4>
+                      </div>
+                      <div class="modal-body">
+                            <form id='form_password' method='post' action='' role="form">{% csrf_token %}
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label for='email'>Usuario o email: </label>
+                                            <input type="text" id="email_pass" value="" name="email_pass" class="form-control" placeholder="Introduce email o tu usuario"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <p class="bg-danger my_error" id="form_error_pass" style="display:none"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="alert alert-info" id="alert_pass" role="alert">Te enviaremos un email con tu nueva contraseña</div>
+                                    </div>
+                                </div>
+                            </form>
+                      </div>
+                      <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                Cerrar
+                            </button>
+                            <button id="btn-pass" type="button" class="btn btn-success" onclick="javascript:submit_olvida_pass();">
+                                <span class="glyphicon" id="icono_login_pass" aria-hidden="true"></span> Enviar
+                            </button>
+                      </div>
+                </div>
+          </div>
+    </div>
+
+    <!-- Formularios redirección -->
+    <form id="form_redirige" action=""></form>
+
+    <!-- DIV Redes sociales -->
+    <div class="redes_sociales">
+        <a class="btn btn-primary btn-rrss" href="https://www.facebook.com/gestiondepistasdeportivas" target="_blank" role="button" id="btn-facebook"
+                onmouseenter="addHtml('in')" onmouseout="addHtml('out')">
+            <i class="fa fa-thumbs-up fa-fw"></i>
+        </a>
+    </div>
+
+    <!-- API Facebook -->
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v2.8";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+</body>
+</html>

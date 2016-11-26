@@ -64,6 +64,8 @@ class Club(models.Model):
     facebook = models.CharField(max_length=200, verbose_name="Facebook", blank=True, null=True)
     def __unicode__(self):
 		return unicode(self.nombre)
+    def separa_guiones_nombre(self):
+        return self.nombre.replace(" ", "-")
 
 class Pista(models.Model):
     nombre = models.CharField(max_length=50, verbose_name="Nombre")
@@ -207,5 +209,3 @@ class ComentarioPartido(models.Model):
     partido = models.ForeignKey(Partido, null=False, blank=False)
     def __unicode__(self):
 		return unicode("Comentario: "+str(self.id))
-
-

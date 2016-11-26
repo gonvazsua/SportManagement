@@ -10,7 +10,7 @@ function inscripcion_clubes(club_id){
     var form = $("#form_inscripcion_club_"+club_id).serialize();
     $.ajax({
         data: form,
-        url: '/buscador/clubes/inscripcion',
+        url: '/usuario/buscador/clubes/inscripcion',
         type: 'POST',
         success: function(data){
             var r = JSON.parse(data);
@@ -33,7 +33,7 @@ function baja_clubes(club_id){
     var form = $("#form_baja_club_"+club_id).serialize();
     $.ajax({
         data: form,
-        url: '/buscador/clubes/baja',
+        url: '/usuario/buscador/clubes/baja',
         type: 'POST',
         success: function(data){
             var r = JSON.parse(data);
@@ -47,4 +47,30 @@ function baja_clubes(club_id){
             }
         }
     });
+}
+
+
+function mostrar_ocultar_club(menu){
+
+    if(menu == 'eventos'){
+
+        $("#enlace_club_partidos").removeClass("active");
+        $("#enlace_club_eventos").addClass("active");
+
+        $("#apartado_club_partidos").slideUp( "slow", function() {
+            $("#apartado_club_eventos").slideDown("slow");
+        });
+
+    }
+    else{
+
+        $("#enlace_club_eventos").removeClass("active");
+        $("#enlace_club_partidos").addClass("active");
+
+        $("#apartado_club_eventos").slideUp( "slow", function() {
+            $("#apartado_club_partidos").slideDown("slow");
+        });
+
+    }
+
 }

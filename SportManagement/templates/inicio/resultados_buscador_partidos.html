@@ -1,0 +1,41 @@
+{% for partido in partidos %}
+
+    <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10
+        {%if partido.perfiles.count == 4%} pista_verde
+        {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla
+        {%elif partido.es_partido_evento %} pista_evento
+        {%else%}pista_roja{%endif%}"
+            onclick="javascript:loginDialog();">
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 row-centered">
+                <h4 class="color_blanco">{{partido.pista.nombre}}</h4>
+                <h4 class="color_blanco">- {{partido.pista.deporte.deporte}} -</h4>
+            </div>
+        </div>
+
+        <div class="row row-centered">
+            <div class="col-lg-12 col-md-12">
+                {% if partido.perfiles.count > 0 %}
+                    <i class="fa fa-user fa-fw"></i>{{partido.perfiles.count}}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row row-centered row-margin-top-20">
+            <div class="col-lg-12 col-md-12">
+                <h5 class="color_blanco cursiva">{{partido.franja_horaria.inicio|time:'G:i'}} - {{partido.franja_horaria.fin|time:'G:i'}}</h5>
+            </div>
+        </div>
+
+    </div>
+
+{% empty%}
+
+    <div class="row row-centered">
+        <div class="col-lg-12 col-md-12">
+            <h5>No se han encontrado partidos. ¿Qué tal otro día?</h5>
+        </div>
+    </div>
+
+{% endfor %}

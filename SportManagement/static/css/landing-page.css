@@ -168,3 +168,20 @@ footer {
 p.copyright {
     margin: 15px 0 0;
 }
+
+.hr{
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.img-buscador{
+    cursor:pointer;
+}
+
+.img-buscador:hover{
+    opacity: 0.8;
+}
+
+.row-margin-top-20{
+    margin-top: 20px !important;
+}
