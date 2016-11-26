@@ -307,13 +307,14 @@ def inicio_buscador_club(request):
             municipio_id = request.POST.get("municipio")
             datos["provincia_id"] = int(provincia_id)
             datos["municipio_id"] = int(municipio_id)
+            clubes_excluir = [settings.ID_CLUB_PRUEBAS, settings.ID_CLUB_DEMO]
 
             if provincia_id and municipio_id and int(municipio_id) != 0:
-                clubes = Club.objects.filter(municipio__id = municipio_id)
+                clubes = Club.objects.filter(municipio__id = municipio_id).exclude(id__in = clubes_excluir)
                 municipios = Municipios.objects.filter(provincia__id = provincia_id)
 
             elif provincia_id:
-                clubes = Club.objects.filter(municipio__provincia__id = provincia_id)
+                clubes = Club.objects.filter(municipio__provincia__id = provincia_id).exclude(id__in = clubes_excluir)
                 municipios = Municipios.objects.filter(provincia__id = provincia_id)
 
         datos["clubes"] = clubes
