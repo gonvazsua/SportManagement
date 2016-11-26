@@ -332,6 +332,7 @@ def inicio_buscar_clubes(request):
 
     try:
         clubes = []
+        clubes_excluir = [settings.ID_CLUB_PRUEBAS, settings.ID_CLUB_DEMO]
 
         if request.method == "POST":
             provincia_id = request.POST.get("provincia")
@@ -339,19 +340,19 @@ def inicio_buscar_clubes(request):
 
             if provincia_id and municipio_id:
                 if int(municipio_id) != 0:
-                    clubes = Club.objects.filter(municipio__id = municipio_id)[:20]
+                    clubes = Club.objects.filter(municipio__id = municipio_id).exclude(id__in = clubes_excluir)[:20]
                     datos["provincia_id"] = int(provincia_id)
                     datos["municipio_id"] = int(municipio_id)
                 elif provincia_id:
-                    clubes = Club.objects.filter(municipio__provincia__id = provincia_id)[:20]
+                    clubes = Club.objects.filter(municipio__provincia__id = provincia_id).exclude(id__in = clubes_excluir)[:20]
                     datos["provincia_id"] = int(provincia_id)
 
             elif provincia_id:
-                clubes = Club.objects.filter(municipio__provincia__id = provincia_id)[:20]
+                clubes = Club.objects.filter(municipio__provincia__id = provincia_id).exclude(id__in = clubes_excluir)[:20]
                 datos["provincia_id"] = int(provincia_id)
 
             else:
-                clubes = Club.objects.all()[:20]
+                clubes = Club.objects.all().exclude(id__in = clubes_excluir)[:20]
 
         datos["clubes"] = clubes
 

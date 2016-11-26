@@ -51,6 +51,7 @@ def usuario_buscador_clubes(request, id_usuario):
     if request.method == "POST":
         provincia_id = request.POST.get('provincia')
         municipio_id = request.POST.get('municipio')
+        clubes_excluir = [settings.ID_CLUB_PRUEBAS, settings.ID_CLUB_DEMO]
 
         try:
             #Buscar clubes a los que ya pertenece el jugador o ha enviado peticiones para que no pueda
@@ -59,9 +60,9 @@ def usuario_buscador_clubes(request, id_usuario):
             clubes_ya_peticion_enviada = Notificacion.objects.values_list('club_id',flat=True).filter(tipo = settings.TIPO_NOTIF_INSCRIPCION_CLUB, jugador=perfil, estado=settings.ESTADO_NULL)
 
             if municipio_id  and int(municipio_id) != 0:
-                clubes = Club.objects.filter(municipio__id = municipio_id)
+                clubes = Club.objects.filter(municipio__id = municipio_id).exclude(id__in = clubes_excluir)
             elif provincia_id and int(provincia_id) != 0:
-                clubes = Club.objects.filter(municipio__provincia__id = provincia_id)
+                clubes = Club.objects.filter(municipio__provincia__id = provincia_id).exclude(id__in = clubes_excluir)
             else:
                 clubes = []
 
