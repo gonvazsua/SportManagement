@@ -20,13 +20,14 @@ ruta_buscador_club = "inicio/clubes_buscador.html"
 ruta_buscar_clubes = "inicio/resultados_buscador_club.html"
 ruta_inicio_club = "inicio/inicio_club.html"
 ruta_buscar_partidos_club = "inicio/resultados_buscador_partidos.html"
+ruta_buscar_partidos_club_partido = "inicio/partido.html"
 
 
 def inicio(request):
 
     login_form = formulario_login()
     registro_form = formulario_registro()
-    '''
+
     if request.user.is_authenticated():
         try:
             perfil = Perfil.objects.get(user=request.user)
@@ -43,11 +44,11 @@ def inicio(request):
             'login_form' : login_form,
             'registro_form' : registro_form
         }
-    '''
+
 
     #Modificacion para que no se inice sesion automaticamente
-    if request.user.is_authenticated():
-        auth.logout(request)
+    #if request.user.is_authenticated():
+    #    auth.logout(request)
 
     #Provincias y municipios para el buscador de clubes
     municipios = []
@@ -385,6 +386,23 @@ def inicio_club(request, nombre_club):
                 eventos = Evento.objects.filter(club = club).order_by("-fecha")[:10]
                 datos["eventos"] = eventos
 
+        else:
+            nombre_club_sin_guiones = nombre_club.replace("-", " ")
+            clubes = Club.objects.filter(nombre = nombre_club_sin_guiones)
+
+            if len(clubes) > 0:
+                club = clubes.first()
+                datos["club"] = club
+
+                franjas_horarias = FranjaHora.objects.filter(club = club).order_by("inicio")
+                datos["franjas_horarias"] = franjas_horarias
+
+                eventos = Evento.objects.filter(club = club).order_by("-fecha")[:10]
+                datos["eventos"] = eventos
+
+            else:
+                return HttpResponseRedirect("/buscador/club")
+
     except Exception, e:
         logger.debug("inicio/views - Método inicio_club: " + e.message)
 
@@ -423,6 +441,34 @@ def buscar_partidos_inicio(request):
 
     return render_to_response(ruta_buscar_partidos_club, datos, context_instance=RequestContext(request))
 
+
+@login_required()
+def inicio_club_partido(request, nombre_club, id_partido):
+
+    datos = {}
+    club = None
+
+    try:
+
+        nombre_club_sin_guiones = nombre_club.replace("-", " ")
+
+        clubes = Club.objects.filter(nombre = nombre_club_sin_guiones)
+        if len(clubes) > 0:
+            club = clubes.first()
+            datos["club"] = club
+
+        if club and id_partido:
+            partido = Partido.objects.get(id = id_partido)
+            datos["partido"] = partido
+
+        else:
+            return HttpResponseRedirect("/buscador/club")
+
+
+    except Exception, e:
+        logger.debug("inicio/views - Método inicio_buscar_partidos: " + e.message)
+
+    return render_to_response(ruta_buscar_partidos_club_partido, datos, context_instance=RequestContext(request))
 
 ######################################################
 #Metodo que genera claves aleatorias para los usuarios

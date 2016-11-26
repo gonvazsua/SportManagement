@@ -1,11 +1,18 @@
 {% for partido in partidos %}
 
+    {% if request.user.is_authenticated %}
+        <a href="/club/{{partido.pista.club.separa_guiones_nombre}}/partidos/{{partido.id}}" title="Ver partido">
+    {% endif %}
+
     <div id="pista_{{pista.id}}" class="principal_partido col-lg-4  row-altura row-margin-top-10
         {%if partido.perfiles.count == 4%} pista_verde
         {%elif partido.perfiles.count > 0 and partido.perfiles.count < 4 %} pista_amarilla
         {%elif partido.es_partido_evento %} pista_evento
         {%else%}pista_roja{%endif%}"
-            onclick="javascript:loginDialog();">
+
+        {% if not request.user.is_authenticated %}
+            onclick="javascript:loginDialog();"
+        {% endif %}>
 
         <div class="row">
             <div class="col-lg-12 col-md-12 row-centered">
@@ -29,6 +36,10 @@
         </div>
 
     </div>
+
+    {% if request.user.is_authenticated %}
+        </a>
+    {% endif %}
 
 {% empty%}
 
