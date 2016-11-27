@@ -442,13 +442,20 @@ def buscar_partidos_inicio(request):
     return render_to_response(ruta_buscar_partidos_club, datos, context_instance=RequestContext(request))
 
 
-@login_required()
+
 def inicio_club_partido(request, nombre_club, id_partido):
 
     datos = {}
     club = None
 
     try:
+
+        login_form = formulario_login()
+        registro_form = formulario_registro()
+        datos = {
+            'login_form' : login_form,
+            'registro_form' : registro_form
+        }
 
         nombre_club_sin_guiones = nombre_club.replace("-", " ")
 

@@ -3,6 +3,14 @@
     {{perfil.user.first_name}}
 {% endblock %}
 
+{% block meta %}
+    <!-- Compartir partido en facebook -->
+    <meta property="og:title" content="Partido en Sportclick.com" />
+    <meta property="og:description" content="Hoy juego un partido en {{club.nombre}}, con Sportclick" />
+    <meta property="og:image" content="{{MEDIA_URL}}{{club.imagen}}"/>
+    <meta property="og:url" content="http://{{request.get_host}}/club/{{club.separa_guiones_nombre}}/partidos/{{partido.id}}" />
+{% endblock %}
+
 {% block nombre_principal %}
     Partidos
 {% endblock %}
@@ -66,8 +74,15 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-12 col-md-12">
+    <div class="col-lg-6 col-md-6">
         <h4>Jugadores: ({{partido.perfiles.all|length}})</h4><hr>
+    </div>
+    <div class="col-lg-6 text-right">
+        <a class="btn btn-primary btn-rrss"
+           href="http://www.facebook.com/sharer.php?u=http://{{request.get_host}}/club/{{partido.pista.club.separa_guiones_nombre}}/partidos/{{partido.id}}" target="_blank" role="button" data-site="">
+
+            <i class="fa fa-thumbs-up fa-fw"></i> Compartir este partido en Facebook
+        </a>
     </div>
 </div>
 

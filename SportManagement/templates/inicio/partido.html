@@ -16,10 +16,7 @@
     </script>
 
     <!-- META Tags -->
-    <META name="description" content="Gestión de pistas deportivas, organiza tu club, usuarios y partidos. Inscripción de jugadores. Reserva de pistas online">
-    <META name="keywords" content="Gestión de pistas deportivas, Aplicación gestionar club, Montar partidos,
-    Gestión de pistas de padel gratis, programa gestion padel, reservas online, gimnasios, gestion deportiva, reserva pistas online,
-    centros deportivos, instalaciones, deportes, reservar, reservas, gestion de pistas de padel, gestion club">
+
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{STATIC_URL}}img/Logo_v2.png?v=1">
@@ -67,6 +64,12 @@
       ga('send', 'pageview');
 
     </script>
+
+    <!-- Compartir partido en facebook -->
+    <meta property="og:title" content="Partido en Sportclick.com" />
+    <meta property="og:description" content="Hoy juego un partido en {{club.nombre}}, con Sportclick" />
+    <meta property="og:image" content="{{MEDIA_URL}}{{club.imagen}}"/>
+    <meta property="og:url" content="http://{{request.get_host}}/club/{{club.separa_guiones_nombre}}/partidos/{{partido.id}}" />
 
 
 
@@ -155,9 +158,7 @@
             <div class="row">
                 <div class="col-lg-12 text-right">
                     <a class="btn btn-primary btn-rrss"
-                       href="http://www.facebook.com/sharer.php?s=100&p[url]={{request.get_host}}/{{club.separa_guiones_nombre}}/partidos/{{partido.id}}
-                       &p[title]=Partido en SportClick&p[summary]=Hoy juego al padel en {{club.nombre}}, con Sportclick
-                       &p[images][0]={{MEDIA_URL}}{{club.imagen}}" target="_blank" role="button">
+                       href="http://www.facebook.com/sharer.php?u=http://{{request.get_host}}/club/{{club.separa_guiones_nombre}}/partidos/{{partido.id}}" target="_blank" role="button" data-site="">
 
                         <i class="fa fa-thumbs-up fa-fw"></i> Compartir este partido en Facebook
                     </a>
@@ -233,38 +234,58 @@
                     <div class="row">
                         <div class="col-lg-12">
 
-                            {% for jugador in partido.perfiles.all %}
+                            {% if not request.user.is_authenticated %}
 
-                                {% if forloop.counter0|divisibleby:2 %}
-                                <div class="row">
-                                    <div class="col-lg-1"></div>
-                                {% endif %}
+                                <div class="alert alert-warning" role="alert">
 
-                                    <div class="col-lg-5 padding5 border-radius">
-                                        <div class="row over-fondo-info">
-                                            <div class="col-lg-4  border-left">
-                                                {% if jugador.imagen == "" %}
-                                                    <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{jugador.user.first_name}}" class="img-responsive img-rounded">
-                                                {% else %}
-                                                    <img src="{{MEDIA_URL}}{{jugador.imagen}}" title="{{jugador.user.first_name}}" alt="{{jugador.user.first_name}}" class="img-responsive img-rounded">
-                                                {% endif %}
-                                            </div>
-                                            <div class="col-lg-8">
-                                                <div class="row">
-                                                    <div class="col-lg-12"><i class="fa fa-tag fa-1"></i> <strong>Usuario:</strong> {{jugador.user.username}}</div>
+                                    <p><a href="javascript:loginDialog();">Accede</a> para ver este contenido</p>
+
+                                </div>
+
+                            {% else %}
+
+                                {% for jugador in partido.perfiles.all %}
+
+                                    {% if forloop.counter0|divisibleby:2 %}
+                                    <div class="row">
+                                        <div class="col-lg-1"></div>
+                                    {% endif %}
+
+                                        <div class="col-lg-5 padding5 border-radius">
+                                            <div class="row over-fondo-info">
+                                                <div class="col-lg-4  border-left">
+                                                    {% if jugador.imagen == "" %}
+                                                        <img src="{{STATIC_URL}}img/no-image.png" title="Imagen no disponible" alt="{{jugador.user.first_name}}" class="img-responsive img-rounded">
+                                                    {% else %}
+                                                        <img src="{{MEDIA_URL}}{{jugador.imagen}}" title="{{jugador.user.first_name}}" alt="{{jugador.user.first_name}}" class="img-responsive img-rounded">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <div class="row">
+                                                        <div class="col-lg-12"><i class="fa fa-tag fa-1"></i> <strong>Usuario:</strong> {{jugador.user.username}}</div>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <hr>
                                         </div>
-                                        <hr>
+
+                                    {% if not forloop.counter0|divisibleby:2 %}
                                     </div>
+                                    {%else%}
+                                    <div class="col-lg-1"></div>
+                                    {% endif %}
 
-                                {% if not forloop.counter0|divisibleby:2 %}
+                                {% empty %}
+
+                                <div class="row">
+                                    <div class="col-lg-12 text-center">
+                                        <h4>Ups, todavía no hay jugadores inscritos en este partido</h4>
+                                    </div>
                                 </div>
-                                {%else%}
-                                <div class="col-lg-1"></div>
-                                {% endif %}
 
-                            {% endfor %}
+                                {% endfor %}
+
+                            {% endif %}
 
                         </div>
                     </div>
