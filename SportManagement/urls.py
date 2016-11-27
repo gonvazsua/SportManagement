@@ -23,6 +23,7 @@ urlpatterns = patterns('',
 
     url(r'^buscar_partidos_ajax', 'Core.views.buscar_partidos_inicio'),
     url(r'^club/(?P<nombre_club>[\w\-]+)/partidos/(?P<id_partido>\d+)', 'Core.views.inicio_club_partido'),
+    url(r'^club/(?P<nombre_club>[\w\-]+)/eventos/(?P<id_evento>\d+)', 'Core.views.inicio_club_evento'),
     url(r'^club/(?P<nombre_club>[\w\-]+)', 'Core.views.inicio_club'),
     url(r'^buscador/club/buscar', 'Core.views.inicio_buscar_clubes'),
     url(r'^buscador/club', 'Core.views.inicio_buscador_club'),

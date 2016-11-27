@@ -21,6 +21,7 @@ ruta_buscar_clubes = "inicio/resultados_buscador_club.html"
 ruta_inicio_club = "inicio/inicio_club.html"
 ruta_buscar_partidos_club = "inicio/resultados_buscador_partidos.html"
 ruta_buscar_partidos_club_partido = "inicio/partido.html"
+ruta_buscar_partidos_club_evento = "inicio/evento.html"
 
 
 def inicio(request):
@@ -476,6 +477,40 @@ def inicio_club_partido(request, nombre_club, id_partido):
         logger.debug("inicio/views - Método inicio_buscar_partidos: " + e.message)
 
     return render_to_response(ruta_buscar_partidos_club_partido, datos, context_instance=RequestContext(request))
+
+def inicio_club_evento(request, nombre_club, id_evento):
+
+    datos = {}
+    club = None
+
+    try:
+
+        login_form = formulario_login()
+        registro_form = formulario_registro()
+        datos = {
+            'login_form' : login_form,
+            'registro_form' : registro_form
+        }
+
+        nombre_club_sin_guiones = nombre_club.replace("-", " ")
+
+        clubes = Club.objects.filter(nombre = nombre_club_sin_guiones)
+        if len(clubes) > 0:
+            club = clubes.first()
+            datos["club"] = club
+
+        if club and id_evento:
+            evento = Evento.objects.get(id = id_evento)
+            datos["evento"] = evento
+
+        else:
+            return HttpResponseRedirect("/buscador/club")
+
+
+    except Exception, e:
+        logger.debug("inicio/views - Método inicio_club_evento: " + e.message)
+
+    return render_to_response(ruta_buscar_partidos_club_evento, datos, context_instance=RequestContext(request))
 
 ######################################################
 #Metodo que genera claves aleatorias para los usuarios

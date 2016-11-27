@@ -3,6 +3,19 @@
     {{perfil.user.first_name}}
 {% endblock %}
 
+{% block meta %}
+    <!-- Compartir partido en facebook -->
+    <meta property="og:title" content="{{evento_editar.nombre}} en {{club.nombre}}, con Sportclick.com" />
+    <meta property="og:description" content='{{fecha|date:"d/m/Y"}}' />
+    {% if club.imagen == "" or club.imagen == None %}
+        <meta property="og:image" content="{{STATIC_URL}}img/Logo_v2.png"/>
+    {% else %}
+        <meta property="og:image" content="{{MEDIA_URL}}{{club.imagen}}"/>
+    {% endif %}
+    <meta property="og:url" content="http://{{request.get_host}}/club/{{club.separa_guiones_nombre}}/partidos/{{partido.id}}" />
+
+{% endblock %}
+
 {% block nombre_principal %}
     Editar evento - {{club.nombre}}
 {% endblock %}
@@ -40,6 +53,20 @@
         </div>
     </div>
 {% endif %}
+
+<div class="row">
+    <div class="col-lg-10 text-right">
+        <a class="btn btn-primary btn-rrss"
+           href="http://www.facebook.com/sharer.php?u=http://{{request.get_host}}/club/{{club.separa_guiones_nombre}}/eventos/{{evento.id}}" target="_blank" role="button" data-site="">
+
+            <i class="fa fa-thumbs-up fa-fw"></i> Compartir este evento en Facebook
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-10"><hr/></div>
+</div>
 
 <form id="editar_evento" method="post" action="/administrador/{{perfil.user.id}}/eventos/{{evento_editar.id}}/editar" enctype="multipart/form-data">
     {% csrf_token %}
